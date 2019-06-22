@@ -1,5 +1,0 @@
-# id:{memberName{=role}:}{|attributeName{=value}:}
-# example:
-# groupname:membername=role|description=desc
-
-ebmsgroup:ebms=manager:ebmsadmin=admin|description=ebms group

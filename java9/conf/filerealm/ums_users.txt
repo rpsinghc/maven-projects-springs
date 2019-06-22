@@ -1,8 +1,0 @@
-# $Id: ums_users.txt 19340 2007-02-16 19:41:26Z hansen $
-# id:{attributeName{=value}:}
-# example:
-# user:password=pass:email=user@xyz.com:phone=800-123-5436:lastname=user:firstname=user:
-#
-
-ebms:password=ebms:firstname=ebms:lastname=ebms:email=ebms@savvion.com:phone=408-330-3400
-ebmsadmin:password=ebmsadmin:firstname=ebmsadmin:lastname=ebmsadmin:email=ebmsadmin@savvion.com:phone=408-330-3400
