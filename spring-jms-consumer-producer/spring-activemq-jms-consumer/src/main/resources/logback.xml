@@ -1,0 +1,50 @@
+<configuration>
+
+<appender name="console-log" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n
+			</pattern>
+		</encoder>
+</appender>
+
+	<!-- Normal debug log appender -->
+	<appender name="file-app"
+		class="ch.qos.logback.core.FileAppender">
+		<file>target/logs/consumer-normal.log</file>
+
+		<encoder>
+			<pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="consumer-app"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file value="target/logs/consumer.log" />
+		<encoder>
+			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n
+			</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				target/logs/archived/log_%d{dd-MM-yyyy}.log
+			</fileNamePattern>
+			<maxHistory>10</maxHistory>
+			<totalSizeCap>5MB</totalSizeCap>
+		</rollingPolicy>
+
+	</appender>
+
+	<!-- Setup the root category, add the appenders and set the default level -->
+	<root level="info">
+		<appender-ref ref="consumer-app" />
+		<appender-ref ref="console-log"/>
+	</root>
+
+	<!-- Specify the level specific to co.myapp.notifier -->
+	<logger name="org.soa.activemq">
+		<level value="ALL" />
+		<appender-ref ref="consumer-app" />
+	</logger>
+
+</configuration>

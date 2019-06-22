@@ -1,0 +1,375 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" 
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OfficeCapacity">
+
+	<!--- Showing data by ID -->
+		
+		<resultMap id="branchOfficeMasterVO" class="com.worldcheck.atlas.vo.masters.BranchOfficeMasterVO">
+			<result property="branchOfficeId" column="office_id" />
+			<result property="branchOffice" column="office" />
+		</resultMap>
+	
+	  <select id="getOffices" resultMap="branchOfficeMasterVO" parameterClass="java.lang.String">
+		select distinct cum.office_id, com.office from cms_user_master cum,CMS_OFFICE_MASTER com 
+		where cum.status=1 and cum.office_id=com.OFFICE_MASTER_ID and  LEVEL>1 
+		START WITH (LOGIN_ID = (#user#) or reports_to = (#user#)) 
+		CONNECT BY NOCYCLE PRIOR upper(LOGIN_ID) = upper(REPORTS_TO) 
+		order by upper(com.office)
+	  </select>
+	  
+	  
+	  <resultMap id="productivityPointsAndCasesVO" class="com.worldcheck.atlas.vo.report.ProductivityPointsAndCasesVO">
+			<result property="supervisor" column="SUPERVISOR" />
+			<result property="analyst" column="analyst" />
+			<result property="month" column="month" />
+			<result property="cmpPoints" column="cmp_jlp" />
+			<result property="cmpCases" column="cmp_case_count" />
+			<result property="wipPoints" column="wip_jlp" />
+			<result property="wipCases" column="wip_case_count" />
+			<result property="totalPoints" column="ttl_jlp" />
+			<result property="totalCases" column="ttl_case_count" />
+			<result property="year" column="year" />
+		</resultMap>
+	
+	  <select id="getUtilizationByProductivityPtsCD" resultMap="productivityPointsAndCasesVO" parameterClass="java.util.HashMap">
+			select 
+			a.supervisor supervisor,
+			a.analyst analyst,
+			a.month month,
+			a.year year,
+		    round(decode(cmp_jlp,null,0,cmp_jlp),2) cmp_jlp, round(decode(wip_jlp,null,0,wip_jlp),2) wip_jlp, 
+			round(decode(ttl_jlp,null,0,ttl_jlp),2) ttl_jlp, decode(cmp_case_count,null,0,cmp_case_count) cmp_case_count, 
+			decode(wip_case_count,null,0,wip_case_count) wip_case_count, 
+			decode(ttl_case_count,null,0,ttl_case_count) ttl_case_count 
+			from(
+			select distinct supervisor,	analyst, months.month, months.year
+			from 
+			DW_OFC_CAPACITY_JLP,
+			(
+			select 
+			to_number(to_char(add_months(to_date('1-' || #startMonth# || '-' || #startYear#,'dd-mm-yyyy'),level-1),'FMmm')) month,
+			to_number(to_char(add_months(to_date('1-' || #startMonth# || '-' || #startYear#,'dd-mm-yyyy'),level-1),'yyyy')) year
+			from dual connect by level <![CDATA[ <= ]]> 
+			(select months_between(to_date('1-' || #endMonth# || '-' || #endYear#, 'dd-mm-yyyy'), to_date('1-' || #startMonth# || '-' || #startYear#, 'dd-mm-yyyy')) + 1 from  dual)
+			) months
+			where office = #office#
+			<isEqual property="startYear" compareProperty="endYear" prepend="AND">
+			(FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#)
+			</isEqual>   
+			<isNotEqual property="startYear" compareProperty="endYear"  prepend="AND">
+			((FINAL_SENT_YEAR <![CDATA[ > ]]> #startYear# and FINAL_SENT_YEAR <![CDATA[ < ]]> #endYear#)
+			or (FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth#)
+			or (FINAL_SENT_YEAR = #endYear# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#))
+			</isNotEqual>
+			) a
+			left join 
+			(
+			select 
+			 supervisor,analyst,
+			 cmp_jlp, wip_jlp, 
+			 ttl_jlp, cmp_case_count, 
+			 wip_case_count, 
+			 ttl_case_count,
+			 FINAL_SENT_MONTH month,
+			 FINAL_SENT_YEAR year
+			from DW_OFC_CAPACITY_JLP
+			where office = #office#
+			<isEqual property="startYear" compareProperty="endYear" prepend="AND">
+			(FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#)
+			</isEqual>
+			<isNotEqual property="startYear" compareProperty="endYear" prepend="AND">
+			((FINAL_SENT_YEAR <![CDATA[ > ]]> #startYear# and FINAL_SENT_YEAR <![CDATA[ < ]]> #endYear#)
+			or (FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth#)
+			or (FINAL_SENT_YEAR = #endYear# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#))
+			</isNotEqual> 
+			)b 
+			ON a.month=b.month AND a.year=b.year AND a.analyst=b.analyst AND a.supervisor=b.supervisor
+			ORDER BY year, month, UPPER(supervisor), UPPER(analyst)
+	  </select>
+	  
+	  
+	  <select id="getUtilizationByProductivityCount" resultClass="java.lang.Integer" parameterClass="java.util.HashMap">
+			select count(*) 
+			from(
+			select distinct supervisor,	analyst, months.month, months.year
+			from 
+			DW_OFC_CAPACITY_JLP,
+			(
+			select 
+			to_number(to_char(add_months(to_date('1-' || #startMonth# || '-' || #startYear#,'dd-mm-yyyy'),level-1),'FMmm')) month,
+			to_number(to_char(add_months(to_date('1-' || #startMonth# || '-' || #startYear#,'dd-mm-yyyy'),level-1),'yyyy')) year
+			from dual connect by level <![CDATA[ <= ]]> 
+			(select months_between(to_date('1-' || #endMonth# || '-' || #endYear#, 'dd-mm-yyyy'), to_date('1-' || #startMonth# || '-' || #startYear#, 'dd-mm-yyyy')) + 1 from  dual)
+			) months
+			where office = #office#
+			<isEqual property="startYear" compareProperty="endYear" prepend="AND">
+			(FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#)
+			</isEqual>   
+			<isNotEqual property="startYear" compareProperty="endYear"  prepend="AND">
+			((FINAL_SENT_YEAR <![CDATA[ > ]]> #startYear# and FINAL_SENT_YEAR <![CDATA[ < ]]> #endYear#)
+			or (FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth#)
+			or (FINAL_SENT_YEAR = #endYear# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#))
+			</isNotEqual>
+			) a
+			left join 
+			(
+			select 
+			 supervisor,analyst,
+			 cmp_jlp, wip_jlp, 
+			 ttl_jlp, cmp_case_count, 
+			 wip_case_count, 
+			 ttl_case_count,
+			 FINAL_SENT_MONTH month,
+			 FINAL_SENT_YEAR year
+			from DW_OFC_CAPACITY_JLP
+			where office = #office#
+			<isEqual property="startYear" compareProperty="endYear" prepend="AND">
+			(FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#)
+			</isEqual>
+			<isNotEqual property="startYear" compareProperty="endYear" prepend="AND">
+			((FINAL_SENT_YEAR <![CDATA[ > ]]> #startYear# and FINAL_SENT_YEAR <![CDATA[ < ]]> #endYear#)
+			or (FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth#)
+			or (FINAL_SENT_YEAR = #endYear# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#))
+			</isNotEqual> 
+			)b 
+			ON a.month=b.month AND a.year=b.year AND a.analyst=b.analyst AND a.supervisor=b.supervisor 
+	  </select>
+	  
+	<select id="getUtilizationByRevenue" parameterClass="java.util.Map" resultClass="com.worldcheck.atlas.vo.report.UtilizationByRevenueVO">
+		select 
+		a.supervisor supervisor,
+		a.analyst analyst,
+		a.month month,
+		a.year year,
+		decode(b.cmpRevenue,null,'0', 0, '0', trim(TO_CHAR(b.cmpRevenue,'999,999,999,999,999,999,999,999,999,999,999,999.99'))) cmpRevenue, 
+		decode(b.wipRevenue,null,'0', 0, '0', trim(TO_CHAR(b.wipRevenue,'999,999,999,999,999,999,999,999,999,999,999,999.99'))) wipRevenue, 
+		decode(b.ttlRevenue,null,'0', 0, '0', trim(TO_CHAR(b.ttlRevenue,'999,999,999,999,999,999,999,999,999,999,999,999.99'))) ttlRevenue
+		from 
+		(
+			select distinct supervisor,	analyst, months.month, months.year
+			from 
+			DW_OFC_CAPACITY_REV,
+			(
+				select 
+				to_number(to_char(add_months(to_date('1-' || #startMonth# || '-' || #startYear#,'dd-mm-yyyy'),level-1),'FMmm')) month,
+				to_number(to_char(add_months(to_date('1-' || #startMonth# || '-' || #startYear#,'dd-mm-yyyy'),level-1),'yyyy')) year
+				from dual connect by level <![CDATA[ <= ]]> 
+				(select months_between(to_date('1-' || #endMonth# || '-' || #endYear#, 'dd-mm-yyyy'), to_date('1-' || #startMonth# || '-' || #startYear#, 'dd-mm-yyyy')) + 1 from  dual)
+			) months
+			where office = #office#
+			<isEqual property="startYear" compareProperty="endYear" prepend="AND">
+			(FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#)
+			</isEqual>
+			<isNotEqual property="startYear" compareProperty="endYear" prepend="AND">
+			((FINAL_SENT_YEAR <![CDATA[ > ]]> #startYear# and FINAL_SENT_YEAR <![CDATA[ < ]]> #endYear#)
+			or (FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth#)
+			or (FINAL_SENT_YEAR = #endYear# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#))
+			</isNotEqual>
+		) a
+		left join 
+		(
+			select 
+			supervisor,analyst,
+			CMP_REVENUE cmpRevenue, 
+			WIP_REVENUE wipRevenue, 
+			TTL_REVENUE ttlRevenue,
+			FINAL_SENT_MONTH month,
+			FINAL_SENT_YEAR year
+			from DW_OFC_CAPACITY_REV
+			where office = #office#
+			<isEqual property="startYear" compareProperty="endYear" prepend="AND">
+			(FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#)
+			</isEqual>
+			<isNotEqual property="startYear" compareProperty="endYear" prepend="AND">
+			((FINAL_SENT_YEAR <![CDATA[ > ]]> #startYear# and FINAL_SENT_YEAR <![CDATA[ < ]]> #endYear#)
+			or (FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth#)
+			or (FINAL_SENT_YEAR = #endYear# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#))
+			</isNotEqual>
+		) b 
+		ON a.month=b.month AND a.year=b.year AND a.analyst=b.analyst AND a.supervisor=b.supervisor
+		ORDER BY year, month, UPPER(supervisor), UPPER(analyst)
+	</select>
+	
+	
+	<select id="getUtilizationByRevenueCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*) from 
+		(
+			select distinct supervisor,	analyst, months.month, months.year
+			from 
+			DW_OFC_CAPACITY_REV,
+			(
+				select 
+				to_number(to_char(add_months(to_date('1-' || #startMonth# || '-' || #startYear#,'dd-mm-yyyy'),level-1),'FMmm')) month,
+				to_number(to_char(add_months(to_date('1-' || #startMonth# || '-' || #startYear#,'dd-mm-yyyy'),level-1),'yyyy')) year
+				from dual connect by level <![CDATA[ <= ]]> 
+				(select months_between(to_date('1-' || #endMonth# || '-' || #endYear#, 'dd-mm-yyyy'), to_date('1-' || #startMonth# || '-' || #startYear#, 'dd-mm-yyyy')) + 1 from  dual)
+			) months
+			where office = #office#
+			<isEqual property="startYear" compareProperty="endYear" prepend="AND">
+			(FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#)
+			</isEqual>
+			<isNotEqual property="startYear" compareProperty="endYear" prepend="AND">
+			((FINAL_SENT_YEAR <![CDATA[ > ]]> #startYear# and FINAL_SENT_YEAR <![CDATA[ < ]]> #endYear#)
+			or (FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth#)
+			or (FINAL_SENT_YEAR = #endYear# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#))
+			</isNotEqual>
+		) a
+		left join 
+		(
+			select 
+			supervisor,analyst,
+			CMP_REVENUE cmpRevenue, 
+			WIP_REVENUE wipRevenue, 
+			TTL_REVENUE ttlRevenue,
+			FINAL_SENT_MONTH month,
+			FINAL_SENT_YEAR year
+			from DW_OFC_CAPACITY_REV
+			where office = #office#
+			<isEqual property="startYear" compareProperty="endYear" prepend="AND">
+			(FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#)
+			</isEqual>
+			<isNotEqual property="startYear" compareProperty="endYear" prepend="AND">
+			((FINAL_SENT_YEAR <![CDATA[ > ]]> #startYear# and FINAL_SENT_YEAR <![CDATA[ < ]]> #endYear#)
+			or (FINAL_SENT_YEAR = #startYear# and FINAL_SENT_MONTH <![CDATA[ >= ]]> #startMonth#)
+			or (FINAL_SENT_YEAR = #endYear# and FINAL_SENT_MONTH <![CDATA[ <= ]]> #endMonth#))
+			</isNotEqual>
+		) b 
+		ON a.month=b.month AND a.year=b.year AND a.analyst=b.analyst AND a.supervisor=b.supervisor 
+	</select>
+	  
+	   <select id="currentAnalystLoadinXls" resultClass="com.worldcheck.atlas.vo.report.CurrentAnalystLoadingVO" parameterClass="java.util.HashMap">
+		 Select 
+	all_analyst.Analyst,
+	all_analyst.supervisor,
+	nvl(resultTable.PERFORMER,' ')PERFORMER,
+	nvl(resultTable.LoginId,' ') LoginId,
+    nvl(resultTable.total,0) TOTAL,
+	nvl(resultTable.primarySubject,' ') primarySubject,
+    nvl(resultTable.primarySubjectCountry,' ') primarySubjectCountry,
+    nvl(resultTable.crn,' ') crn,
+     nvl(resultTable.itrm1,'') itrm1, 
+	 nvl(resultTable.itrm2,'') itrm2, 
+	 nvl(resultTable.finalDueDate,'') finalDueDate,
+    nvl(resultTable.caseStatus,' ') caseStatus,
+    nvl(resultTable.USER_ID,' ') USER_ID,
+    nvl(resultTable.LEAVETYPE,' ') LEAVETYPE,
+    nvl(resultTable.LEAVEDATE,'') LEAVEDATE
+       FROM (
+		SELECT a.*,b.* 
+		FROM
+		(	 SELECT PERFORMER, LoginId , COUNT(crn) total,
+		  tab_to_clob(CAST(COLLECT(primarySubject) AS t_varchar2_tab),'SP~@@') primarySubject                                                                        ,
+		  tab_to_clob(CAST(COLLECT(primarySubjectCountry) AS t_varchar2_tab),'SP~@@') primarySubjectCountry                                                          ,
+		  tab_to_clob(CAST(COLLECT(crn) AS t_varchar2_tab)) crn                                                                                              ,
+		  tab_to_clob(CAST(COLLECT(DECODE(TO_CHAR(itrm1),NULL,TO_CHAR(to_date(#endDate#)       +1),TO_CHAR(itrm1))) AS t_varchar2_tab)) itrm1              ,
+		  tab_to_clob(CAST(COLLECT(DECODE(TO_CHAR(itrm2),NULL,TO_CHAR(to_date(#endDate#)       +1),TO_CHAR(itrm2))) AS t_varchar2_tab)) itrm2              ,
+		  tab_to_clob(CAST(COLLECT(DECODE(TO_CHAR(finalDueDate),NULL,TO_CHAR(to_date(#endDate#)+1),TO_CHAR(finalDueDate))) AS t_varchar2_tab)) finalDueDate,
+		  tab_to_clob(CAST(COLLECT(caseStatus) AS t_varchar2_tab)) caseStatus                                                                                
+		  
+		   FROM
+		  (SELECT  a.PERFORMER     ,   
+            a.LoginId              ,
+		    a.crn                  ,
+		    a.primarySubject       ,
+		    a.primarySubjectCountry,
+		    a.caseStatus           ,
+		    a.itrm1                ,
+		    a.itrm2                ,
+		    a.finalDueDate         
+		   
+		     FROM
+		    (SELECT    crn          ,
+		      PERFORMER PERFORMER                          ,
+              analyst LoginId                              ,
+		      PRIMARY_SUBJECT primarySubject               ,
+		      PRIMARY_SUBJECT_COUNTRY primarySubjectCountry,
+		      case_status caseStatus                       ,
+		      team_interim_duedate1 itrm1                  ,
+		      team_interim_duedate2 itrm2                  ,
+		      team_final_due_date finalDueDate
+		       FROM DW_CURRENT_ANALYST_LOADING
+		      WHERE ((team_interim_duedate1 <![CDATA[ >= ]]> to_date(#startDate#)
+		    AND team_interim_duedate1      <![CDATA[<= ]]> to_date(#endDate#))
+		    OR(team_interim_duedate2       <![CDATA[ >= ]]> to_date(#startDate#)
+		    AND team_interim_duedate2      <![CDATA[<= ]]> to_date(#endDate#))
+		    OR(team_final_due_date         <![CDATA[ >= ]]> to_date(#startDate#)
+		    AND team_final_due_date        <![CDATA[<= ]]> to_date(#endDate#)))
+		    AND upper(Office)                     =  upper(#office#)
+		    ) a
+		   
+		  )
+            GROUP BY  PERFORMER,
+                  LoginId     
+		  
+		)   a
+		LEFT OUTER JOIN 
+		(
+		SELECT C.USER_ID,WM_CONCAT(LEAVETYPE) AS LEAVETYPE,WM_CONCAT(LEAVEDATE) AS LEAVEDATE
+		FROM 
+		(
+		SELECT B.USER_ID,
+		      (SELECT wm_concat(to_date(b.from_date,'dd-mon-yy') + rownum -1)
+		         FROM all_objects
+		        WHERE rownum <![CDATA[<= ]]> to_date(b.to_date,'dd-mon-yy')-to_date(b.from_date,'dd-mon-yy')+1
+		      )  leaveDate ,
+		      
+		      (SELECT wm_concat(DECODE(b.leaveType,1,'L',2,'AM',3,'PM',NULL,''))
+		         FROM all_objects
+		        WHERE rownum <![CDATA[<= ]]> to_date(b.to_date,'dd-mon-yy')-to_date(b.from_date,'dd-mon-yy')+1
+		      ) leaveType
+		FROM 
+		(
+		    SELECT cul.USER_ID,
+		    cul.from_date    ,
+		    cul.to_date      ,
+		    cltm.leave_type_master_id leaveType
+		    FROM CMS_USER_LEAVE cul,
+		    CMS_LEAVE_TYPE_MASTER cltm
+		    WHERE cul.LEAVE_TYPE = cltm.LEAVE_TYPE_MASTER_ID
+		    AND cul.from_date     <![CDATA[ >= ]]> to_date(#startDate#,'dd-MON-YY')
+		    AND cul.to_date       <![CDATA[<= ]]> to_date(#endDate#,'dd-MON-YY')
+		) b
+		) C     
+		GROUP BY USER_ID
+		) B 
+		ON a.PERFORMER = b.USER_ID
+		)resultTable
+
+       , (select us.login_id Analyst,supervisr.user_full_name supervisor
+      from cms_user_master us,cms_user_master supervisr,
+      cms_user_role_map mp,
+      cms_user_role_master ma 
+      where us.status=1 and us.reports_to=supervisr.login_id
+      and us.office_id in (Select OFFICE_MASTER_ID from cms_office_master where upper(Office) = upper(#office#))
+      and mp.role_id = ma.role_id 
+      and us.user_master_id = mp.user_id 
+      and mp.role_id = 'R5'
+
+) all_analyst
+
+where  resultTable.performer(+) = all_analyst.Analyst
+
+
+		order by 
+		upper(supervisor) ,
+		upper(PERFORMER),
+     upper(LoginId)
+	 
+	  </select>
+
+
+<select id="currentAnalystLoadin_PH" resultClass="java.lang.String" parameterClass="java.util.HashMap">
+
+select wm_concat(distinct(to_char(DATED_ON))) phDate 
+from cms_holiday_master chm join cms_office_master com on chm.office_id = com.OFFICE_MASTER_ID
+where 
+com.office = #office#
+and
+to_date(chm.DATED_ON) <![CDATA[>=]]> to_date(#stDate#,'dd MON YYYY') 
+and 
+to_date(chm.DATED_ON) <![CDATA[<=]]> to_date(#edDate#,'dd MON YYYY') 
+order by DATED_ON
+	 </select>  
+</sqlMap>

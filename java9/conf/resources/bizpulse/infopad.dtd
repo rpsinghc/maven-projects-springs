@@ -1,0 +1,45 @@
+<!ELEMENT Infopads ( Infopad+ ) >
+<!ATTLIST Infopads publishdate CDATA #REQUIRED >
+<!ATTLIST Infopads sbmbuild CDATA #REQUIRED >
+<!ATTLIST Infopads sbmversion CDATA #REQUIRED >
+
+<!ELEMENT Infopad ( Description, InfopadSchema, InfopadData ) >
+<!ATTLIST Infopad appname CDATA #REQUIRED >
+<!ATTLIST Infopad id CDATA #REQUIRED >
+<!ATTLIST Infopad modulename CDATA #REQUIRED >
+<!ATTLIST Infopad name CDATA #REQUIRED >
+
+<!ELEMENT Description ( #PCDATA ) >
+
+<!ELEMENT InfopadSchema ( InfopadType, InfopadDimension, InfopadSlots ) >
+
+<!ELEMENT InfopadType ( Type, PType, RType ) >
+<!ELEMENT Type ( #PCDATA ) >
+<!ELEMENT PType ( #PCDATA ) >
+<!ELEMENT RType ( #PCDATA ) >
+
+<!ELEMENT InfopadDimension ( Rows, RowTitle, Columns, ColumnTitle ) >
+<!ELEMENT Rows ( #PCDATA ) >
+<!ELEMENT RowTitle ( #PCDATA ) >
+<!ELEMENT Columns ( #PCDATA ) >
+<!ELEMENT ColumnTitle ( #PCDATA ) >
+
+<!ELEMENT InfopadSlots ( SlotInfo+ ) >
+
+<!ELEMENT SlotInfo ( Name, Index, Type ) >
+<!ELEMENT Name ( #PCDATA ) >
+<!ELEMENT Index ( #PCDATA ) >
+
+<!ELEMENT InfopadData ( Row* ) >
+
+<!ELEMENT Row ( Column | SlotValue )* >
+<!ATTLIST Row rowid CDATA #REQUIRED >
+<!ATTLIST Row rowlabel CDATA #IMPLIED >
+
+<!ELEMENT Column ( SlotValue+ ) >
+<!ATTLIST Column colid CDATA #REQUIRED >
+<!ATTLIST Column collabel CDATA #IMPLIED >
+
+<!ELEMENT SlotValue ( #PCDATA ) >
+<!ATTLIST SlotValue index CDATA #REQUIRED >
+<!ATTLIST SlotValue name CDATA #REQUIRED >

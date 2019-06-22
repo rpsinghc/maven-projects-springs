@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+            
+    <xsd:simpleType name="restricted-string">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="128" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:element name="ServerInfo">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="Server" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="Server">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Alias" type="restricted-string" nillable="false"/>
+                <xsd:element name="Url" type="restricted-string" nillable="false"/>
+                <xsd:element ref="SuperUser" />
+                <xsd:element name="Description" type="xsd:string" nillable="true" minOccurs="0"/>
+                <xsd:element name="Category" type="restricted-string" nillable="true"/>
+                <xsd:element ref="Properties" minOccurs="0"/>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="restricted-string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="SuperUser">
+        <xsd:complexType mixed="true">
+            <xsd:attribute name="password" type="restricted-string" use="required" />
+            <xsd:attribute name="encrypted" type="restricted-string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="Properties">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="Property" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="Property">
+        <xsd:complexType> 
+            <xsd:attribute name="key" type="restricted-string" use="required"/>
+            <xsd:attribute name="value" type="restricted-string" use="required"/>            
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

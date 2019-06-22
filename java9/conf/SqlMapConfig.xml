@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig
+    PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<settings enhancementEnabled="true" useStatementNamespaces="true" cacheModelsEnabled="true" />
+	<!-- 	<sqlMap resource="ibatis/CaseHistory.xml" /> -->
+		<!--Sql map Entries for Master Starts-->
+		
+		<sqlMap resource="ibatis/Country_Master.xml"/>
+		<sqlMap resource="ibatis/Industry_Master.xml"/>
+		<sqlMap resource="ibatis/Risk_Master.xml"/>
+		<sqlMap resource="ibatis/PublicHoliday_Master.xml"/>
+		<sqlMap resource="ibatis/ScoreSheet_Master.xml"/>
+		<sqlMap resource="ibatis/REMultiAction.xml"/>
+		
+		<sqlMap resource="ibatis/CreateCase.xml"/>
+		
+		<!--Sql map Entries for Master End-->
+		<sqlMap resource="ibatis/DocConfig.xml"/>
+		<sqlMap resource="ibatis/AclPermissions.xml" />
+		<sqlMap resource="ibatis/Currency.xml"/>		
+		<sqlMap resource="ibatis/Tasks.xml"/>
+
+
+		<sqlMap resource="ibatis/Invoice.xml"/>
+
+		<sqlMap resource="ibatis/Reports.xml"/>
+
+		<sqlMap resource="ibatis/OfficeUtilization.xml"/>
+		<sqlMap resource="ibatis/OfficeCapacity.xml"/>
+		<sqlMap resource="ibatis/CountryDB.xml"/>
+		<sqlMap resource="ibatis/ClientReq.xml"/>
+		<sqlMap resource="ibatis/CurrencyConversion.xml"/>
+		<sqlMap resource="ibatis/ReportTemplDown.xml"/>
+		<sqlMap resource="ibatis/AdminConsole.xml" />
+
+		<sqlMap resource="ibatis/UserMultiAction.xml"/>
+		<sqlMap resource="ibatis/ClientMultiAction.xml"/>
+		<sqlMap resource="ibatis/BOMultiAction.xml"/>
+		<sqlMap resource="ibatis/ClientGroup_Master.xml"/>
+		
+		<sqlMap resource="ibatis/Subject.xml"/>
+		<sqlMap resource="ibatis/VendorMultiAction.xml"/>
+		<sqlMap resource="ibatis/Notification.xml"/>
+		<sqlMap resource="ibatis/reportTypeMaster.xml"/>
+		<sqlMap resource="ibatis/OfficeAssignment.xml"/>
+		<sqlMap resource="ibatis/TeamAssignment.xml"/>
+
+		<sqlMap resource="ibatis/TeamJLP.xml"/>
+		<sqlMap resource="ibatis/financeOverview.xml"/>
+		<sqlMap resource="ibatis/OfficePerformance.xml"/>
+
+		<sqlMap resource="ibatis/CaseRawDataTemplate.xml"/>
+		<sqlMap resource="ibatis/mutex.xml"/>
+
+
+		<sqlMap resource="ibatis/ReviewTask.xml"/>
+
+		<sqlMap resource="ibatis/OverdueReport.xml"/>
+		<sqlMap resource="ibatis/CaseDueToday.xml"/>
+		<sqlMap resource="ibatis/AllOnHoldReport.xml"/>
+		<sqlMap resource="ibatis/myPerformanceReport.xml"/>
+		<sqlMap resource="ibatis/VisualKey.xml"/>
+		<sqlMap resource="ibatis/Comments.xml"/>
+
+		<sqlMap resource="ibatis/VendorDetail.xml"/>
+		<sqlMap resource="ibatis/RejectionRE.xml"/>
+		<sqlMap resource="ibatis/AuditHistory.xml"/>
+		<sqlMap resource="ibatis/CaseDetails.xml"/>
+		<sqlMap resource="ibatis/UpdateCTData.xml"/>
+		<sqlMap resource="ibatis/Dashboard.xml"/>
+		<sqlMap resource="ibatis/TimeTracker.xml"/>
+		<sqlMap resource="ibatis/BackUp.xml"/>
+		<sqlMap resource="ibatis/TeamPerformance.xml"/>
+                 <sqlMap resource="ibatis/UnconfirmBudget.xml"/>
+                 	<sqlMap resource="ibatis/LegacyDocAttachment.xml"/>
+ <!-- Search  -->
+       <sqlMap resource="ibatis/CaseSearch.xml"/>
+       <sqlMap resource="ibatis/SubjectSearch.xml"/>
+       <sqlMap resource="ibatis/TeamSearch.xml"/>
+       <sqlMap resource="ibatis/MessageSearch.xml"/>
+	<sqlMap resource="ibatis/AtlasWebService.xml"/>
+	 <sqlMap resource="ibatis/AtlasScheduler.xml"/>
+	 <sqlMap resource="ibatis/AtlasWebServiceClient.xml"/>
+       <!-- Search ends -->
+
+       <!-- Client FeedBack CR-7 R-1.3.1  -->
+
+       <sqlMap resource="ibatis/ClientFeedBack.xml"/>
+
+       <!-- Client FeedBack CR-7 R-1.3.1  END -->
+
+       <!-- Support Module R-1.3.1 -->
+	<sqlMap resource="ibatis/SupportApp.xml"/>
+       <!-- Support Module Ends -->
+	   
+	   <!--Start: Added for JPMC Adhoc Reports BI-244-->
+	   <sqlMap resource="ibatis/JPMCReportTemplate.xml"/>
+	   <!--End: Added for JPMC Adhoc Reports BI-244-->
+	   
+       <!--Added by U6027780 for CR BI-293 Start -->
+	<sqlMap resource="ibatis/DBUtils.xml"/>
+       <!-- Added by U6027780 for CR BI-293 Ends -->
+       
+<!-- Start BI-293 Invoice MIS Added by 6035037 -->
+	   <sqlMap resource="ibatis/InvoiceMIS.xml"/>
+
+	   <sqlMap resource="ibatis/AtlasHistory.xml"/>
+	   
+	   
+</sqlMapConfig>
+  

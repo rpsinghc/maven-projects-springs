@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="AtlasWebServiceClient">
+
+ 
+	<insert id="insertJMSQueueRecord" parameterClass="java.util.HashMap">
+			<selectKey resultClass="int" type="pre" keyProperty="id">
+				SELECT CMS_QUEUE_SEQ.NEXTVAL AS VALUE FROM DUAL
+		   </selectKey>
+			INSERT INTO CMS_QUEUE_RECORDS (
+			QUEUE_RECORD_ID,
+			CRN,
+			OPERATION_NAME,
+			SUBJECT_OPERATION_TYPE,
+			SUBJECT_ID,
+			REQUEST_TIME,
+			COMMUNICATION_FLAG,
+			SUCCESS_FLAG
+			)values (
+			#id#,
+			#crn#,
+			#operationName#,
+			#subjectOperationName#,
+			#subjectId#,
+			SYSDATE,
+			#communicationFlag#,
+			#successFlag#
+			
+		)
+	</insert>
+		
+ 	 <select id="getSameCRNCOunt" resultClass="java.lang.Integer" parameterClass="java.util.HashMap">
+
+		select count(crn) from CMS_QUEUE_RECORDS where crn=#crn# and QUEUE_RECORD_ID <![CDATA[ <> ]]> #recordId# AND QUEUE_RECORD_ID <![CDATA[ < ]]> #recordId# AND SUCCESS_FLAG = 0
+						
+	</select>
+
+	<update id="updateForSuccess" parameterClass="java.lang.Long">
+		UPDATE 
+			CMS_QUEUE_RECORDS
+		SET
+			COMMUNICATION_FLAG = 1,
+			SUCCESS_FLAG = 1
+		WHERE
+			QUEUE_RECORD_ID = #sequenceId#
+	</update>
+
+	<update id="updateForManualSuccess" parameterClass="java.lang.Long">
+		UPDATE 
+			CMS_QUEUE_RECORDS
+		SET
+			COMMUNICATION_FLAG = 1,
+			SUCCESS_FLAG = 2
+		WHERE
+			QUEUE_RECORD_ID = #sequenceId#
+	</update>
+
+	<update id="updateForFailureErrorCode" parameterClass="java.lang.Long">
+		UPDATE 
+			CMS_QUEUE_RECORDS
+		SET
+			COMMUNICATION_FLAG = 1,
+			SUCCESS_FLAG = 0
+		WHERE
+			QUEUE_RECORD_ID = #sequenceId#
+	</update>
+	
+	<update id="UpdateSubjectForISISSubjectId" parameterClass="java.util.HashMap">
+		UPDATE 
+		CMS_SUBJECT
+		SET
+
+			CMS_SUBJECT.ISIS_SUBJECT_ID = #isisSubjectId#,
+			CMS_SUBJECT.UPDATED_BY = #updatedBy#,
+			CMS_SUBJECT.UPDATED_ON = SYSDATE
+
+		WHERE
+			CMS_SUBJECT.CRN = #crn# and
+			CMS_SUBJECT.SUBJECT_ID = #atlasSubjectId#
+	</update>
+
+	
+	
+ </sqlMap>
+

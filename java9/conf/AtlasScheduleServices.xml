@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScheduledJobs>
+	<JobClass jobId="" jobName="AtlasRecurrenceCaseJob" jobGroup="AtlasJobGroup" className = "com.worldcheck.atlas.scheduler.job.RecurrenceCaseScheduleJob"
+	triggerName="RecurrenceCaseAtlasTrigger" startTime = ""  endTime =""  runTime="0 30 0 * * ?" isEnabled="true" serviceName="AtlasRecurenceCaseSchedulerService"/>	
+	<JobClass jobId="" jobName="AtlasOverdueCaseJob" jobGroup="AtlasJobGroup" className = "com.worldcheck.atlas.scheduler.job.OverdueCaseJob"
+	triggerName="OvrdueCaseAtlasTrigger" startTime = ""  endTime =""  runTime="0 00 01 * * ?" isEnabled="true" serviceName="AtlasOverdueCasesService"/>	
+	<JobClass jobId="" jobName="AtlasEmailPrepaymentCase" jobGroup="AtlasJobGroup" className="com.worldcheck.atlas.scheduler.job.EmailPrepaymentCaseJob" 
+	triggerName="EmailPrepaymentCaseAtlasTrigger" startTime="" endTime="" runTime="0 0 1 1/1 * ?" isEnabled="true" serviceName="AtlasEmailPrepaymentCaseService"/>
+<JobClass jobId="" jobName="AtlasTempFeedbackAttachRemove" jobGroup="AtlasJobGroup" className="com.worldcheck.atlas.scheduler.job.TempFeedbackAttachRemoveJob" 
+	triggerName="TempFeedbackAttachRemoveAtlasTrigger" startTime="" endTime="" runTime="0 0 1 1/1 * ?" isEnabled="true" serviceName="AtlasTempFeedbackAttachRemoveService"/>
+</ScheduledJobs>

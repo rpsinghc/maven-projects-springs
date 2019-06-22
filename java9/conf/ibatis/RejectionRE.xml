@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" 
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Rejection">        
+     
+     
+     <resultMap id="rejectionREMAP" class="com.worldcheck.atlas.vo.SubTeamReMapVO" groupBy="subject">
+		<result property="crn" column="CRN" />
+		<result property="country" column="COUNTRY" />		
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="subject" column="SUBJECT_NAME" />
+		
+		<result property="reElementByTeam" resultMap="Rejection.reMapByTeam" />
+	</resultMap>
+	
+	<resultMap id="reMapByTeam" class="com.worldcheck.atlas.vo.SubTeamReMapVO">
+		<result property="reId" column="RE_ID" />
+		<result property="reName" column="Name" />
+		<result property="officeId" column="office_id" />
+		<result property="office" column="office" />
+		<result property="teamId" column="TEAM_ID" />		
+		<result property="teamName" column="TEAM_TYPE" />		
+		<result property="performer" column="PERFORMER" />		
+		<result property="performerFullName" column="performerFullName" />
+		<result property="reportsTo" column="reports_to" />
+		<result property="reportsToFullName" column="reportsToFullName" />
+		<result property="managerId" column="manager_id" />
+		<result property="managerFullName" column="managerFullName" />
+		<result property="mainAnalyst" column="main_analyst" />
+		<result property="analystFullName" column="analystFullName" />
+	</resultMap>
+	
+	
+	<select id="getAllSubjectInfoByTeam" resultMap="rejectionREMAP" parameterClass="java.util.HashMap"> 	
+  			 SELECT  
+		    ctd.crn,
+		    CM.COUNTRY ,
+		    ctd.office_id office_id,
+		    COM.office office,
+		    ctd.team_id,
+		    ctt.team_type,    
+		    ctd.team_type_id,
+                    SUBJECT.SUBJECT_ID,
+  					SUBJECT.SUBJECT_NAME,
+		    RM.re_master_id RE_ID,    
+  					RM.Name,
+		    cum.user_full_name performerFullName,
+		    STRM.performer performer,    
+		    reportsTO.user_full_name reportsToFullName ,
+		    cum.reports_to,        
+		    ctd.manager_id,
+		    manager.user_full_name managerFullName, 
+		    ctd.main_analyst,
+		    analyst.user_full_name analystFullName    
+  			FROM 
+					CMS_SUB_TEAM_RE_MAP STRM,
+					CMS_SUBJECT SUBJECT,
+					CMS_COUNTRY_MASTER CM,
+			CMS_OFFICE_MASTER COM,
+			cms_user_master CUM,
+					CMS_RE_MASTER RM,
+			cms_team_details ctd,    
+			cms_team_type ctt,
+			cms_user_master reportsTO,
+			cms_user_master manager,
+			cms_user_master analyst
+			WHERE
+	        ctd.crn = #crn#
+			AND STRM.SUBJECT_ID  = SUBJECT.SUBJECT_ID
+			AND SUBJECT.COUNTRY_ID  = CM.COUNTRY_MASTER_ID
+			AND COM.OFFICE_MASTER_ID(+) = ctd.office_id
+			AND STRM.RE_ID       = RM.RE_MASTER_ID
+			AND STRM.TEAM_ID     = ctd.TEAM_ID
+			AND CUM.login_id = STRM.PERFORMER
+			AND	ctd.team_type_id = ctt.TEAM_TYPE_ID
+		    AND reportsTO.LOGIN_ID(+) = cum.reports_to
+		    AND manager.LOGIN_ID(+) = ctd.manager_id
+		    AND analyst.LOGIN_ID(+) = ctd.main_analyst
+		    AND STRM.REV_STATUS     =1
+		<isNotNull property="processCycle">
+			<isEqual prepend="AND"  property="processCycle" compareValue="Interim1">
+				CTD.REV_INTDUEDATE1 IS NOT NULL
+			</isEqual> 
+      	</isNotNull>
+      	
+      	<isNotNull property="processCycle">
+			<isEqual prepend="AND"  property="processCycle" compareValue="Interim2">
+				CTD.REV_INTDUEDATE2 IS NOT NULL
+			</isEqual> 
+      	</isNotNull>
+      						
+			<isNotNull property="teamId">
+			<isNotEqual property="teamName" compareValue="Primary">			
+				<isNotEmpty prepend="AND" property="teamId">
+					 STRM.TEAM_ID=#teamId#
+			    </isNotEmpty>
+			 </isNotEqual>
+		 </isNotNull>
+            ORDER BY 
+			CASE WHEN (SELECT SUB.ENTITY_TYPE_ID    
+				FROM CMS_CLIENTCASE CASE,CMS_SUBJECT SUB ,  CMS_COUNTRY_MASTER COUNT,CMS_ENTITYTYPE_MASTER ENTITY    
+				WHERE 	CASE.CRN=ctd.crn AND SUB.CRN=CASE.CRN  AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID 
+				and SUB.ENTITY_TYPE_ID = ENTITY.ENTITY_TYPE_ID  AND SUB.IS_PRIMARY_SUB = 1) = 1 THEN SUBJECT.entity_type_id      
+			END  ,			  
+			CASE WHEN (SELECT SUB.ENTITY_TYPE_ID    
+				FROM CMS_CLIENTCASE CASE,CMS_SUBJECT SUB ,  CMS_COUNTRY_MASTER COUNT,CMS_ENTITYTYPE_MASTER ENTITY    
+				WHERE 	CASE.CRN=ctd.crn AND SUB.CRN=CASE.CRN  AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID 
+				and SUB.ENTITY_TYPE_ID = ENTITY.ENTITY_TYPE_ID       AND SUB.IS_PRIMARY_SUB = 1) = 2 THEN SUBJECT.entity_type_id 			 
+			END  desc, upper(SUBJECT.SUBJECT_NAME) asc,
+			SUBJECT.SUBJECT_ID ASC,
+			RM.GROUP_ID,
+			RM.Name		
+	</select>
+	 
+	 
+	 <select id="getPrimaryTemaInfo" resultClass="com.worldcheck.atlas.vo.SubTeamReMapVO" parameterClass="java.lang.String"> 
+		SELECT 
+				distinct ctd.team_id,
+				COM.OFFICE office, 
+				ctt.TEAM_TYPE ,
+				CUM.Login_Id PERFORMER, 
+				cum.user_full_name performerFullName ,
+				ctd.main_analyst mainAnalyst,
+				manager.user_full_name analystFullName,
+				CUM.REPORTS_TO reportsTo,
+				reportsTO.user_full_name reportsToFullName,
+				ctd.TEAM_TYPE_ID
+				FROM 
+				CMS_SUB_TEAM_RE_MAP CSTRM, 
+				CMS_TEAM_DETAILS CTD,
+				CMS_USER_MASTER CUM,
+				CMS_TEAM_TYPE ctt,
+				CMS_OFFICE_MASTER COM,
+				cms_user_master reportsTO,
+				cms_user_master manager,
+				cms_user_master analyst
+	    Where 
+				CSTRM.TEAM_ID = CTD.TEAM_ID AND 
+				CSTRM.PERFORMER = CUM.LOGIN_ID and 
+				ctt.TEAM_TYPE_ID = ctd.TEAM_TYPE_ID AND 
+				CTD.CRN = #crn# and 
+				ctt.TEAM_TYPE = 'Primary' AND 
+				CTD.office_id = COM.OFFICE_MASTER_ID AND 
+				CSTRM.PERFORMER = cum.login_id
+				AND reportsTO.LOGIN_ID(+) = cum.reports_to
+				AND manager.LOGIN_ID(+) = ctd.manager_id
+				AND analyst.LOGIN_ID(+) = ctd.main_analyst
+        		And CUM.Login_Id = ctd.main_analyst
+	</select>
+	 
+	<update id="saveRejectedREInfo" parameterClass="com.worldcheck.atlas.vo.SubTeamReMapVO">
+        UPDATE CMS_SUB_TEAM_RE_MAP
+        SET
+           REV_STATUS = 2
+        WHERE      
+				CRN =#crn# AND
+				TEAM_ID=#teamId# AND
+				SUBJECT_ID=#subjectId# AND
+				RE_ID=#reId# AND
+				PERFORMER=#performer#    
+    </update>
+    
+    <select id="getNotiFicationSender" resultClass="com.worldcheck.atlas.vo.SubTeamReMapVO" parameterClass="java.lang.String">
+     select distinct team_id teamId,office,TEAM_TYPE teamName, TEAM_TYPE||','||office teamDisplayName,PERFORMER,
+    performerFullName ,manager,reportsTo,teamTypeId
+	  from (
+	  
+    SELECT distinct ctd.team_id,COM.OFFICE office, ctt.TEAM_TYPE ,CUM.Login_Id PERFORMER ,CUM.user_full_name performerFullName,ctd.manager_id manager,CUM.REPORTS_TO reportsTo,
+    ctd.TEAM_TYPE_ID teamTypeId 
+	  FROM CMS_SUB_TEAM_RE_MAP CSTRM, CMS_TEAM_DETAILS CTD,CMS_USER_MASTER CUM,CMS_TEAM_TYPE ctt,CMS_OFFICE_MASTER COM, cms_accounts
+	  Where CSTRM.TEAM_ID = CTD.TEAM_ID AND CSTRM.PERFORMER = CUM.LOGIN_ID and ctt.TEAM_TYPE_ID = ctd.TEAM_TYPE_ID
+	  AND CTD.CRN = #crn# and CSTRM.REV_STATUS=2 
+    AND CTD.office_id = COM.OFFICE_MASTER_ID(+)
+    AND CSTRM.PERFORMER = cum.login_id
+	  
+	  union
+	  
+    SELECT distinct ctd.team_id,COM.OFFICE office, ctt.TEAM_TYPE ,CUM.Login_Id PERFORMER, cum.user_full_name performerFullName ,ctd.manager_id manager,CUM.REPORTS_TO reportsTo,
+    ctd.TEAM_TYPE_ID
+	  FROM CMS_SUB_TEAM_RE_MAP CSTRM, CMS_TEAM_DETAILS CTD,CMS_USER_MASTER CUM,CMS_TEAM_TYPE ctt,
+    CMS_OFFICE_MASTER COM
+	  Where CSTRM.TEAM_ID = CTD.TEAM_ID AND CSTRM.PERFORMER = CUM.LOGIN_ID and ctt.TEAM_TYPE_ID = ctd.TEAM_TYPE_ID
+	  AND CTD.CRN = #crn# and ctt.TEAM_TYPE = 'Primary' AND CTD.office_id = COM.OFFICE_MASTER_ID
+    AND CSTRM.PERFORMER = cum.login_id
+    
+    )
+	   order by teamTypeId,teamId   
+    </select>
+</sqlMap>

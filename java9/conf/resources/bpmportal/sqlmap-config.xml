@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL MAP Config 2.0//EN" 
+        "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+    <settings useStatementNamespaces="true"/>
+    <transactionManager type="JDBC"> 
+        <dataSource type="JNDI">
+            <property name="DataSource" value="jdbc/SBMPortalsDB"/>
+        </dataSource>
+    </transactionManager> 
+    <sqlMap resource="task-analysis-sqlmap.xml"/>
+    <sqlMap resource="instance-analysis-sqlmap.xml"/>
+    <sqlMap resource="alerts-widget-sqlmap.xml"/>
+    <sqlMap resource="user-management-sqlmap.xml"/>
+    <sqlMap resource="portal-sqlmap.xml"/>
+</sqlMapConfig>

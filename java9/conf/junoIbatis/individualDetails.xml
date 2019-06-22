@@ -1,0 +1,824 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="IndividualDetailsSummaryVO">
+
+
+	<!-- Inserting into Individual Details Component  -->
+	<insert id="insert"
+		parameterClass="com.worldcheck.juno.vo.component.IndividualDetailsSummaryVO">
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_INDIVIDUAL_SUMMARY_SEQ.NEXTVAL from dual
+		</selectKey>
+
+		insert into RG_INDIVIDUAL_SUMMARY (
+		INDIVIDUAL_SUMMARY_ID,
+		CASE_ID,
+		PROCESSCYCLEID,
+		TABLE_BOTTOM_NOTES,
+		TITLE,
+		UPDATED_ON,UPDATED_BY,
+		SUBJECT_ID,
+		IS_AUTO_SAVED,
+		IND_TYPE
+		)values (
+		#id#,
+		#crn#,#processCycleId#,#tableBottomNotes#,
+		#title#,
+		sysdate,#updateBy#,
+		#subjectId#,
+		#isAutoSave#,
+		#individualType#
+		)
+	</insert>
+	<!--generic query-->
+	<insert id="insertAutoSave">
+		<selectKey keyProperty="autoSaveId" resultClass="long">
+			SELECT
+			RG_INDIVIDUAL_SUMMARY_SEQ.NEXTVAL from dual
+	  </selectKey>
+		insert into RG_INDIVIDUAL_SUMMARY (
+		INDIVIDUAL_SUMMARY_ID,
+		CASE_ID,
+		PROCESSCYCLEID,
+		SUBJECT_ID,
+		TITLE,
+		UPDATED_ON,
+		UPDATED_BY,
+		TABLE_BOTTOM_NOTES,
+		IS_AUTO_SAVED,
+		PARENT_RECORD_ID,
+		IND_TYPE
+		)values (
+		#autoSaveId#,
+		#crn#,
+		#processCycleId#,
+		#subjectId#,
+		#title#,
+		sysdate,
+		#updateBy#,
+		#tableBottomNotes#,
+		'Y',
+		#id#,
+		#individualType#
+		)
+	</insert>
+
+	<insert id="insertTable" parameterClass="map">
+		Insert into RG_INDIVIDUAL_DETAILS
+		(INDIVIDUAL_DETAILS_ID,ROW_NO,
+		FIELD_NAME, FIELD_VALUE,INDIVIDUAL_SUMMARY_ID,COMMENT,
+		UPDATED_ON,UPDATED_BY)
+
+		Values
+		<iterate property="list" conjunction=", ">
+			(RG_INDIVIDUAL_DETAILS_SEQ.NEXTVAL, #list[].fieldName#,
+			#list[].fieldValue#,29, #list[].comment#, sysdate, 'Swati')
+		</iterate>
+	</insert>
+
+	<insert id="inserthistory"
+		parameterClass="com.worldcheck.juno.vo.component.IndividualDetailsSummaryVO">
+		<selectKey keyProperty="historyId" resultClass="long">
+			SELECT
+			RG_INDIVIDUAL_SUMMARY_HST_SEQ.NEXTVAL from dual
+	 	</selectKey>
+		insert into
+		RG_INDIVIDUAL_SUMMARY_HST (
+		HISTORY_ID,
+		INDIVIDUAL_SUMMARY_ID,
+		SUBJECT_ID,
+		PROCESSCYCLEID,CASE_ID,
+		UPDATED_ON,UPDATED_BY,
+		TITLE,
+		TABLE_BOTTOM_NOTES
+		)
+		values(
+		#historyId#,#id#,#subjectId#,#processCycleId#,#crn#,sysdate,#updateBy#,#title#,#tableBottomNotes#
+		)
+
+	</insert>
+	<insert id="insertTableHistory" parameterClass="map">
+		insert into
+		RG_INDIVIDUAL_DETAILS_HST
+		(HISTORY_ID,INDIVIDUAL_DETAILS_ID,INDIVIDUAL_SUMMARY_ID,SUMMARY_HISTORY_ID,ROW_NO,FIELD_NAME,FIELD_VALUE,COMMENTS)
+		(select RG_INDIVIDUAL_DETAILS_HST_SEQ.nextval,
+		INDIVIDUAL_DETAILS_ID,#pdId#,#historyId#,ROW_NO,
+		FIELD_NAME,FIELD_VALUE,COMMENTS
+		from RG_INDIVIDUAL_DETAILS where
+		INDIVIDUAL_SUMMARY_ID =#pdId#)
+	</insert>
+
+	<resultMap id="individualDetailsTableRows"
+		class="com.worldcheck.juno.vo.component.IndividualDetailsVO" groupBy="id">
+		<result property="id" column="INDIVIDUAL_DETAILS_ID" />
+		<result property="fieldName" column="FIELD_NAME" />
+		<result property="fieldValue" column="FIELD_VALUE" />
+		<result property="comment" column="COMMENTS" />
+		<result property="rowNo" column="ROW_NO" />
+		<result property="parentId" column="INDIVIDUAL_SUMMARY_ID" />
+	</resultMap>
+	<resultMap id="resultVO"
+		class="com.worldcheck.juno.vo.component.IndividualDetailsSummaryVO"
+		groupBy="id">
+		<result property="id" column="INDIVIDUAL_SUMMARY_ID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="subjectName" column="REPORT_SUBJECT_NAME" />
+
+		<result property="tableBottomNotes" column="TABLE_BOTTOM_NOTES" />
+		<result property="title" column="TITLE" />
+
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="individualType" column="IND_TYPE" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="isAutoSave" column="IS_AUTO_SAVED" />
+		<result property="individualDetailsTableRows"
+			resultMap="IndividualDetailsSummaryVO.individualDetailsTableRows"
+			notNullColumn="INDIVIDUAL_DETAILS_ID" />
+	</resultMap>
+
+	<!--generic query-->
+	<select id="getById" resultMap="resultVO">
+		SELECT rg.INDIVIDUAL_SUMMARY_ID,
+		rg.CASE_ID,
+		rg.PROCESSCYCLEID,
+		cc.DESCRIPTION,
+		rg.SUBJECT_ID,
+		cs.REPORT_SUBJECT_NAME,
+		rg.TABLE_BOTTOM_NOTES,
+		rg.TITLE,
+		rg.UPDATED_ON,rg.UPDATED_BY,
+		rg.IS_AUTO_SAVED,
+		rg.IND_TYPE,
+		pd.ROW_NO,
+		pd.FIELD_NAME,pd.FIELD_VALUE,
+		pd.INDIVIDUAL_DETAILS_ID,pd.COMMENTS,
+		pd.INDIVIDUAL_SUMMARY_ID
+
+		FROM RG_INDIVIDUAL_SUMMARY rg
+		LEFT
+		OUTER JOIN
+		RG_INDIVIDUAL_DETAILS pd ON pd.INDIVIDUAL_SUMMARY_ID =
+		rg.INDIVIDUAL_SUMMARY_ID
+		JOIN CMS_CASECYCLE cc ON cc.CASECYCLE_ID =
+		rg.PROCESSCYCLEID
+		JOIN RG_SUBJECT cs ON cs.SUBJECT_ID = rg.SUBJECT_ID
+		WHERE
+		rg.INDIVIDUAL_SUMMARY_ID =#id#
+		ORDER
+		BY pd.ROW_NO ASC
+	</select>
+
+	<!--generic query-->
+	<update id="update"
+		parameterClass="com.worldcheck.juno.vo.component.IndividualDetailsSummaryVO">
+		update RG_INDIVIDUAL_SUMMARY
+		set TITLE = #title#,
+		TABLE_BOTTOM_NOTES = #tableBottomNotes#,
+		PROCESSCYCLEID=#processCycleId# ,
+		UPDATED_ON=sysdate,
+		UPDATED_BY=#updateBy#,
+		IS_AUTO_SAVED = 'N',
+		PARENT_RECORD_ID = null
+		where INDIVIDUAL_SUMMARY_ID = #id#
+	</update>
+
+	<!--generic query-->
+	<update id="updateAutoSave"
+		parameterClass="com.worldcheck.juno.vo.component.IndividualDetailsSummaryVO">
+		update RG_INDIVIDUAL_SUMMARY set
+		TITLE=#title#,
+		TABLE_BOTTOM_NOTES=#tableBottomNotes#,
+		PROCESSCYCLEID=#processCycleId#
+		,
+		UPDATED_ON=sysdate,
+		UPDATED_BY=#updateBy#,
+		IS_AUTO_SAVED = 'Y',
+		PARENT_RECORD_ID = #id#
+		where
+		INDIVIDUAL_SUMMARY_ID = #autoSaveId#
+	</update>
+
+	<resultMap id="individualDtlList"
+		class="com.worldcheck.juno.vo.component.IndividualDetailsSummaryVO"
+		groupBy="id">
+		<result property="id" column="INDIVIDUAL_SUMMARY_ID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="subjectName" column="REPORT_SUBJECT_NAME" />
+		<result property="displayDate" column="displayDate" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="individualType" column="IND_TYPE" />
+	</resultMap>
+	<!--generic query-->
+
+	<select id="listByCRN" resultMap="individualDtlList"
+		parameterClass="java.util.HashMap">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (
+		SELECT
+		rg.INDIVIDUAL_SUMMARY_ID,
+		rg.CASE_ID,
+		rg.PROCESSCYCLEID,
+		cc.DESCRIPTION,
+		rg.SUBJECT_ID,
+		cs.REPORT_SUBJECT_NAME,
+		to_char(rg.UPDATED_ON, 'DD-Mon-YY
+		HH24:MI:SS') as displayDate,
+		NVL(rg.UPDATED_BY,'System') UPDATED_BY,
+		IND_TYPE
+		FROM
+		RG_INDIVIDUAL_SUMMARY rg
+		,CMS_CASECYCLE cc, RG_SUBJECT cs, rg_report_subcomponents sbcmp
+		WHERE
+		CASE_ID=#crn# and
+		rg.PROCESSCYCLEID = cc.CASECYCLE_ID and rg.SUBJECT_ID
+		= cs.SUBJECT_ID
+		and cs.ENTITY_TYPE_ID=#componentLevel#
+		AND
+		upper(rg.IS_AUTO_SAVED)=upper('N')
+		and rg.ind_type = sbcmp.subcomponent_name
+		<isNotNull property="subjectId">
+			<isNotEqual prepend="AND" property="subjectId"
+				compareValue="0">
+				rg.SUBJECT_ID=#subjectId# 
+			</isNotEqual>
+		</isNotNull>
+
+		<isNotNull property="processCycleId">
+			<isNotEqual prepend="AND" property="processCycleId"
+				compareValue="0">
+				rg.PROCESSCYCLEID=#processCycleId# 
+			</isNotEqual>
+		</isNotNull>
+
+		order by 
+		cs.is_primary_sub desc,cs.REPORT_ORDER
+		ASC,upper(cs.REPORT_SUBJECT_NAME) asc,cc.processcycle_order desc
+		, sbcmp.subcomponent_order
+		) a
+		<isNotNull property="limit">
+			<isNotEqual property="limit" compareValue="0">
+
+				WHERE ROWNUM <![CDATA[ <= ]]>
+				#limit#
+			</isNotEqual>
+		</isNotNull>
+		)
+		<isNotNull property="limit">
+			<isNotEqual property="limit" compareValue="0">
+
+				WHERE rn <![CDATA[ >= ]]>
+				#start#
+			</isNotEqual>
+		</isNotNull>
+	</select>
+
+	<resultMap id="subjProcList"
+		class="com.worldcheck.juno.vo.component.IndividualDetailsSummaryVO">
+		<result property="crn" column="CASE_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="subjectId" column="SUBJECT_ID" />
+	</resultMap>
+
+	<select id="getSubjectProcessList" parameterClass="java.util.HashMap"
+		resultMap="subjProcList">
+		SELECT * FROM (select subpc.*, ROWNUM rn from (
+		select distinct
+		rg.subject_id, rg.processcycleid, rg.case_id,
+		sub.report_order,cc.processcycle_order,rg.IS_AUTO_SAVED
+		from
+		rg_individual_summary rg
+		join RG_SUBJECT sub on sub.subject_id =
+		rg.subject_id
+		join cms_casecycle cc on cc.casecycle_id =
+		rg.processcycleid
+		group by rg.subject_id, rg.processcycleid,
+		rg.case_id, sub.REPORT_ORDER,
+		cc.processcycle_order,rg.IS_AUTO_SAVED
+		having rg.case_id = #crn# and upper(rg.IS_AUTO_SAVED)=upper('N')
+		order
+		by sub.REPORT_ORDER, cc.processcycle_order desc
+		) subpc WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+	</select>
+
+	<select id="listByIndividualType" resultMap="individualDtlList"
+		parameterClass="java.util.HashMap">
+		SELECT
+		rg.INDIVIDUAL_SUMMARY_ID,
+		rg.CASE_ID,
+		rg.PROCESSCYCLEID,
+		cc.DESCRIPTION,
+		rg.SUBJECT_ID,
+		cs.REPORT_SUBJECT_NAME,
+		to_char(rg.UPDATED_ON, 'DD-Mon-YY
+		HH24:MI:SS') as displayDate,
+		NVL(rg.UPDATED_BY,'System') UPDATED_BY,
+		IND_TYPE
+		FROM
+		RG_INDIVIDUAL_SUMMARY
+		rg
+		,CMS_CASECYCLE cc,
+		RG_SUBJECT cs, rg_report_subcomponents sbcmp
+		WHERE
+		rg.PROCESSCYCLEID = cc.CASECYCLE_ID and
+		rg.SUBJECT_ID
+		= cs.SUBJECT_ID
+		<iterate prepend="AND" property="subProcList" open="(" close=")"
+			conjunction="or">
+			( rg.SUBJECT_ID = #subProcList[].subjectId# and
+			rg.PROCESSCYCLEID=#subProcList[].processCycleId#
+			and rg.CASE_ID =#subProcList[].crn# )
+		</iterate>
+		AND
+		upper(rg.IS_AUTO_SAVED)=upper('N')
+		and rg.ind_type = sbcmp.subcomponent_name
+		order by cs.is_primary_sub desc,cs.REPORT_ORDER
+		ASC,upper(cs.REPORT_SUBJECT_NAME) asc,cc.PROCESSCYCLE_ORDER desc, sbcmp.subcomponent_order
+
+	</select>
+	<select id="getSearchCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from (
+		select distinct rg.subject_id,
+		rg.processcycleid, rg.case_id,rg.IS_AUTO_SAVED
+		from
+		rg_individual_summary rg
+		group by
+		rg.subject_id, rg.processcycleid,
+		rg.case_id,rg.IS_AUTO_SAVED
+		having rg.case_id = #crn# and
+		upper(rg.IS_AUTO_SAVED)=upper('N')
+		) subpc
+		
+	</select>
+	<!-- Procedure for Default Entries into Individual Component -->
+	<select id="getHistoryCountForCRN" resultClass="java.lang.Long"
+		parameterClass="java.lang.String">
+		select count(*) from RG_INDIVIDUAL_SUMMARY_HST where
+		case_id=#crn#
+  
+  	</select>
+	<!-- Update Summary table by entry of Default records.-->
+	<update id="insertDefaultEntries" parameterClass="java.util.HashMap">
+		declare
+		recordId number(10);
+		hstId number(10);
+		detailHistId number(10);
+		subList varray_varchar;
+		indTypeArray varray_varchar;
+		indTypeTitleArray
+		varray_varchar;
+		subId number;
+		crn VARCHAR2(200):=#crn#;
+		processCycle
+		number:=#processCycleId#;
+		userName VARCHAR2(200):=#userName#;
+		indType
+		VARCHAR2(200);
+		indTypeTitle VARCHAR2(2000);
+
+		begin
+		subList:=
+		varray_varchar
+		<iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[].subjectId#
+					 </iterate>
+		;
+		indTypeArray
+		:=varray_varchar('individualDetails','assoIndividualDetails','otherAssoIndividualDetails');
+		indTypeTitleArray
+		:=varray_varchar('INDIVIDUAL DETAILS','ASSOCIATED INDIVIDUALS / ENTITIES','OTHER ASSOCIATED INDIVIDUALS / ENTITIES');
+		for elem
+		in 1 .. subList.count loop
+
+		subId:=subList(elem);
+		for elem2 in 1 ..
+		indTypeArray.count loop
+		indType :=indTypeArray(elem2);
+		indTypeTitle
+		:=indTypeTitleArray(elem2);
+		select
+		RG_INDIVIDUAL_SUMMARY_SEQ.nextval
+		into
+		recordId from dual;
+
+		INSERT INTO
+		RG_INDIVIDUAL_SUMMARY
+		(INDIVIDUAL_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,
+		UPDATED_ON,UPDATED_BY,IS_AUTO_SAVED,TITLE,IND_TYPE)
+		values(recordId,
+		subId ,
+		processCycle, crn
+		,sysdate,userName
+		,'N',indTypeTitle,indType);
+
+		insert
+		into
+		RG_INDIVIDUAL_DETAILS
+		(INDIVIDUAL_DETAILS_ID,INDIVIDUAL_SUMMARY_ID,ROW_NO,FIELD_NAME,COMMENTS,FIELD_VALUE)
+		SELECT
+		RG_INDIVIDUAL_DETAILS_SEQ.nextval,recordId,ROW_NO,FIELD_NAME,COMMENTS,FIELD_VALUE
+		FROM
+		RG_INDIVIDUAL_DETAILS_STATIC where SUB_COMPONENT_TYPE=indType;
+
+		END
+		LOOP;
+		END LOOP;
+		END;
+
+	</update>
+
+	<!--generic query-->
+	<select id="findAutoSave" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Long">
+		SELECT rg.INDIVIDUAL_SUMMARY_ID
+		FROM RG_INDIVIDUAL_SUMMARY
+		rg
+		WHERE
+		upper(rg.IS_AUTO_SAVED)=upper('Y') AND
+		rg.PARENT_RECORD_ID =
+		#parentId# 
+	</select>
+
+	<!--generic query-->
+	<select id="findNewAutoSave" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Long">
+		SELECT rg.INDIVIDUAL_SUMMARY_ID
+		FROM RG_INDIVIDUAL_SUMMARY
+		rg
+		WHERE CASE_ID=#crn# AND
+		upper(rg.IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID IS NULL
+		and IND_TYPE =#componentType#
+	</select>
+
+	<!--generic query-->
+	<select id="findById" resultClass="int">
+		select
+		count(rg.INDIVIDUAL_SUMMARY_ID)
+		FROM RG_INDIVIDUAL_SUMMARY rg
+		WHERE
+		rg.INDIVIDUAL_SUMMARY_ID = #id#
+	</select>
+
+	<!--generic query-->
+	<delete id="deleteNewAutoSave">
+		delete FROM RG_INDIVIDUAL_SUMMARY WHERE
+		CASE_ID=#crn#
+		AND
+		upper(IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID IS NULL 		
+		and IND_TYPE =#componentType#
+		
+	</delete>
+
+	<!--generic query-->
+	<delete id="deleteAutoSave">
+		delete FROM RG_INDIVIDUAL_SUMMARY WHERE
+		CASE_ID=#crn#
+		AND
+		upper(IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID = #parentId#
+	</delete>
+
+	<!--generic query-->
+	<delete id="delete">
+		delete FROM RG_INDIVIDUAL_SUMMARY WHERE
+		INDIVIDUAL_SUMMARY_ID = #id#
+	</delete>
+
+	<!--generic query-->
+	<delete id="deleteIds">
+		delete FROM RG_INDIVIDUAL_SUMMARY WHERE
+		INDIVIDUAL_SUMMARY_ID in
+		<iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[]#
+	    </iterate>
+	</delete>
+	<!-- Table Row Operations -->
+	<insert id="insertRow"
+		parameterClass="com.worldcheck.juno.vo.component.IndividualDetailsVO">
+		insert into
+		RG_INDIVIDUAL_DETAILS (
+		INDIVIDUAL_DETAILS_ID,
+		ROW_NO,
+		FIELD_NAME,
+		FIELD_VALUE,
+		COMMENTS,
+		INDIVIDUAL_SUMMARY_ID
+		)values (
+		RG_INDIVIDUAL_DETAILS_SEQ.NEXTVAL,
+		#rowNo#,
+		#fieldName#,
+		#fieldValue#,
+		#comment#,
+		#parentId#
+		)
+	</insert>
+
+	<update id="updateRow"
+		parameterClass="com.worldcheck.juno.vo.component.IndividualDetailsVO">
+		update
+		RG_INDIVIDUAL_DETAILS set
+		ROW_NO=#rowNo#,
+		FIELD_NAME =#fieldName#,
+		FIELD_VALUE =#fieldValue#
+		where
+		INDIVIDUAL_DETAILS_ID = #id#
+	</update>
+
+	<delete id="deleteRowsForParent">
+		delete FROM RG_INDIVIDUAL_DETAILS WHERE
+		INDIVIDUAL_SUMMARY_ID = #id#
+	</delete>
+
+	<delete id="deleteRows">
+		delete FROM RG_INDIVIDUAL_DETAILS WHERE
+		INDIVIDUAL_DETAILS_ID IN
+		<iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[]#
+	    </iterate>
+	</delete>
+
+	<!--generic query-->
+	<select id="getSubProcCycleList" parameterClass="java.util.HashMap"
+		resultMap="ReportSubjectVO.subProcCycleList">
+		select rem.subject_id
+		subject_id,
+		rem.processcycleid
+		Process_Cycle_Id,cs.REPORT_SUBJECT_NAME
+		subject_name,
+		ccl.DESCRIPTION
+		Process_Cycle
+		from RG_INDIVIDUAL_SUMMARY
+		rem,
+		RG_SUBJECT cs
+		,CMS_CASECYCLE ccl
+		where cs.CRN = rem.case_id
+		and
+		ccl.CASECYCLE_ID=
+		rem.processcycleid
+		and cs.subject_id =rem.subject_id
+		and rem.case_id =
+		#crn# and rem.IND_TYPE = #compType#
+		and
+		upper(rem.IS_AUTO_SAVED)=upper('N')
+		order by cs.subject_id,
+		rem.processcycleid
+
+	</select>
+	<!--generic query-->
+	<select id="getProcessCycleList" parameterClass="java.util.HashMap"
+		resultMap="ProcessCycleVO.processCycleList">
+		select rem.processcycleid Process_Cycle_Id,cc.DESCRIPTION
+		Process_Cycle
+		from RG_INDIVIDUAL_SUMMARY rem, cms_casecycle cc
+		where
+		rem.subject_id=#subId# and rem.case_id=#crn#
+		and cc.casecycle_id=
+		rem.processcycleid
+		and upper(rem.IS_AUTO_SAVED)=upper('N')
+		and
+		rem.IND_TYPE = #individualType# and
+		rem.INDIVIDUAL_SUMMARY_ID !=
+		#recordId#
+	
+	</select>
+
+	<select id="checkIfExist" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from RG_INDIVIDUAL_SUMMARY where
+		PROCESSCYCLEID=#processCycleId# and SUBJECT_ID = #subjectId# and
+		case_id=#crn# and upper(IND_TYPE)=upper(#individualType#) and upper(IS_AUTO_SAVED)=upper('N')
+	</select>
+	<!-- makeCopyIndividual  Of Summary -->
+
+	<insert id="makeCopy" parameterClass="java.util.HashMap">
+
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_INDIVIDUAL_SUMMARY_SEQ.nextval from dual
+	  </selectKey>
+
+		insert into RG_INDIVIDUAL_SUMMARY (
+		INDIVIDUAL_SUMMARY_ID,
+		CASE_ID,
+		PROCESSCYCLEID,
+		TABLE_BOTTOM_NOTES,
+		TITLE,
+		UPDATED_ON,UPDATED_BY,
+		SUBJECT_ID,
+		IS_AUTO_SAVED,
+		IND_TYPE
+		)
+		select #id#,
+		CASE_ID,
+		#processCycleId#,
+		TABLE_BOTTOM_NOTES,
+		TITLE,
+		sysdate,#userName#,
+		SUBJECT_ID,
+		IS_AUTO_SAVED,
+		IND_TYPE
+		from
+		RG_INDIVIDUAL_SUMMARY
+		where
+		INDIVIDUAL_SUMMARY_ID =#recordId#
+	</insert>
+
+	<!-- makeCopyIndividual  Of Details -->
+	<insert id="makeCopyDetails" parameterClass="java.util.HashMap">
+		insert
+		into
+		RG_INDIVIDUAL_DETAILS
+		(INDIVIDUAL_DETAILS_ID,INDIVIDUAL_SUMMARY_ID,ROW_NO,FIELD_NAME,FIELD_VALUE,COMMENTS)
+		SELECT
+		RG_INDIVIDUAL_DETAILS_SEQ.NEXTVAL,#genSumryId#,
+		ROW_NO,
+		FIELD_NAME,
+		FIELD_VALUE,COMMENTS
+		from RG_INDIVIDUAL_DETAILS
+		Where
+		INDIVIDUAL_SUMMARY_ID=#recordId#
+	</insert>
+
+	<!-- history of makeCopyIndividual  Summary -->
+	<insert id="makeCopyHst" parameterClass="java.util.HashMap">
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_INDIVIDUAL_SUMMARY_HST_SEQ.nextval from dual
+	  </selectKey>
+		INSERT INTO RG_INDIVIDUAL_SUMMARY_HST
+		(HISTORY_ID,INDIVIDUAL_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,
+		UPDATED_ON,UPDATED_BY,TITLE,TABLE_BOTTOM_NOTES)
+
+		select
+		#id#,#genSumryId#, SUBJECT_ID,PROCESSCYCLEID,CASE_ID,
+		sysdate,#userName#,TITLE,TABLE_BOTTOM_NOTES from RG_INDIVIDUAL_SUMMARY
+		where INDIVIDUAL_SUMMARY_ID=#genSumryId#
+	</insert>
+	<!-- history of makeCopy Individual  details -->
+	<insert id="makeCopyDetailsHistory" parameterClass="java.util.HashMap">
+		insert into
+		RG_INDIVIDUAL_DETAILS_HST
+		(HISTORY_ID,INDIVIDUAL_DETAILS_ID,INDIVIDUAL_SUMMARY_ID,SUMMARY_HISTORY_ID,ROW_NO,FIELD_NAME,COMMENTS,FIELD_VALUE)
+		select
+		RG_INDIVIDUAL_DETAILS_HST_SEQ.nextval,INDIVIDUAL_DETAILS_ID,INDIVIDUAL_SUMMARY_ID,#genHistoryId#,ROW_NO,FIELD_NAME,COMMENTS,FIELD_VALUE
+		from RG_INDIVIDUAL_DETAILS where INDIVIDUAL_SUMMARY_ID=#genSumryId#
+	</insert>
+
+	<resultMap id="defaultIndividualDetailsTableRows"
+		class="com.worldcheck.juno.vo.component.IndividualDetailsVO" groupBy="id">
+
+		<result property="fieldName" column="FIELD_NAME" />
+		<result property="fieldValue" column="FIELD_VALUE" />
+		<result property="comment" column="COMMENTS" />
+		<result property="rowNo" column="ROW_NO" />
+		
+
+	</resultMap>
+	<select id="defaultTable" resultMap="defaultIndividualDetailsTableRows">
+		SELECT
+		ROW_NO,FIELD_NAME,COMMENTS,FIELD_VALUE FROM
+		RG_INDIVIDUAL_DETAILS_STATIC where
+		sub_component_type=#individualType# ORDER
+		BY
+		ROW_NO
+	</select>
+
+	<select id="getHistoryCount" resultClass="java.lang.Integer">
+		SELECT count(*)
+		FROM
+		RG_INDIVIDUAL_SUMMARY_HST
+		rg where
+		rg.INDIVIDUAL_SUMMARY_ID=#recordId#
+	</select>
+
+	<resultMap id="resultHistory"
+		class="com.worldcheck.juno.vo.component.IndividualDetailsSummaryVO">
+		<result property="id" column="HISTORY_ID" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="tableBottomNotes" column="TABLE_BOTTOM_NOTES" />
+
+	</resultMap>
+
+	<select id="getHistory" resultMap="resultHistory"
+		parameterClass="java.util.HashMap">
+
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (SELECT
+		rg.HISTORY_ID,
+		rg.UPDATED_ON, rg.UPDATED_BY, rg.PROCESSCYCLEID
+		,
+		cc.DESCRIPTION,
+		rg.TABLE_BOTTOM_NOTES
+
+		FROM RG_INDIVIDUAL_SUMMARY_HST
+		rg,CMS_CASECYCLE cc
+
+		WHERE rg.PROCESSCYCLEID =
+		cc.CASECYCLE_ID
+		and
+		rg.INDIVIDUAL_SUMMARY_ID=#recordId#
+		order by
+		rg.UPDATED_ON desc
+		) a WHERE
+		ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+
+	</select>
+	<resultMap id="individualDetailsHistoryRows"
+		class="com.worldcheck.juno.vo.component.IndividualDetailsVO">
+		<result property="id" column="INDIVIDUAL_DETAILS_ID" />
+		<result property="fieldName" column="FIELD_NAME" />
+		<result property="fieldValue" column="FIELD_VALUE" />
+		<result property="comment" column="COMMENTS" />
+		<result property="rowNo" column="ROW_NO" />
+		<result property="parentId" column="INDIVIDUAL_SUMMARY_ID" />
+	</resultMap>
+	<select id="getTableValues" resultMap="individualDetailsHistoryRows">
+
+		select
+		pd.INDIVIDUAL_DETAILS_ID,
+		pd.ROW_NO,
+		pd.FIELD_NAME,pd.FIELD_VALUE,
+		pd.COMMENTS,
+		pd.INDIVIDUAL_SUMMARY_ID
+
+		from
+		RG_INDIVIDUAL_DETAILS_HST pd
+		where pd.SUMMARY_HISTORY_ID=#recordId#
+		ORDER BY ROW_NO ASC
+	</select>
+	<!--
+		Include General Functionality for Make Copy and Mark Done Calling
+		stored procedure For Make Copy, Pass the Component name same as that
+		present in RG_Component table's column : component_Desc <parameterMap
+		id="getParameterMap" class="java.util.Map"> <parameter property="crn"
+		jdbcType="VARCHAR" javaType="java.lang.String" mode="IN" /> <parameter
+		property="processCycle" jdbcType="LONG" javaType="java.lang.Long"
+		mode="IN" /> <parameter property="documentColumnId" jdbcType="LONG"
+		javaType="java.lang.Long" mode="IN" /> <parameter property="userCode"
+		jdbcType="VARCHAR" javaType="java.lang.String" mode="IN" /> <parameter
+		property="errorCode" jdbcType="INTEGER" javaType="java.lang.Integer"
+		mode="OUT" /> </parameterMap> <procedure id="callMakeCopy"
+		parameterMap="getParameterMap"> { call RG_PROC_MAKE_COPY( ?, ?, ?, ?,
+		?, 'PERSONAL_DETAILS','N','INDIVIDUAL_SUMMARY_ID','Y','N','N')}
+		</procedure> Calling stored procedure For Mark Done <parameterMap
+		id="getParameterMapMD" class="java.util.Map"> <parameter
+		property="crn" jdbcType="VARCHAR" javaType="java.lang.String"
+		mode="IN" /> <parameter property="componentName" jdbcType="VARCHAR"
+		javaType="java.lang.String" mode="IN" /> <parameter
+		property="errorCode" jdbcType="INTEGER" javaType="java.lang.Integer"
+		mode="OUT" /> </parameterMap> <procedure id="callMarkDone"
+		parameterMap="getParameterMapMD"> { call RG_PROC_MARK_DONE(?,?,?)}
+		</procedure>
+	-->
+	<insert id="insertHistoryBeforeDeletion" parameterClass="map">
+		insert into
+		RG_INDIVIDUAL_SUMMARY_HST(HISTORY_ID,INDIVIDUAL_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,
+		UPDATED_ON,UPDATED_BY,TITLE,TABLE_BOTTOM_NOTES)
+		SELECT
+		RG_INDIVIDUAL_SUMMARY_HST_SEQ.nextval,inner_view.*
+		FROM
+		<iterate property="recList" conjunction="UNION ALL" open="("
+			close=")">
+			(SELECT #recList[]# INDIVIDUAL_SUMMARY_ID ,SUBJECT_ID,
+			PROCESSCYCLEID ,
+			CASE_ID ,sysdate,#userName# UPDATED_BY ,TITLE
+			,TABLE_BOTTOM_NOTES
+			from RG_INDIVIDUAL_SUMMARY
+			where
+			INDIVIDUAL_SUMMARY_ID=#recList[]#)			
+		</iterate>
+		inner_view
+
+	</insert>
+	<resultMap id="miniRecord"
+		class="com.worldcheck.juno.vo.component.IndividualDetailsSummaryVO"
+		groupBy="id">
+		<result property="id" column="INDIVIDUAL_SUMMARY_ID" />
+		<result property="updateOn" column="UPDATED_ON" />
+	</resultMap>
+	<!--generic query-->
+	<select id="getUpdationTimeById" resultMap="miniRecord">
+		SELECT
+		rg.INDIVIDUAL_SUMMARY_ID,
+		rg.UPDATED_ON
+		FROM RG_INDIVIDUAL_SUMMARY rg
+		WHERE
+		rg.INDIVIDUAL_SUMMARY_ID = #id#
+	</select>
+</sqlMap>

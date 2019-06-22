@@ -1,0 +1,265 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ClientRequirement">
+<resultMap id="resultClientMasterVO" class="com.worldcheck.atlas.vo.masters.ClientMasterVO">
+    <result property="clientCode" column="CLIENT_CODE"/>
+    <result property="clientName" column="CLIENT_NAME"/>
+    <result property="codeName" column="codeName"/>
+</resultMap>
+
+	<select id="searchClientReq"
+	parameterClass="com.worldcheck.atlas.vo.masters.ClientRequirmentMasterVO"
+	resultClass="com.worldcheck.atlas.vo.masters.ClientRequirmentMasterVO">
+	SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (SELECT CCRM.CLIENT_REQ_ID clientReqId,
+	DECODE(IS_GENERAL, '1','GENERAL',CCRM.CLIENT_CODE) clientCode ,
+	DECODE(IS_GENERAL, '1','',CCRM.CLIENT_NAME) clientName,
+	CRTM.REPORT_TYPE reportType,
+	CCRM.INSTRUCTION instruction,
+	CCRM.IS_GENERAL isGeneral,
+	CCRM.FILE_NAME uploadedFile,
+	CCRM.COMMENTS "comment",
+	CCRM.COMMENTS clientReqComment,
+	TO_CHAR(CCRM.UPLOAD_TIME,'DD-Mon-YYYY HH24:MI:SS') uploadedDateAndTime,
+	CCRM.UPLOADED_BY uploladedBy	
+	FROM
+	CMS_CLIENT_REQ_MASTER CCRM,
+	CMS_CLIENT_MASTER CCM,
+	CMS_REPORT_TYPE_MASTER CRTM	
+	WHERE 
+	CCRM.CLIENT_CODE = CCM.CLIENT_CODE
+	AND CCRM.REPORT_ID = CRTM.REPORT_TYPE_MASTER_ID
+	AND CCRM.HISTORY_STATUS = 0
+	AND CRTM.STATUS = 1 
+	AND CCM.STATUS = 1 
+	<isNotNull prepend="AND" property="clientCode">
+	 			<isNotEmpty property="clientCode">
+	 UPPER(CCRM.CLIENT_CODE) = UPPER(#clientCode#)
+	 </isNotEmpty></isNotNull>
+	<isNotNull prepend="AND" property="clientName">
+	 			<isNotEmpty property="clientName">
+	 UPPER(CCRM.CLIENT_NAME) LIKE '%'||UPPER(#clientName#)||'%'
+	 </isNotEmpty></isNotNull>
+	<isNotNull prepend="AND" property="reportType">
+	 			<isNotEmpty property="reportType">
+	 CRTM.REPORT_CODE = #reportType#
+	 </isNotEmpty></isNotNull>
+	<isNotNull prepend="AND" property="comment">
+	 			<isNotEmpty property="comment">
+	 UPPER(CCRM.COMMENTS)  LIKE  '%'||UPPER(#comment#)||'%'
+	 </isNotEmpty></isNotNull>
+	<isNotNull prepend="AND" property="updateStartDate">
+	 			<isNotEmpty property="updateStartDate">
+	 			 TO_DATE(TO_CHAR(CCRM.UPLOAD_TIME,'DD-Mon-YYYY')) >= TO_DATE(#updateStartDate#,'DD-Mon-YYYY' )
+	 
+	 </isNotEmpty></isNotNull>
+	<isNotNull prepend="AND" property="updateEndDate">
+	 			<isNotEmpty property="updateEndDate">
+	 			TO_DATE(TO_CHAR(CCRM.UPLOAD_TIME,'DD-Mon-YYYY')) <![CDATA[ <= ]]> TO_DATE(#updateEndDate#,'DD-Mon-YYYY')
+	 
+	 </isNotEmpty></isNotNull>
+	 ORDER BY upper($sortColumnName$) $sortType$ ) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+	
+</select>
+
+
+<select id="searchClientReqCount"
+	parameterClass="com.worldcheck.atlas.vo.masters.ClientRequirmentMasterVO"
+	resultClass="java.lang.Integer">
+	SELECT COUNT(CCRM.CLIENT_REQ_ID) 	
+	FROM
+	CMS_CLIENT_REQ_MASTER CCRM,
+	CMS_CLIENT_MASTER CCM,
+	CMS_REPORT_TYPE_MASTER CRTM	
+	WHERE 
+	CCRM.CLIENT_CODE = CCM.CLIENT_CODE
+	AND CCRM.REPORT_ID = CRTM.REPORT_TYPE_MASTER_ID
+	AND CCRM.HISTORY_STATUS = 0
+	AND CRTM.STATUS = 1 
+	AND CCM.STATUS = 1 
+	<isNotNull prepend="AND" property="clientCode">
+	 			<isNotEmpty property="clientCode">
+	 UPPER(CCRM.CLIENT_CODE) = UPPER(#clientCode#)
+	 </isNotEmpty></isNotNull>
+	<isNotNull prepend="AND" property="clientName">
+	 			<isNotEmpty property="clientName">
+	 UPPER(CCRM.CLIENT_NAME) LIKE '%'||UPPER(#clientName#)||'%'
+	 </isNotEmpty></isNotNull>
+	<isNotNull prepend="AND" property="reportType">
+	 			<isNotEmpty property="reportType">
+	 CRTM.REPORT_CODE = #reportType#
+	 </isNotEmpty></isNotNull>
+	<isNotNull prepend="AND" property="comment">
+	 			<isNotEmpty property="comment">
+	UPPER(CCRM.COMMENTS)  LIKE  '%'||UPPER(#comment#)||'%'
+	 </isNotEmpty></isNotNull>
+	<isNotNull prepend="AND" property="updateStartDate">
+	 			<isNotEmpty property="updateStartDate">
+	 			 TO_DATE(TO_CHAR(CCRM.UPLOAD_TIME,'DD-Mon-YYYY')) >= TO_DATE(#updateStartDate#,'DD-Mon-YYYY' )
+	 
+	 </isNotEmpty></isNotNull>
+	<isNotNull prepend="AND" property="updateEndDate">
+	 			<isNotEmpty property="updateEndDate">
+	 			TO_DATE(TO_CHAR(CCRM.UPLOAD_TIME,'DD-Mon-YYYY')) <![CDATA[ <= ]]> TO_DATE(#updateEndDate#,'DD-Mon-YYYY')
+	 
+	 </isNotEmpty></isNotNull>
+	 ORDER BY CCRM.UPLOAD_TIME DESC
+	
+</select>
+
+	<insert id="insertClientReq"
+		parameterClass="com.worldcheck.atlas.vo.masters.ClientRequirmentMasterVO">
+		<selectKey resultClass="int" type="pre" keyProperty="clientReqId">
+			SELECT CMS_CLIENTREQMASTER_SEQ.NEXTVAL AS VALUE FROM DUAL
+  	</selectKey>
+	INSERT INTO CMS_CLIENT_REQ_MASTER (CLIENT_REQ_ID,
+		CLIENT_NAME,
+		CLIENT_CODE,
+		REPORT_ID,
+		UPLOADED_BY,
+		COMMENTS,
+		FILE_NAME,
+		UPLOAD_TIME,
+		INSTRUCTION,
+		IS_GENERAL)
+	VALUES(
+		#clientReqId#,
+		#clientName#,
+		#clientCode#,
+		(SELECT
+		CRTM.REPORT_TYPE_MASTER_ID FROM
+		CMS_REPORT_TYPE_MASTER CRTM WHERE
+		CRTM.REPORT_TYPE = #reportType# ),
+		#uploladedBy#,
+		#comment#,
+		#uploadedFile#,
+		SYSDATE,
+		#instruction#,
+		#isGeneral#
+	)
+	</insert>
+
+<select id="getInsertedData" parameterClass="int" resultClass="com.worldcheck.atlas.vo.masters.ClientRequirmentMasterVO">
+ 		SELECT CCRM.CLIENT_REQ_ID "clientReqId",
+ 				CCRM.CLIENT_CODE "clientCode",
+		        CCRM.CLIENT_NAME "clientName",
+		        CCRM.COMMENTS "comment",
+		        CCRM.INSTRUCTION instruction,
+		         CCRM.IS_GENERAL "isGeneral",
+		        CCRM.FILE_NAME "uploadedFile",
+		  		 TO_CHAR(CCRM.UPLOAD_TIME,'DD-Mon-YYYY HH24:MI:SS') "uploadedDateAndTime",
+		        CCRM.UPLOADED_BY "uploladedBy",
+		        CRTM.REPORT_TYPE "reportType"		        
+		FROM CMS_CLIENT_REQ_MASTER CCRM,		    
+		    CMS_REPORT_TYPE_MASTER CRTM		    
+		WHERE    CCRM.REPORT_ID = CRTM.REPORT_TYPE_MASTER_ID 
+		AND CCRM.CLIENT_REQ_ID = #id#
+</select>
+
+<select id="getHistoryDataOfClient" parameterClass="string" resultClass="com.worldcheck.atlas.vo.masters.ClientRequirmentMasterVO">
+ 		SELECT CCRM.CLIENT_REQ_ID "clientReqId",
+ 				CCRM.CLIENT_CODE "clientCode",
+		        CCRM.CLIENT_NAME "clientName",
+		        CCRM.COMMENTS "comment",
+		        CCRM.INSTRUCTION instruction,
+		         CCRM.IS_GENERAL "isGeneral",
+		        CCRM.FILE_NAME "uploadedFile",
+		  		 TO_CHAR(CCRM.UPLOAD_TIME,'DD-Mon-YYYY HH24:MI:SS') "uploadedDateAndTime",
+		        CCRM.UPLOADED_BY "uploladedBy",
+		        CRTM.REPORT_TYPE "reportType"		        
+		FROM CMS_CLIENT_REQ_MASTER CCRM,		    
+		    CMS_REPORT_TYPE_MASTER CRTM		    
+		WHERE    CCRM.REPORT_ID = CRTM.REPORT_TYPE_MASTER_ID 
+		AND CCRM.CLIENT_CODE = #clientCode#
+		AND CCRM.HISTORY_STATUS = 1
+</select>
+
+<update id = "updateHistoryStatus" parameterClass="java.util.HashMap"   >
+		UPDATE CMS_CLIENT_REQ_MASTER 
+		SET HISTORY_STATUS = 1,
+		UPLOADED_BY = #uploladedBy#,
+		UPLOAD_TIME = SYSDATE		
+		WHERE CLIENT_REQ_ID = #id#
+
+</update>
+
+<update id = "updateRecord" parameterClass="com.worldcheck.atlas.vo.masters.ClientRequirmentMasterVO">
+		UPDATE CMS_CLIENT_REQ_MASTER 
+		SET UPLOADED_BY = #uploladedBy#,
+			COMMENTS = #comment#,
+			INSTRUCTION = #instruction#,
+			HISTORY_STATUS = 0,
+			UPLOAD_TIME = SYSDATE,
+			IS_GENERAL = #isGeneral#	
+		WHERE CLIENT_REQ_ID = #clientReqId#
+
+</update>
+
+<select id ="getGeneralClients" resultMap="resultClientMasterVO">
+		SELECT CCM.CLIENT_CODE,CCM.CLIENT_NAME,CCM.CLIENT_CODE||'-'||CCM.CLIENT_NAME codeName
+		FROM CMS_CLIENT_MASTER CCM 
+		WHERE STATUS = 1 
+		AND CCM.CLIENT_CODE NOT IN(SELECT DISTINCT(CCRM.CLIENT_CODE)  FROM CMS_CLIENT_REQ_MASTER CCRM 
+		WHERE CCRM.IS_GENERAL = 0)
+		ORDER BY CLIENT_CODE
+</select>
+
+
+<select id="getFilesForCaseDetail" resultClass = "com.worldcheck.atlas.vo.masters.ClientRequirmentMasterVO" 
+	parameterClass = "java.util.HashMap">
+	SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (
+	SELECT
+	CLIENT_CODE "clientCode",
+	(SELECT REPORT_TYPE FROM cms_report_type_master WHERE REPORT_TYPE_MASTER_ID = REPORT_ID) "reportType",
+	FILE_NAME uploadedFile,
+	COMMENTS "comment",	
+	INSTRUCTION instruction,
+	UPLOADED_BY uploladedBy
+	FROM
+	CMS_CLIENT_REQ_MASTER
+	WHERE HISTORY_STATUS = 0
+	<isNotNull prepend="AND" property="clientCode">
+		<isNotEmpty property="clientCode">
+			CLIENT_CODE = #clientCode#
+	 	 </isNotEmpty>
+	</isNotNull>
+	<isNotNull prepend="AND" property="reportType">
+		<isNotEmpty property="reportType">
+
+			REPORT_ID = (SELECT REPORT_TYPE_MASTER_ID FROM cms_report_type_master WHERE
+			REPORT_TYPE = #reportType#)
+		</isNotEmpty>
+	</isNotNull>
+	order by "reportType"
+	) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+	
+</select>
+
+
+
+<select id="getFilesForCaseDetailCount" resultClass = "java.lang.Integer" 
+	parameterClass = "java.util.HashMap">
+	SELECT
+	count(CLIENT_CODE )
+	FROM
+	CMS_CLIENT_REQ_MASTER
+	WHERE HISTORY_STATUS = 0
+	<isNotNull prepend="AND" property="clientCode">
+		<isNotEmpty property="clientCode">
+			CLIENT_CODE = #clientCode#
+	 	 </isNotEmpty>
+	</isNotNull>
+	<isNotNull prepend="AND" property="reportType">
+		<isNotEmpty property="reportType">
+
+			REPORT_ID = (SELECT REPORT_TYPE_MASTER_ID FROM cms_report_type_master WHERE
+			REPORT_TYPE = #reportType#)
+		</isNotEmpty>
+	</isNotNull>
+	
+	
+</select>
+
+</sqlMap>

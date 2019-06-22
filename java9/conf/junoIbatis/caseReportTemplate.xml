@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="CaseReportTemplateComponentVO">
+
+	<resultMap id="resultVO"
+		class="com.worldcheck.juno.vo.component.CaseReportTemplateComponentVO">
+		<result property="componentId" column="COMPONENT_ID" />
+		<result property="componentLevelId" column="COMPONENT_LEVEL_ID" />
+		<result property="componentNumber" column="COMPONENT_NUMBER" />
+		<result property="sectionNumber" column="NUMBER_VALUE" />
+	</resultMap>
+
+
+	<select id="listOnPcNCrn" resultMap="resultVO" parameterClass="java.util.HashMap">
+		select rgctc.COMPONENT_ID,rgcts.NUMBER_VALUE,
+		rgctc.COMPONENT_LEVEL_ID,rgctc.COMPONENT_NUMBER
+		from
+		RG_CASERPT_TEMPLATE_COMPONENT rgctc,RG_CASERPT_TEMPLATE_SECTION rgcts
+		where rgctc.SECTION_ID=rgcts.CASERPT_SECTION_ID
+		and rgctc.case_id =#crn#
+		and
+		rgctc.processcycleid =#pcId#
+
+</select>
+
+	<select id="isMarkDone" resultClass="java.lang.String">
+
+		select COMPONENT_STATUS from RG_CASERPT_TEMPLATE_COMPONENT
+		where CASERPT_COMPONENTS_ID = #recordId# 
+</select>
+	<update id="updateStatus" parameterClass="java.util.HashMap">
+
+		update RG_CASERPT_TEMPLATE_COMPONENT set COMPONENT_STATUS = 'W'
+		where CASERPT_COMPONENTS_ID = #recordId#
+		 and component_status = 'N'
+
+</update>
+
+</sqlMap>

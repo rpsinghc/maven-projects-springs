@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DocConfig">
+
+	<resultMap id="mp" class="com.worldcheck.atlas.vo.document.DocMapVO">
+		<result property="names" column="names" />
+		<result property="docId" column="docId" />
+	</resultMap>
+
+	<!--
+		* * This query is for PO Information for PO detail screen and input
+		field will be Savvion PID * *
+	-->
+
+	<select id="getDocs" resultMap="mp" parameterClass="java.util.Map">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (
+		select
+		doc.DOCNAME names ,
+		doc.DOCID
+		docId from
+		CMS_DOCUMENT doc where doc.PID=#pid# order by
+		names
+		) a
+		WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+	</select>
+
+	<select id="getAllDocs" resultMap="mp" parameterClass="java.util.Map">
+
+		select
+		doc.DOCNAME names ,
+		doc.DOCID
+		docId from
+		CMS_DOCUMENT doc where doc.PID=#pid# order by
+                names
+		
+	</select>
+
+	<select id="getDocCount" resultClass="java.lang.Integer"
+		parameterClass="java.lang.String">
+		select
+		count(*) from
+		CMS_DOCUMENT doc where doc.PID=#pid#
+	</select>
+
+	<select id="getAllDocIds" resultMap="mp" parameterClass="java.lang.String">
+		select
+		DOCID as docId ,DOCNAME as names from
+		CMS_DOCUMENT doc where doc.PID=#pid#
+	</select>
+
+	<delete id="deleteDocuments" parameterClass="java.lang.String">
+		delete from document
+		where doc_id in ($docIds$)
+	</delete>
+
+	<update id="updateCreatorName" parameterClass="java.util.Map">
+		update document set creator=#creatorName# where doc_id in ($docIds$)
+	</update>
+
+	<select id="getDocByDocId" resultClass="com.worldcheck.atlas.vo.document.DocMapVO" parameterClass="java.lang.String">
+		select * from CMS_DOCUMENT doc where doc.docId = #docId#
+	</select>
+
+	<update id="updateCreatorDate" parameterClass="java.util.Map">
+		update CMS_DOCUMENT set CREATEDON=#creatorDate# where docid in ($docIds$)
+	</update>
+
+
+</sqlMap>

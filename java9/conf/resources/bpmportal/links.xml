@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<linkset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="links.xsd">
+    <!-- Home -->
+    <link id="tasks" url="/bpmportal/myhome/bizsite.task" />
+    <link id="instances" url="/bpmportal/myhome/bizsite.status.list" />
+    <link id="apps" url="/bpmportal/myhome/bizsite.app.list" />
+    <link id="Dashboard" url="/bpmportal/myhome/viewdashboard.portal" />
+    <link id="alerts" url="/bpmportal/myhome/bizsite.alerts.list" /> 
+    
+    <!-- Management -->
+    <link id="instanceOverview" url="/bpmportal/management/overview.jsp" />
+    <link id="applicationOverview" url="/bpmportal/management/app_overview.jsp" />
+    <link id="reports" url="/bpmportal/management/report_list.jsp" />
+    <link id="statusReports" url="/bpmportal/management/report_generator_status.jsp" />
+    <link id="timeReports" url="/bpmportal/management/report_generator_timeanalysis.jsp" />
+    <link id="workloadReports" url="/bpmportal/management/report_generator_workload.jsp" />
+    <link id="bulkInstances" url="/bpmportal/management/instance_search.jsp" />
+    <link id="bulkTasks" url="/bpmportal/management/user_list.jsp" />
+    <link id="bscConsole" url="/bpmportal/management/bal_score.jsp" />
+    <link id="bscDesigner" url="/bpmportal/management/bsc_list_wiz.jsp" />
+    <link id="infopads" url="/bpmportal/management/infopad_mgr.jsp" />
+    <link id="workstepSearch" url="/bpmportal/management/wrkstep_search.jsp" />
+
+    
+    <!-- Administration -->
+    <link id="SystemStatus" url="/bpmportal/administration/SBMAdminServlet?action=systemStatus" />
+    <link id="LogViewer" url="/bpmportal/administration/SBMAdminServlet?action=viewLog" />
+    <link id="Users" url="/bpmportal/administration/UserManagementServlet?action=listUser" />
+    <link id="Groups" url="/bpmportal/administration/UserManagementServlet?action=listGroup" />
+    <link id="Queues" url="/bpmportal/administration/UserManagementServlet?action=listQueue" />
+    <link id="Permissions" url="/bpmportal/administration/UserManagementServlet?action=listPermission" />
+    <link id="bizlogicApps" url="/bpmportal/administration/SBMAdminAppServlet?action=bizlogicAll" />
+    <link id="bizsoloApps" url="/bpmportal/administration/SBMAdminAppServlet?action=bizsoloAll" />
+    
+    <!-- Case Info -->
+    <link id="tasks" url="/bpmportal/myhome/bizsite.task" />
+    <link id="instances" url="/bpmportal/myhome/bizsite.status.list" />
+    <link id="apps" url="/bpmportal/myhome/bizsite.app.list" />
+    <link id="Dashboard" url="/bpmportal/myhome/viewdashboard.portal" />
+    <link id="alerts" url="/bpmportal/myhome/bizsite.alerts.list" /> 
+    
+    <!-- Examples -->
+    <!-- <link id="bizsolo" url="/BizSolo/SVBSurvey/Start.jsp" /> -->
+</linkset>

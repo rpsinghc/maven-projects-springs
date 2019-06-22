@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CountryIccrVO">
+
+
+
+	<resultMap id="countryVO" class="com.worldcheck.juno.vo.master.CountryVO">
+		<result property="id" column="COUNTRY_ID" />
+		<result property="name" column="COUNTRY" />
+
+	</resultMap>
+
+	<resultMap id="result" class="com.worldcheck.juno.vo.master.CountryIccrVO">
+		<result property="icrrId" column="COUNTRY_ICRR_DATA_ID" />
+		<result property="fatfStatus" column="FATF_STATUS" />
+		<result property="fatfPhrase" column="FATF_PHRASE" />
+		<result property="stateTerrorrism" column="STATE_TERRORISM" />
+		<result property="designatedOn" column="DESIGNATED_ON" />
+		<result property="delistedOn" column="DELISTED_ON" />
+		<result property="terrorismDate" column="TERRORISM_DATE" />
+		<result property="otherSanction" column="OTHER_SANCTIONS" />
+		<result property="status" column="STATUS" />
+		<result property="countryVO" resultMap="CountryIccrVO.countryVO" />
+	</resultMap>
+
+
+	<insert id="insert" parameterClass="com.worldcheck.juno.vo.master.CountryIccrVO">
+
+
+		insert into
+		RG_COUNTRY_ICRR_DATA_MASTER (
+
+		COUNTRY_ICRR_DATA_ID,
+		COUNTRY_ID ,
+		FATF_STATUS ,
+		STATE_TERRORISM ,
+		FATF_PHRASE ,
+		DESIGNATED_ON,
+		DELISTED_ON,
+		TERRORISM_DATE,
+		OTHER_SANCTIONS,
+		STATUS,
+		UPDATED_BY,UPDATED_ON
+
+		)values (
+
+		RG_COUNTRY_ICRR_DATA_MST_SEQ.nextval,
+		#countryVO.id#,
+		#fatfStatus#,
+		#stateTerrorrism#,
+		#fatfPhrase#,
+
+		#designatedOn#,
+		#delistedOn#,
+		#terrorismDate#,
+		#otherSanction#,
+		#status#,
+		#userName#
+		,sysdate
+		)     
+	  </insert>
+
+	<select id="getById" resultMap="result">
+
+		select
+		icrr.COUNTRY_ICRR_DATA_ID,
+		icrr.FATF_STATUS,
+		icrr.STATE_TERRORISM,
+		icrr.FATF_PHRASE,
+		icrr.DESIGNATED_ON,
+		icrr.DELISTED_ON,
+		icrr.TERRORISM_DATE,
+		icrr.OTHER_SANCTIONS,
+		icrr.STATUS,
+		icrr.COUNTRY_ID,
+		ccm.COUNTRY
+		from
+		CMS_COUNTRY_MASTER ccm,RG_COUNTRY_ICRR_DATA_MASTER icrr
+
+		where
+		icrr.COUNTRY_ICRR_DATA_ID =#icrrId# and icrr.COUNTRY_ID=
+		ccm.COUNTRY_MASTER_ID
+		
+	</select>
+
+	<update id="update" parameterClass="com.worldcheck.juno.vo.master.CountryIccrVO">
+
+		update
+		RG_COUNTRY_ICRR_DATA_MASTER set
+
+		FATF_STATUS = #fatfStatus#,
+		STATE_TERRORISM = #stateTerrorrism#,
+		FATF_PHRASE = #fatfPhrase#,
+		DESIGNATED_ON
+		=#designatedOn#,
+		DELISTED_ON =#delistedOn#,
+		TERRORISM_DATE
+		=#terrorismDate#,
+		OTHER_SANCTIONS =#otherSanction#,
+		STATUS =#status#,
+		UPDATED_BY =#userName#,
+		UPDATED_ON = sysdate
+		where
+		COUNTRY_ICRR_DATA_ID =
+		#icrrId#
+	 			 
+	  </update>
+
+
+	<select id="searchIcrrCountry" resultMap="result"
+		parameterClass="java.util.HashMap">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (select
+		icrr.COUNTRY_ICRR_DATA_ID,cm.COUNTRY ,
+		icrr.FATF_STATUS,
+		icrr.STATE_TERRORISM,
+		icrr.FATF_PHRASE,
+		icrr.DESIGNATED_ON,
+		icrr.DELISTED_ON,
+		icrr.TERRORISM_DATE,
+		icrr.OTHER_SANCTIONS,
+		icrr.STATUS,
+		icrr.COUNTRY_ID
+
+		from cms_country_master cm
+		,RG_COUNTRY_ICRR_DATA_MASTER icrr
+
+		where
+		icrr.COUNTRY_ID=cm.COUNTRY_MASTER_ID
+		<isNotNull property="countryId">
+			<isNotEqual prepend="AND" property="countryId"
+				compareValue="0">
+				icrr.COUNTRY_ID=#countryId# 
+			</isNotEqual>
+		</isNotNull>
+		<isNotNull property="status">
+			<isNotEqual prepend="AND" property="status" compareValue="">
+				upper(icrr.STATUS)=upper(#status#)
+			</isNotEqual>
+		</isNotNull>
+
+		order by cm.COUNTRY) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+
+	</select>
+
+	<update id="deActivate" parameterClass="java.util.HashMap">
+		update RG_COUNTRY_ICRR_DATA_MASTER set
+		STATUS =0
+		where
+		COUNTRY_ICRR_DATA_ID in
+
+		<iterate property="icrrId" open="(" close=")" conjunction=",">
+			#icrrId[]#
+	    </iterate>
+	</update>
+
+	<update id="activate" parameterClass="java.util.HashMap">
+		update RG_COUNTRY_ICRR_DATA_MASTER set
+		STATUS =1
+		where
+		COUNTRY_ICRR_DATA_ID in
+		<iterate property="icrrId" open="(" close=")" conjunction=",">
+			#icrrId[]#
+	    </iterate>
+	</update>
+
+	<select id="getSearchCount" resultClass="java.lang.Integer"
+		parameterClass="java.util.HashMap">
+		select count(*)
+
+		from cms_country_master cm
+		,RG_COUNTRY_ICRR_DATA_MASTER
+		icrr
+
+		where
+		icrr.COUNTRY_ID=cm.COUNTRY_MASTER_ID
+		<isNotNull property="countryId">
+			<isNotEqual prepend="AND" property="countryId"
+				compareValue="0">
+				icrr.COUNTRY_ID=#countryId# 
+			</isNotEqual>
+		</isNotNull>
+		<isNotNull property="status">
+			<isNotEqual prepend="AND" property="status" compareValue="">
+				upper(icrr.STATUS)=upper(#status#)
+			</isNotEqual>
+		</isNotNull>
+
+		order by cm.COUNTRY
+	</select>
+
+	<select id="checkCountryStatus" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+
+		select count(*) from rg_country_icrr_data_master
+		where country_id=#countryId# and status=#status#
+	
+	</select>
+	
+	
+	<select id="searchIcrrCountryExport" resultMap="result"
+		parameterClass="java.util.HashMap">
+		select 
+		icrr.COUNTRY_ICRR_DATA_ID,cm.COUNTRY ,
+		icrr.FATF_STATUS,
+		icrr.STATE_TERRORISM,
+		icrr.FATF_PHRASE,
+		icrr.DESIGNATED_ON,
+		icrr.DELISTED_ON,
+		icrr.TERRORISM_DATE,
+		icrr.OTHER_SANCTIONS,
+		icrr.STATUS,
+		icrr.COUNTRY_ID
+
+		from cms_country_master cm
+		,RG_COUNTRY_ICRR_DATA_MASTER icrr
+
+		where
+		icrr.COUNTRY_ID=cm.COUNTRY_MASTER_ID
+		<isNotNull property="countryId">
+			<isNotEqual prepend="AND" property="countryId"
+				compareValue="0">
+				icrr.COUNTRY_ID=#countryId# 
+			</isNotEqual>
+		</isNotNull>
+		<isNotNull property="status">
+			<isNotEqual prepend="AND" property="status" compareValue="">
+				upper(icrr.STATUS)=upper(#status#)
+			</isNotEqual>
+		</isNotNull>
+
+		order by cm.COUNTRY
+
+	</select>
+	
+	
+	
+</sqlMap>

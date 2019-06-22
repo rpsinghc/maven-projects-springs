@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form SYSTEM "form.dtd" >
+<Form version="6.5">
+  <DataSources>
+    <DataSource name="system">
+      <DataField name="ALLDATASLOTS" type="Object"/>
+      <DataField name="CREATOR" type="String"/>
+      <DataField name="PRIORITY" type="String"/>
+      <DataField name="PROCESSNAME" type="String"/>
+      <DataField name="STARTTIME" type="LONG"/>
+      <DataField name="WORKSTEPNAME" type="String"/>
+    </DataSource>
+    <DataSource name="user"/>
+  </DataSources>
+  <head>
+    <link rel="stylesheet" type="bizsolo"/>
+  </head>
+  <body class="apbody"/>
+</Form>

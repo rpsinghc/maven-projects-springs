@@ -1,0 +1,690 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SubjectSearch">
+	<select id="getSubjectType" resultClass="com.worldcheck.atlas.vo.SubjectDetails">
+		select entity_type_id entityTypeId,entity_name entityName from CMS_ENTITYTYPE_MASTER
+	</select>
+	
+	<select id="getSubjectList" parameterClass="com.worldcheck.atlas.bl.search.SearchCriteria"
+		resultClass="com.worldcheck.atlas.vo.search.SubjectSearchVO">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (SELECT cs.crn crnNo,
+  cs.SUBJECT_ID subjectId,
+	  cs.subject_name subjectName,
+	  ccm.country subjectCountry,
+	  <isNotNull property="subjectName" >
+	  		<isNotEmpty property="subjectName">
+  				 cem.entity_name entityName,
+  			</isNotEmpty>
+  			<isEmpty property="subjectName">'Primary Subject' entityName,</isEmpty>
+	  </isNotNull>
+	  <isNull property="subjectName" >
+  			'Primary Subject' entityName,
+		</isNull>
+	  ccsm.DESCRIPTION caseStatus,
+ 	 '0' isLegacyData
+	FROM CMS_CLIENTCASE cc, 
+	  cms_subject cs,
+	  cms_country_master ccm,
+	  cms_entitytype_master cem,
+	  CMS_CASE_STATUS_MASTER ccsm
+	WHERE cc.crn = cs.CRN 
+	and ccsm.CASE_STATUS_ID = cc.CASE_STATUS_ID
+	and cs.country_id = ccm.country_master_id
+	 AND cs.entity_type_id = cem.entity_type_id
+	 <isNotNull prepend="AND" property="subjectName">
+			<isNotEmpty property="subjectName">
+			 <isEqual property="exactMatch" compareValue='true'>
+				 upper(cs.SUBJECT_NAME) = UPPER(#subjectName#)
+		    </isEqual>
+		     <isEqual property="exactMatch" compareValue='false'> 
+				upper(cs.SUBJECT_NAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual> 
+			 <isEqual property="exactMatch" compareValue=''> 
+				upper(cs.SUBJECT_NAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual> 
+			</isNotEmpty>
+			<isEmpty property="subjectName">cs.IS_PRIMARY_SUB = 1</isEmpty>
+		</isNotNull>
+		<isNull property="subjectName">cs.IS_PRIMARY_SUB = 1</isNull>
+		<isNotNull property="entityTypeId">
+		<isNotEqual prepend="AND" property="entityTypeId" compareValue="0">
+
+			<isNotEmpty property="entityTypeId">
+				cs.ENTITY_TYPE_ID = #entityTypeId#
+			</isNotEmpty>
+		</isNotEqual>
+		</isNotNull>
+		<isNotNull prepend="AND" property="startCaseRecvDate">
+				<isNotEmpty property="startCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ >= ]]> to_date(#startCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="endCaseRecvDate">
+				<isNotEmpty property="endCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ <= ]]>  to_date(#endCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="endCaseRecvDate">
+				<isNotEmpty property="endCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ <= ]]>  to_date(#endCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="country">
+					<isNotEmpty property="country">
+						CS.COUNTRY_ID IN
+						<iterate property="country" open="(" close=")" conjunction=",">
+							#country[]#
+						</iterate>
+					</isNotEmpty>
+				</isNotNull>
+		ORDER BY upper($sortColumnName$) $sortType$ ) a 
+		<isNotNull property="keyWord">
+		 	<isNotEmpty property="keyWord">
+		 		inner join rg_generated_reports rg  on  a.crnNo = rg.case_id and rg.search_flag = 'Y'  
+				and contains(rg.GENERATED_REPORT, '{' ||  upper(#keyWord#) || '}') > 0
+		 	</isNotEmpty>
+		 </isNotNull>
+		 WHERE ROWNUM <![CDATA[ <= ]]>
+		#maxRecord#) WHERE rn <![CDATA[ >= ]]>
+		#minRecord#
+	</select>
+	
+	<select id="getExportSubjectList" parameterClass="java.util.Map"
+		resultClass="com.worldcheck.atlas.vo.search.SubjectSearchVO">
+		select fst.*,sec.* from (
+		<isNotNull property="keyWord" >
+                       <isNotEmpty property="keyWord">
+  			               select a.* from (
+                       </isNotEmpty>
+		</isNotNull>
+	  SELECT cs.crn crnNo,
+	  cs.SUBJECT_ID subjectId,
+	  cs.subject_name subjectName,
+	  ccm.country subjectCountry,
+	  <isNotNull property="subjectName" >
+	  		<isNotEmpty property="subjectName">
+  				 cem.entity_name entityName,
+  			</isNotEmpty>
+  			<isEmpty property="subjectName">'Primary Subject' entityName,</isEmpty>
+	  </isNotNull>
+	  <isNull property="subjectName" >
+  			'Primary Subject' entityName,
+		</isNull>
+	  ccsm.DESCRIPTION caseStatus
+	FROM CMS_CLIENTCASE cc, 
+	  cms_subject cs,
+	  cms_country_master ccm,
+	  cms_entitytype_master cem,
+	  CMS_CASE_STATUS_MASTER ccsm
+	WHERE cc.crn = cs.CRN 
+	and ccsm.CASE_STATUS_ID = cc.CASE_STATUS_ID
+	and cs.country_id = ccm.country_master_id
+	 AND cs.entity_type_id = cem.entity_type_id
+	 <isNotNull prepend="AND" property="subjectName">
+			<isNotEmpty property="subjectName">
+			   <isEqual property="exactMatch" compareValue='true'>
+				 upper(cs.SUBJECT_NAME) = UPPER(#subjectName#)
+		    </isEqual>
+		     <isEqual property="exactMatch" compareValue='false'> 
+				upper(cs.SUBJECT_NAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>
+			 <isEqual property="exactMatch" compareValue=''> 
+				upper(cs.SUBJECT_NAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>				
+			</isNotEmpty>
+			<isEmpty property="subjectName">cs.IS_PRIMARY_SUB = 1</isEmpty>
+		</isNotNull>
+		<isNull property="subjectName">cs.IS_PRIMARY_SUB = 1</isNull>
+		<isNotNull property="entityTypeId">
+		<isNotEqual prepend="AND" property="entityTypeId" compareValue="0">
+
+			<isNotEmpty property="entityTypeId">
+				cs.ENTITY_TYPE_ID = #entityTypeId#
+			</isNotEmpty>
+		</isNotEqual>
+		</isNotNull>
+		<isNotNull prepend="AND" property="startCaseRecvDate">
+				<isNotEmpty property="startCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ >= ]]> to_date(#startCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="endCaseRecvDate">
+				<isNotEmpty property="endCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ <= ]]>  to_date(#endCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="country">
+					<isNotEmpty property="country">
+						CS.COUNTRY_ID IN
+						<iterate property="country" open="(" close=")" conjunction=",">
+							#country[]#
+						</iterate>
+					</isNotEmpty>
+				</isNotNull>
+		<isNotNull property="keyWord">
+		 	<isNotEmpty property="keyWord">
+		 	)a inner join rg_generated_reports rg  on  a.crnNo = rg.case_id and rg.search_flag = 'Y'  
+			 and contains(rg.GENERATED_REPORT, '{' ||  upper(#keyWord#) || '}') > 0
+		</isNotEmpty>
+		 </isNotNull>
+		 ) fst
+left join 
+(
+select subject_id asc_subID, tab_to_clob(cast(collect(asub.crn) as t_varchar2_tab)) 
+relatedCrn from cms_asc_subject asub 
+group by asub.SUBJECT_ID
+
+) sec
+on fst.subjectId = sec.asc_subID
+order by fst.crnNo Asc
+	</select>
+
+	
+	<select id="getSubjectListCount" parameterClass="com.worldcheck.atlas.bl.search.SearchCriteria"
+		resultClass="java.lang.Integer">
+		<isNull property="keyWord" >
+			SELECT count(*)FROM  
+	  	</isNull>
+		<isNotNull property="keyWord" >
+              <isNotEmpty property="keyWord">
+          			select count(*) from (SELECT cc.crn	FROM 
+               </isNotEmpty>
+               <isEmpty property="keyWord">SELECT count(*)FROM</isEmpty>
+		</isNotNull>
+           CMS_CLIENTCASE cc, 
+	  cms_subject cs,
+	  cms_country_master ccm,
+	  cms_entitytype_master cem,
+	  CMS_CASE_STATUS_MASTER ccsm
+	WHERE cc.crn = cs.CRN 
+	and ccsm.CASE_STATUS_ID = cc.CASE_STATUS_ID
+	and cs.country_id = ccm.country_master_id
+	 AND cs.entity_type_id = cem.entity_type_id
+	 <isNotNull prepend="AND" property="subjectName">
+			<isNotEmpty property="subjectName">
+			 <isEqual property="exactMatch" compareValue='true'>
+				 upper(cs.SUBJECT_NAME) = UPPER(#subjectName#)
+		    </isEqual>
+		     <isEqual property="exactMatch" compareValue='false'> 
+				upper(cs.SUBJECT_NAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>
+			 <isEqual property="exactMatch" compareValue=''> 
+				upper(cs.SUBJECT_NAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>				
+			</isNotEmpty>
+			<isEmpty property="subjectName">cs.IS_PRIMARY_SUB = 1</isEmpty>
+		</isNotNull>
+		<isNull property="subjectName">cs.IS_PRIMARY_SUB = 1</isNull>
+		<isNotNull property="entityTypeId">
+		<isNotEqual prepend="AND" property="entityTypeId" compareValue="0">
+
+			<isNotEmpty property="entityTypeId">
+				cs.ENTITY_TYPE_ID = #entityTypeId#
+			</isNotEmpty>
+		</isNotEqual>
+		</isNotNull>
+		<isNotNull prepend="AND" property="startCaseRecvDate">
+				<isNotEmpty property="startCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ >= ]]> to_date(#startCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="endCaseRecvDate">
+				<isNotEmpty property="endCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ <= ]]>  to_date(#endCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="country">
+					<isNotEmpty property="country">
+						CS.COUNTRY_ID IN
+						<iterate property="country" open="(" close=")" conjunction=",">
+							#country[]#
+						</iterate>
+					</isNotEmpty>
+				</isNotNull>
+	       <isNotNull property="keyWord" >
+                    <isNotEmpty property="keyWord">
+							)inner join rg_generated_reports rg  on crn = rg.case_id and rg.search_flag = 'Y'  
+							and contains(rg.GENERATED_REPORT,'{' ||  upper(#keyWord#) || '}' ) > 0
+                    </isNotEmpty>	
+     	       </isNotNull> 
+	</select>
+	
+	
+	<select id="getLegacySubjectList" parameterClass="com.worldcheck.atlas.bl.search.SearchCriteria"
+		resultClass="com.worldcheck.atlas.vo.search.SubjectSearchVO">
+	SELECT * FROM (SELECT a.*, ROWNUM rn FROM (select * from (SELECT cs.crn crnno,
+  cs.SUBJECT_ID subjectId,
+  cs.subject_name subjectname,
+  ccm.country subjectcountry,
+	  <isNotNull property="subjectName" >
+	  		<isNotEmpty property="subjectName">
+  				 cem.entity_name entityName,
+  			</isNotEmpty>
+  			<isEmpty property="subjectName">'Primary Subject' entityName,</isEmpty>
+	  </isNotNull>
+	  <isNull property="subjectName" >
+  			'Primary Subject' entityName,
+		</isNull>
+  ccsm.DESCRIPTION casestatus,
+  '0' isLegacyData
+FROM CMS_CLIENTCASE cc, 
+  cms_subject cs,
+  cms_country_master ccm,
+  cms_entitytype_master cem,
+  CMS_CASE_STATUS_MASTER ccsm
+WHERE cc.crn = cs.CRN 
+and ccsm.CASE_STATUS_ID = cc.CASE_STATUS_ID
+and cs.country_id = ccm.country_master_id
+ AND cs.entity_type_id = cem.entity_type_id
+ 		<isNotNull prepend="AND" property="subjectName">
+			<isNotEmpty property="subjectName">
+			 <isEqual property="exactMatch" compareValue='true'>
+				 upper(cs.SUBJECT_NAME) = UPPER(#subjectName#)
+		    </isEqual>
+		     <isEqual property="exactMatch" compareValue='false'> 
+				upper(cs.SUBJECT_NAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>
+			 <isEqual property="exactMatch" compareValue=''> 
+				upper(cs.SUBJECT_NAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>
+			</isNotEmpty>
+			<isEmpty property="subjectName">cs.IS_PRIMARY_SUB = 1</isEmpty>
+		</isNotNull>
+		<isNull property="subjectName">cs.IS_PRIMARY_SUB = 1</isNull>
+		<isNotNull property="entityTypeId">
+		<isNotEqual prepend="AND" property="entityTypeId" compareValue="0">
+
+			<isNotEmpty property="entityTypeId">
+				cs.ENTITY_TYPE_ID = #entityTypeId#
+			</isNotEmpty>
+		</isNotEqual>
+		</isNotNull>
+		<isNotNull prepend="AND" property="startCaseRecvDate">
+				<isNotEmpty property="startCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ >= ]]> to_date(#startCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="endCaseRecvDate">
+				<isNotEmpty property="endCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ <= ]]>  to_date(#endCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="country">
+					<isNotEmpty property="country">
+						CS.COUNTRY_ID IN
+						<iterate property="country" open="(" close=")" conjunction=",">
+							#country[]#
+						</iterate>
+					</isNotEmpty>
+				</isNotNull>
+				UNION 
+ 
+ SELECT cs.crn crnno,
+  cs.SUBJECTID subjectId,
+  cs.subjectname subjectname,
+ ccm.country subjectcountry,
+	  <isNotNull property="subjectName" >
+	  		<isNotEmpty property="subjectName">
+  				 cem.entity_name entityName,
+  			</isNotEmpty>
+  			<isEmpty property="subjectName">'Primary Subject' entityName,</isEmpty>
+	  </isNotNull>
+	  <isNull property="subjectName" >
+  			'Primary Subject' entityName,
+		</isNull>
+  ccsm.description casestatus,
+  '1' isLegacyData
+FROM CLIENTCASE_MV cc,
+  subject_mv cs,
+ cms_country_master ccm,
+  cms_entitytype_master cem,
+  cms_case_status_master ccsm
+WHERE cc.crn = cs.crn
+ AND ccsm.STATUS_CODE = cc.statuscode
+ AND cs.countryid = ccm.CODE
+ AND cs.entitytypecode = cem.entity_type_id
+ <isNotNull prepend="AND" property="subjectName">
+			<isNotEmpty property="subjectName">
+			 <isEqual property="exactMatch" compareValue='true'>
+				 upper(cs.SUBJECTNAME) = UPPER(#subjectName#)
+		    </isEqual>
+		     <isEqual property="exactMatch" compareValue='false'> 
+				upper(cs.SUBJECTNAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual> 
+			 <isEqual property="exactMatch" compareValue=''> 
+				upper(cs.SUBJECTNAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual> 
+			</isNotEmpty>
+			<isEmpty property="subjectName">cs.ISPRIMARYSUB = 1</isEmpty>
+		</isNotNull>
+		<isNull property="subjectName">cs.ISPRIMARYSUB = 1</isNull>
+		<isNotNull property="entityTypeId">
+		<isNotEqual prepend="AND" property="entityTypeId" compareValue="0">
+
+			<isNotEmpty property="entityTypeId">
+				cs.entitytypecode = #entityTypeId#
+			</isNotEmpty>
+		</isNotEqual>
+		</isNotNull>
+		<isNotNull prepend="AND" property="startCaseRecvDate">
+				<isNotEmpty property="startCaseRecvDate">
+					trunc(cc.reqrecddt)  <![CDATA[ >= ]]> to_date(#startCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="endCaseRecvDate">
+				<isNotEmpty property="endCaseRecvDate">
+					trunc(cc.reqrecddt)  <![CDATA[ <= ]]>  to_date(#endCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="country">
+					<isNotEmpty property="country">
+						CCM.COUNTRY_MASTER_ID IN
+						<iterate property="country" open="(" close=")" conjunction=",">
+							#country[]#
+						</iterate>
+					</isNotEmpty>
+				</isNotNull>
+ ) ORDER BY upper($sortColumnName$) $sortType$ ) a WHERE ROWNUM <![CDATA[ <= ]]> #maxRecord#) WHERE rn <![CDATA[ >= ]]>  #minRecord#
+	</select>
+	
+<select id="getLegacySubjectListCount" parameterClass="com.worldcheck.atlas.bl.search.SearchCriteria"
+		resultClass="java.lang.Integer">
+	select count(*) from (SELECT cs.crn crnno,
+	cs.SUBJECT_ID subjectId    ,
+  cs.subject_name subjectname,
+  ccm.country subjectcountry,
+  cem.entity_name entityname,
+  ccsm.DESCRIPTION casestatus,
+   '0' isLegacyData
+FROM CMS_CLIENTCASE cc, 
+  cms_subject cs,
+  cms_country_master ccm,
+  cms_entitytype_master cem,
+  CMS_CASE_STATUS_MASTER ccsm
+WHERE cc.crn = cs.CRN 
+and ccsm.CASE_STATUS_ID = cc.CASE_STATUS_ID
+and cs.country_id = ccm.country_master_id
+ AND cs.entity_type_id = cem.entity_type_id
+ 		<isNotNull prepend="AND" property="subjectName">
+			<isNotEmpty property="subjectName">
+			  <isEqual property="exactMatch" compareValue='true'>
+				 upper(cs.SUBJECT_NAME) = UPPER(#subjectName#)
+		    </isEqual>
+			 <isEqual property="exactMatch" compareValue='false'> 
+				upper(cs.SUBJECT_NAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>
+			  <isEqual property="exactMatch" compareValue=''> 
+				upper(cs.SUBJECT_NAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>
+			</isNotEmpty>
+			<isEmpty property="subjectName">cs.IS_PRIMARY_SUB = 1</isEmpty>
+		</isNotNull>
+		<isNull property="subjectName">cs.IS_PRIMARY_SUB = 1</isNull>
+				<isNotNull property="entityTypeId">
+		<isNotEqual prepend="AND" property="entityTypeId" compareValue="0">
+
+			<isNotEmpty property="entityTypeId">
+				cs.ENTITY_TYPE_ID = #entityTypeId#
+			</isNotEmpty>
+		</isNotEqual>
+		</isNotNull>
+		<isNotNull prepend="AND" property="startCaseRecvDate">
+				<isNotEmpty property="startCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ >= ]]> to_date(#startCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="endCaseRecvDate">
+				<isNotEmpty property="endCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ <= ]]>  to_date(#endCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="country">
+					<isNotEmpty property="country">
+						CS.COUNTRY_ID IN
+						<iterate property="country" open="(" close=")" conjunction=",">
+							#country[]#
+						</iterate>
+					</isNotEmpty>
+				</isNotNull>
+				UNION 
+ 
+ SELECT cs.crn crnno,
+    cs.SUBJECTID subjectId     ,
+  cs.subjectname subjectname,
+ ccm.country subjectcountry,
+  cem.entity_name entityname,
+  ccsm.description casestatus,
+   '1' isLegacyData
+FROM clientcase_mv cc,
+  subject_mv cs,
+ cms_country_master ccm,
+  cms_entitytype_master cem,
+  cms_case_status_master ccsm
+WHERE cc.crn = cs.crn
+ AND ccsm.STATUS_CODE = cc.statuscode
+ AND cs.countryid = ccm.CODE
+ AND cs.entitytypecode = cem.entity_type_id
+ <isNotNull prepend="AND" property="subjectName">
+			<isNotEmpty property="subjectName">
+			 <isEqual property="exactMatch" compareValue='true'>
+				 upper(cs.SUBJECTNAME) = UPPER(#subjectName#)
+		    </isEqual>
+			 <isEqual property="exactMatch" compareValue='false'> 
+				upper(cs.SUBJECTNAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>
+			 <isEqual property="exactMatch" compareValue=''> 
+				upper(cs.SUBJECTNAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>
+			</isNotEmpty>
+			<isEmpty property="subjectName">cs.ISPRIMARYSUB = 1</isEmpty>
+		</isNotNull>
+		<isNull property="subjectName">cs.ISPRIMARYSUB = 1</isNull>
+				<isNotNull property="entityTypeId">
+		<isNotEqual prepend="AND" property="entityTypeId" compareValue="0">
+
+			<isNotEmpty property="entityTypeId">
+				cs.entitytypecode = #entityTypeId#
+			</isNotEmpty>
+		</isNotEqual>
+		</isNotNull>
+		<isNotNull prepend="AND" property="startCaseRecvDate">
+				<isNotEmpty property="startCaseRecvDate">
+					trunc(cc.reqrecddt)  <![CDATA[ >= ]]> to_date(#startCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="endCaseRecvDate">
+				<isNotEmpty property="endCaseRecvDate">
+					trunc(cc.reqrecddt)  <![CDATA[ <= ]]>  to_date(#endCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="country">
+					<isNotEmpty property="country">
+						CCM.COUNTRY_MASTER_ID IN
+						<iterate property="country" open="(" close=")" conjunction=",">
+							#country[]#
+						</iterate>
+					</isNotEmpty>
+				</isNotNull>
+ )
+	</select>
+	
+	<select id="getExportLegacySubjectList" parameterClass="java.util.Map"
+		resultClass="com.worldcheck.atlas.vo.search.SubjectSearchVO">
+
+	select fst.*,sec.* from (
+	
+	select * from (SELECT cs.crn crnno,
+	cs.SUBJECT_ID subjectId,
+  cs.subject_name subjectname,
+  ccm.country subjectcountry,
+	  <isNotNull property="subjectName" >
+	  		<isNotEmpty property="subjectName">
+  				 cem.entity_name entityName,
+  			</isNotEmpty>
+  			<isEmpty property="subjectName">'Primary Subject' entityName,</isEmpty>
+	  </isNotNull>
+	  <isNull property="subjectName" >
+  			'Primary Subject' entityName,
+		</isNull>
+  ccsm.DESCRIPTION casestatus
+FROM CMS_CLIENTCASE cc, 
+  cms_subject cs,
+  cms_country_master ccm,
+  cms_entitytype_master cem,
+  CMS_CASE_STATUS_MASTER ccsm
+WHERE cc.crn = cs.CRN 
+and ccsm.CASE_STATUS_ID = cc.CASE_STATUS_ID
+and cs.country_id = ccm.country_master_id
+ AND cs.entity_type_id = cem.entity_type_id
+ 		<isNotNull prepend="AND" property="subjectName">
+			<isNotEmpty property="subjectName">
+			 <isEqual property="exactMatch" compareValue='true'>
+				 upper(cs.SUBJECT_NAME) = UPPER(#subjectName#)
+		    </isEqual>
+		     <isEqual property="exactMatch" compareValue='false'> 
+				upper(cs.SUBJECT_NAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>
+			 <isEqual property="exactMatch" compareValue=''> 
+				upper(cs.SUBJECT_NAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>				
+			</isNotEmpty>
+			<isEmpty property="subjectName">cs.IS_PRIMARY_SUB = 1</isEmpty>
+		</isNotNull>
+		<isNull property="subjectName">cs.IS_PRIMARY_SUB = 1</isNull>
+		<isNotNull property="entityTypeId">
+		<isNotEqual prepend="AND" property="entityTypeId" compareValue="0">
+
+			<isNotEmpty property="entityTypeId">
+				cs.ENTITY_TYPE_ID = #entityTypeId#
+			</isNotEmpty>
+		</isNotEqual>
+		</isNotNull>
+		<isNotNull prepend="AND" property="startCaseRecvDate">
+				<isNotEmpty property="startCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ >= ]]> to_date(#startCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="endCaseRecvDate">
+				<isNotEmpty property="endCaseRecvDate">
+					trunc(cc.REQ_RECD_DT)  <![CDATA[ <= ]]>  to_date(#endCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="country">
+					<isNotEmpty property="country">
+						CS.COUNTRY_ID IN
+						<iterate property="country" open="(" close=")" conjunction=",">
+							#country[]#
+						</iterate>
+					</isNotEmpty>
+				</isNotNull>
+				UNION 
+ 
+ SELECT cs.crn crnno,
+   cs.SUBJECTID subjectId     ,
+  cs.subjectname subjectname,
+ ccm.country subjectcountry,
+	  <isNotNull property="subjectName" >
+	  		<isNotEmpty property="subjectName">
+  				 cem.entity_name entityName,
+  			</isNotEmpty>
+  			<isEmpty property="subjectName">'Primary Subject' entityName,</isEmpty>
+	  </isNotNull>
+	  <isNull property="subjectName" >
+  			'Primary Subject' entityName,
+		</isNull>
+  ccsm.description casestatus
+FROM clientcase_mv cc,
+  subject_mv cs,
+ cms_country_master ccm,
+  cms_entitytype_master cem,
+  cms_case_status_master ccsm
+WHERE cc.crn = cs.crn
+ AND ccsm.STATUS_CODE = cc.statuscode
+ AND cs.countryid = ccm.CODE
+ AND cs.entitytypecode = cem.entity_type_id
+ 		<isNotNull prepend="AND" property="subjectName">
+			<isNotEmpty property="subjectName">
+			<isEqual property="exactMatch" compareValue='true'>
+				 upper(cs.SUBJECTNAME) = UPPER(#subjectName#)
+		    </isEqual>
+		     <isEqual property="exactMatch" compareValue='false'> 
+				upper(cs.SUBJECTNAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>
+			 <isEqual property="exactMatch" compareValue=''> 
+				upper(cs.SUBJECTNAME) like '%' || UPPER(#subjectName#) || '%'
+			 </isEqual>
+			</isNotEmpty>
+			<isEmpty property="subjectName">cs.ISPRIMARYSUB = 1</isEmpty>
+		</isNotNull>
+		<isNull property="subjectName">cs.ISPRIMARYSUB = 1</isNull>
+		<isNotNull property="entityTypeId">
+		<isNotEqual prepend="AND" property="entityTypeId" compareValue="0">
+
+			<isNotEmpty property="entityTypeId">
+				cs.entitytypecode = #entityTypeId#
+			</isNotEmpty>
+		</isNotEqual>
+		</isNotNull>
+		<isNotNull prepend="AND" property="startCaseRecvDate">
+				<isNotEmpty property="startCaseRecvDate">
+					trunc(cc.reqrecddt)  <![CDATA[ >= ]]> to_date(#startCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="endCaseRecvDate">
+				<isNotEmpty property="endCaseRecvDate">
+					trunc(cc.reqrecddt)  <![CDATA[ <= ]]>  to_date(#endCaseRecvDate#,'dd-Mon-yyyy HH24:MI:SS')
+			 </isNotEmpty>
+	    </isNotNull>
+	    <isNotNull prepend="AND" property="country">
+					<isNotEmpty property="country">
+						CCM.COUNTRY_MASTER_ID IN
+						<iterate property="country" open="(" close=")" conjunction=",">
+							#country[]#
+						</iterate>
+					</isNotEmpty>
+				</isNotNull>
+ )
+ ) fst
+left join 
+(
+select crn as crnAsub,SUBJECTID asc_subID, tab_to_string(cast(collect(asub.crn) as t_varchar2_tab)) 
+relatedCrn from SUBJECTPASTRECORD@LEGACY asub 
+group by asub.SUBJECTID,asub.crn
+
+) sec
+on fst.subjectId = sec.asc_subID and crnAsub=fst.crnNo
+order by fst.crnNo Asc
+	</select>
+	
+	<select id="getAssociateCasesForSub"  resultClass="com.worldcheck.atlas.vo.SubjectDetails" parameterClass="com.worldcheck.atlas.bl.search.SearchCriteria">
+		SELECT * FROM (SELECT 	a.*, ROWNUM rn FROM (
+				SELECT CRN,SUBJECT_NAME subjectName,'0' as isLegacyData FROM CMS_SUBJECT WHERE CRN IN (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+				SUBJECT_ID=#subjectName# AND IS_LEGACY=0) AND IS_PRIMARY_SUB=1
+				UNION
+				SELECT CRN,SUBJECTNAME subjectName,'1' as isLegacyData FROM SUBJECT_MV WHERE CRN IN (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+				SUBJECT_ID=#subjectName# AND IS_LEGACY=1) AND ISPRIMARYSUB=1 )
+				a WHERE ROWNUM  <![CDATA[ <= ]]> #maxRecord#) 
+				WHERE rn  <![CDATA[ >= ]]> #minRecord# ORDER BY TO_NUMBER(SUBSTR(CRN,1,INSTR(CRN, '\')-1)) ASC
+	</select>
+		
+		<select id="getAssociateCasesCountForSub" resultClass="java.lang.Integer" parameterClass="com.worldcheck.atlas.bl.search.SearchCriteria">
+			SELECT COUNT(*) FROM CMS_ASC_SUBJECT WHERE SUBJECT_ID=#subjectName#
+		</select>
+	
+		<select id="getLegacyPastRecords" resultClass="com.worldcheck.atlas.vo.SubjectDetails"  parameterClass="com.worldcheck.atlas.bl.search.SearchCriteria">
+			SELECT * FROM (SELECT a.*, ROWNUM rn FROM (select crn,subjectName,'1' isLegacyData from subject_mv where crn In(select pastcrn from 
+			SUBJECTPASTRECORD@LEGACY where crn =#crnNo# and subjectId=#subjectName#) and ISPRIMARYSUB=1) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#maxRecord#) WHERE rn <![CDATA[ >= ]]>
+		#minRecord# ORDER BY TO_NUMBER(SUBSTR(CRN,1,INSTR(CRN, '\')-1)) ASC
+		</select>
+
+		<select id="getLegacyPastRecordsCount" resultClass="java.lang.Integer" parameterClass="com.worldcheck.atlas.bl.search.SearchCriteria">
+			select count(crn) from subject_mv where crn In(select pastcrn from 
+			SUBJECTPASTRECORD@LEGACY where crn =#crnNo# and subjectId=#subjectName#) and ISPRIMARYSUB=1
+		</select>
+	
+	
+</sqlMap>

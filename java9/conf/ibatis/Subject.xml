@@ -1,0 +1,3116 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+  
+  <sqlMap namespace="Subject">
+
+		<resultMap id="subjectAList" class="com.worldcheck.atlas.vo.SubjectDetails">
+			<result property="crn" column="CRN"/>
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="subjectName" column="subjectName"/>
+			<result property="entityTypeId" column="ENTITY_TYPE_ID"/>
+			<result property="countryId" column="COUNTRY_ID"/>
+			<result property="slBudget" column="subject_fee"/>	
+			<result property="currencycode" column="currency_code"/>	
+			<result property="isSubjLevelSubRptReq" column="IS_SUBJ_LEVEL_SUBRPT_REQ"/>
+			<result property="isisSubjectId" column="isis_subject_id"/>
+			<result property="subReportType" column="sub_report"/>
+			<result property="countryName" column="Country_Name"/>
+			<result property="subReportTypeId" column="subReportTypeId"/>
+		</resultMap>
+		
+  	  	<resultMap id="subjectRPTDetails" class="com.worldcheck.atlas.vo.SubjectDetails">
+				<result property="reportTypeId" column="REPORT_TYPE_ID"/>
+				<result property="reportType" column="REPORT_TYPE"/>
+				<result property="isSubjLevelSubRptReq" column="IS_SUBJ_LEVEL_SUBRPT_REQ"/>			
+		</resultMap>
+		
+		<resultMap id="subjectDetails" class="com.worldcheck.atlas.vo.SubjectDetails">
+			<result property="crn" column="CRN"/>
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="subjectName" column="subjectName"/>
+			<result property="primarySub" column="IS_PRIMARY_SUB"/>
+			<result property="entityTypeId" column="ENTITY_TYPE_ID"/>
+			<result property="position" column="POSITION"/>
+			<result property="countryId" column="COUNTRY_ID"/>
+			<result property="address" column="ADDRESS"/>
+			<result property="otherDetails" column="OTHER_DETAILS"/>
+			<result property="industryCode" column="INDUSTRY_CODE"/>
+			<result property="reportSubjectName" column="REPORT_SUBJECT_NAME"/>
+			<result property="reportOrder" column="REPORT_ORDER"/>
+			<result property="updatedBy" column="UPDATED_BY"/>
+			<result property="updatedOn" column="UPDATED_ON"/>
+			<result property="reIds" column="RE_IDS"/>
+			<result property="caseStatus" column="DESCRIPTION"/>
+			<result property="countryVO" resultMap="Subject.countryMasterVO"/>
+			<result property="entityVO" resultMap="Subject.entityTypeMasterVO"/>
+			<result property="subReportType" column="sub_report"/>				
+			<!--Added by 6027481 for BI-293-->			
+			<result property="slBudget" column="subject_fee"/>	
+			<result property="currencycode" column="currency_code"/>	
+			<result property="isSubjLevelSubRptReq" column="IS_SUBJ_LEVEL_SUBRPT_REQ"/>
+			<result property="isisSubjectId" column="isis_subject_id"/>
+			<!-- End-->	
+
+</resultMap>
+
+		<resultMap id="subjectDet" class="com.worldcheck.atlas.vo.SubjectDetails"  groupBy="subjectId">
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="subjectName" column="SUBJECT_NAME"/>
+			<result property="primarySub" column="IS_PRIMARY_SUB"/>
+			<result property="entityTypeId" column="ENTITY_TYPE_ID"/>
+			<result property="position" column="POSITION"/>
+			<result property="countryId" column="COUNTRY_ID"/>
+			<result property="address" column="ADDRESS"/>
+			<result property="otherDetails" column="OTHER_DETAILS"/>
+			<result property="updatedBy" column="UPDATED_BY"/>
+			<result property="updatedOn" column="UPDATED_ON"/>
+			<result property="reIds" column="RE_IDS"/>
+			<result property="isisCase" column="IS_ISIS"/>
+			<result property="isisSubjectId" column="ISIS_SUBJECT_ID"/>
+			<result property="countryVO" resultMap="Subject.subjectDetCountryMasterVO"/>
+			<result property="entityVO" resultMap="Subject.entityTypeMasterVO"/>
+			<result property="isSubjLevelSubRptReq" column="IS_SUBJ_LEVEL_SUBRPT_REQ"/>
+			<result property="subReportType" column="sub_report_Desc"/>
+			<result property="subReportTypeId" column="SUB_REPORT_TYPE_ID"/>
+			<result property="reportType" column="reportType"/>	
+			<result property="slBudget" column="subject_fee"/>				
+		</resultMap>
+
+		<resultMap id="subjectDetCountryMasterVO" class="com.worldcheck.atlas.vo.masters.CountryMasterVO">
+			<result property="countryMasterId" column="COUNTRY_MASTER_ID"/>
+			<result property="country" column="COUNTRY"/>
+			<result property="countryCode" column="CODE"/>
+			<result property="englishCountry" column="IS_ENG_COUNTRY"/>
+		</resultMap>
+	
+
+		<resultMap id="caseDetail" class="com.worldcheck.atlas.vo.CaseDetails" groupBy="crn">
+			<result property="crn" column="CRN"/>
+			<result property="subjectList" resultMap="Subject.subjectDetails"/>
+		</resultMap>
+
+		<resultMap id="researchElementMasterVO" class="com.worldcheck.atlas.vo.masters.ResearchElementMasterVO">
+			<result property="researchElementcode" column="RE_MASTER_ID"/>
+			<result property="researchElementName" column="NAME"/>
+		</resultMap>
+		
+		<resultMap id="risksMasterVO" class="com.worldcheck.atlas.vo.masters.RisksMasterVO">
+			<result property="riskcode" column="RISK_CODE"/>
+		</resultMap>
+
+		<resultMap id="resultRisksMasterVO" class="com.worldcheck.atlas.vo.masters.RisksMasterVO">
+			<result property="risks" column="RISK"/>
+			<result property="riskcode" column="RISK_CODE"/>
+		</resultMap>
+
+		<resultMap id="countryMasterVO" class="com.worldcheck.atlas.vo.masters.CountryMasterVO">
+			<result property="countryMasterId" column="COUNTRY_MASTER_ID"/>
+			<result property="country" column="COUNTRY"/>
+			<result property="countryCode" column="CODE"/>
+		</resultMap>
+
+		<resultMap id="entityTypeMasterVO" class="com.worldcheck.atlas.vo.masters.EntityTypeMasterVO">
+			<result property="entityType" column="ENTITY_NAME"/>
+			<result property="entityTypeID" column="ENTITY_TYPE_ID"/>
+		</resultMap>
+
+		<resultMap id="industryMasterVO" class="com.worldcheck.atlas.vo.masters.IndustryMasterVO">
+			<result property="industry" column="INDUSTRY"/>
+			<result property="industryCode" column="INDUSTRY_CODE"/>
+		</resultMap>
+		<resultMap id="reMasterVO" class="com.worldcheck.atlas.vo.masters.ResearchElementMasterVO">
+			<result property="researchElementcode" column="RE_MASTER_ID"/>
+			<result property="researchElementName" column="NAME"/>
+		</resultMap>
+		<resultMap id="caseDetails" class="com.worldcheck.atlas.vo.CaseDetails">
+			<result property="crn" column="CRN"/>
+			<result property="primarySubjectName" column="subject_name"/>
+			<result property="isLegacyData" column="IS_LEGACY"/>
+		</resultMap>
+
+		<resultMap id="teamDetail" class="com.worldcheck.atlas.vo.report.TeamDetailsVO">
+			<result property="teamTypeID" column="TEAM_ID"/>
+			<result property="teamType" column="TEAM_TYPE"/>
+		</resultMap>
+
+       <resultMap id="caseDetailsMapForRiskProfile" class="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO">
+			<result property="clientCode" column="CLIENT_CODE"/>
+			<result property="reportType" column="REPORT_TYPE_ID"/>
+			<result property="subReportType" column="SUB_REPORT_TYPE_ID"/>
+	   </resultMap>
+
+     <!-- Added By Saurabh Mittal -->
+	   	<resultMap id="caseCreationRiskAssociationVO" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="hasCntryBreakdown" column="HAS_CNTRY_BRKDOWN"/>
+			<result property="isRiskMandatory" column="RISK_GROUP"/>
+			<result property="isRiskApplied" column="RISK_GROUP"/>
+			<result property="riskCategoryId" column="RISK_CATEGORY_ID"/>
+			<result property="visibleToClient" column="VISIBLE_TO_CLIENT"/>
+			<result property="attributeId" column="ATTRIBUTE_ID"/>
+			<result property="attributeValue" column="VALUE"/>
+			<result property="riskType" column="RISK_TYPE"/>
+	   </resultMap>
+
+  <!-- Added By Saurabh Mittal -->
+
+  	   	<resultMap id="getSubREListMap" class="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO">
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="reIdString" column="RE_IDS"/>
+	   </resultMap>
+
+  
+	   
+     <!-- Added By Saurabh Mittal -->
+         <resultMap id="categoryAttributeValueMap" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="attributeId" column="ATTRIBUTE_ID"/>
+			<result property="attributeValue" column="VALUE"/>
+		 </resultMap>
+
+   <!-- Added By Saurabh Mittal -->
+      	  <resultMap id="caseCreationRiskAssociationCntryBrkDownVO" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="hasCntryBreakdown" column="HAS_CNTRY_BRKDOWN"/>
+			<result property="isRiskMandatory" column="RISK_GROUP"/>
+			<result property="isRiskApplied" column="RISK_GROUP"/>
+			<result property="riskCategoryId" column="RISK_CATEGORY_ID"/>
+			<result property="visibleToClient" column="VISIBLE_TO_CLIENT"/>
+			<result property="riskType" column="RISK_TYPE"/>
+	   </resultMap>
+         
+
+      <!-- Added By Saurabh Mittal -->
+
+         <resultMap id="getCountryBrkDownCaseLevelRiskMap" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="profileId" column="RISK_PROFILE_ID"/>
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="riskCategoryId" column="RISK_CATEGORY_ID"/>
+			<result property="riskType" column="RISK_TYPE"/>
+			<result property="crn" column="crn"/>
+	   </resultMap>
+		 
+	   <!-- Added By Saurabh Mittal -->
+
+
+         <resultMap id="subAdditionRiskAggregationVO" class="com.worldcheck.atlas.vo.RiskAggregationVO">
+			<result property="riskCategoryId" column="RISK_CATEGORY_ID"/>
+			<result property="riskType" column="RISK_TYPE"/>
+	   </resultMap>
+
+         <resultMap id="subUpdationRiskAggregationVO" class="com.worldcheck.atlas.vo.RiskAggregationVO">
+			<result property="riskCategoryId" column="RISK_CATEGORY_ID"/>
+			<result property="aggregateValue" column="AGG_VALUE"/>
+            <result property="crn" column="CRN"/>
+			<result property="subjectId" column="SUBJECT_ID"/>
+	   </resultMap>
+
+
+         <resultMap id="subUpdationRiskCaseLevelCategoryAggregationMap" class="com.worldcheck.atlas.vo.RiskAggregationVO">
+			<result property="riskCategoryId" column="RISK_CATEGORY_ID"/>
+			<result property="aggregateValue" column="AGG_VALUE"/>
+            <result property="crn" column="CRN"/>
+	   </resultMap>
+
+	   
+
+	     <resultMap id="subRiskAggregationDetailsMap" class="com.worldcheck.atlas.vo.RiskAggregationVO">
+			<result property="riskCategoryId" column="RISK_CATEGORY_ID"/>
+			<result property="aggregateValue" column="AGGREGATE_VALUE"/>
+            <result property="riskAggregationId" column="RISK_AGGREGATION_ID"/>
+			
+	   </resultMap>
+	   
+
+	   
+		 
+
+<!--
+	   <resultMap id="hasCountryBreakDownDetailsMap" class="java.util.List">
+			<result property="countryCode" column="COUNTRYCODE"/>
+	   </resultMap>
+
+-->
+	   
+<!--
+	   <resultMap id="oldCaseLevelDetailsMap" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="crn" column="CRN"/>
+
+	   </resultMap>
+-->
+
+  <!-- Added By Saurabh Mittal -->
+	   <resultMap id="oldSubjectLevelDetailsMap" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="crn" column="CRN"/>
+			<result property="isRiskMandatory" column="IS_RISK_MANDATORY"/>
+	
+
+	   </resultMap>
+
+
+	     <!-- Added By Saurabh Mittal -->
+	   <resultMap id="oldCaseLevelDetailsMap" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="crn" column="CRN"/>	
+			<result property="isRiskMandatory" column="IS_RISK_MANDATORY"/>
+			
+
+	   </resultMap>
+
+
+	   
+
+ <!-- Added By Saurabh Mittal -->
+ 	   <resultMap id="oldSubjectLevelDetailsCntryBrkDownMap" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="profileId" column="RISK_PROFILE_ID"/>
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="crn" column="CRN"/>
+			<result property="countryCode" column="COUNTRYCODE"/>
+			<result property="isRiskMandatory" column="IS_RISK_MANDATORY"/>
+	
+
+	   </resultMap>
+
+	    <resultMap id="oldCaseLevelDetailsCntryBrkDownMap" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="profileId" column="RISK_PROFILE_ID"/>
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="crn" column="CRN"/>
+			<result property="countryCode" column="COUNTRYCODE"/>
+			<result property="isRiskMandatory" column="IS_RISK_MANDATORY"/>
+	
+
+	   </resultMap>
+	
+	   <resultMap id="deletedCaseRisksAssociatedToSubjectMap" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="crn" column="CRN"/>
+			<result property="isRiskMandatory" column="IS_RISK_MANDATORY"/>
+
+	   </resultMap>
+
+ 	   <resultMap id="deletedRisksAssociatedToSubjectMap" class="com.worldcheck.atlas.vo.DeleteSubjectLevelRiskVO">
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="crn" column="CRN"/>
+			<result property="isRiskMandatory" column="IS_RISK_MANDATORY"/>
+	
+	   </resultMap>
+
+ 	   <resultMap id="deletedCategoryAssociatedToSubjectMap" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="crn" column="CRN"/>
+			<result property="riskCategoryId" column="RISK_CATEGORY_ID"/>
+	
+	   </resultMap>
+
+	   
+
+	    <resultMap id="deletedCntryBrkDownRisksAssociatedToSubjectMap" class="com.worldcheck.atlas.vo.DeleteSubjectLevelRiskVO">
+			<result property="profileId" column="RISK_PROFILE_ID"/>
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="crn" column="CRN"/>
+			<result property="countryMasterId" column="COUNTRY_MASTER_ID"/>
+	   </resultMap>
+	   
+	   <!-- End By Saurabh Mittal -->
+	   
+	
+		<select id="generateIdForNewSubject" resultClass="java.lang.Integer">
+				SELECT CMS_SUBJECT_SEQ.NEXTVAL AS VALUE FROM DUAL
+		</select>
+
+		<!-- Added By Saurabh Mittal -->
+
+		
+
+			<insert id="insertSubjectAdditionRiskAggr" parameterClass="com.worldcheck.atlas.vo.RiskAggregationVO">
+
+	<selectKey resultClass="int" type="pre" keyProperty="riskAggregationId">
+       SELECT CMS_RISK_AGGREGATION_SEQ.NEXTVAL AS VALUE FROM DUAL
+    </selectKey>
+
+			INSERT INTO CMS_RISK_AGGREGATION (
+			RISK_AGGREGATION_ID,
+			CRN,
+			SUBJECT_ID,
+			RISK_CATEGORY_ID,
+			RISK_TYPE,
+			AGGREGATE_VALUE,
+			UPDATEDBY
+			)values (
+			#riskAggregationId#,
+			#crn#,
+			#subjectId#,
+			#riskCategoryId#,
+			#riskType#,
+			#aggregateValue#,
+			SYSDATE
+		)
+		</insert>
+
+		<!-- Added by Saurabh Mittal -->
+
+   <insert id="insertSubjectRiskAggregationOnUpdate" parameterClass="com.worldcheck.atlas.vo.RiskAggregationVO">
+
+	<selectKey resultClass="int" type="pre" keyProperty="riskAggregationId">
+       SELECT CMS_RISK_AGGREGATION_SEQ.NEXTVAL AS VALUE FROM DUAL
+    </selectKey>
+
+			INSERT INTO CMS_RISK_AGGREGATION (
+			RISK_AGGREGATION_ID,
+			CRN,
+			SUBJECT_ID,
+			RISK_CATEGORY_ID,
+			RISK_TYPE,
+			AGGREGATE_VALUE,
+			UPDATEDBY
+			)values (
+			#riskAggregationId#,
+			#crn#,
+			#subjectId#,
+			#riskCategoryId#,
+			#riskType#,
+			#aggregateValue#,
+			SYSDATE
+		)
+		</insert>
+
+		
+
+
+	<insert id="insertSubjectAdditionTotalRiskAggr" parameterClass="com.worldcheck.atlas.vo.SubjectLevelAggregation">
+
+	<selectKey resultClass="int" type="pre" keyProperty="subjectAggrId">
+       SELECT CMS_RISK_EACH_SUB_AGGRN_SEQ.NEXTVAL AS VALUE FROM DUAL
+    </selectKey>
+
+			INSERT INTO CMS_RISK_EACH_SUBJECT_AGGRN (
+			SUBJECT_AGGREGATION_ID,
+			TOTAL_AGGREGATION_ID,
+			CRN,
+			SUBJECT_ID,
+			EACH_SUBJECT_LEVEL_AGGRN,
+			UPDATEDBY
+			)values (
+			#subjectAggrId#,
+			#totalAggregationId#,
+			#crn#,
+			#subjectId#,
+			#eachSubLvlAggr#,
+			SYSDATE
+		)
+		</insert>
+
+
+
+			<update id="updateSubjectEachSubjectRiskAggr" parameterClass="com.worldcheck.atlas.vo.SubjectLevelAggregation">
+
+			UPDATE CMS_RISK_EACH_SUBJECT_AGGRN
+			SET EACH_SUBJECT_LEVEL_AGGRN=#eachSubLvlAggr#,
+			UPDATEDBY=SYSDATE
+			WHERE
+			CRN=#crn#
+			AND SUBJECT_ID=#subjectId#
+		
+		</update>
+
+
+
+		 <update id="updateSubjectRiskAggregationOnUpdate" parameterClass="com.worldcheck.atlas.vo.RiskAggregationVO">
+
+			UPDATE CMS_RISK_AGGREGATION
+			SET AGGREGATE_VALUE=#aggregateValue#,
+			UPDATEDBY=SYSDATE
+			WHERE
+            RISK_AGGREGATION_ID=#riskAggregationId#
+		</update>
+
+		
+       <!-- Added by saurabh mittal -->
+
+   	<update id="updateSubjectOverallRiskAggr" parameterClass="com.worldcheck.atlas.vo.TotalRiskAggregationVO">
+
+
+			UPDATE CMS_RISK_TOTAL_AGGREGATION 
+			SET OVERALL_CASE_LEVEL_AGGRN=#overallCaseLvlAggr#,
+			OVERALL_CRN_LEVEL_AGGRN=#overallCrnLvlAggr#,
+			OVERALL_SUBJECT_LEVEL_AGGRN=#overallSubLvlAggr#,
+			UPDATEDBY=SYSDATE
+			WHERE CRN=#crn#
+		
+		</update>
+
+
+
+		<!-- This query is used to insert new subject details to CMS_SUBJECT -->
+
+		<insert id="insertSubject" parameterClass="com.worldcheck.atlas.vo.SubjectDetails">
+			INSERT INTO CMS_SUBJECT (
+			CRN,
+			SUBJECT_ID,
+			SUBJECT_NAME,
+			IS_PRIMARY_SUB,
+			ENTITY_TYPE_ID,
+			POSITION,
+			COUNTRY_ID,
+			ADDRESS,
+			OTHER_DETAILS,
+			INDUSTRY_CODE,
+			RE_IDS,
+			REPORT_SUBJECT_NAME,
+			UPDATED_BY,
+			UPDATED_ON,
+			ISIS_SUBJECT_ID,
+			ISREPLICATED,
+			SUB_REPORT_TYPE_ID
+			)values (
+			#crn#,
+			#subjectId#,
+			#subjectName#,
+			#primarySub#,
+			#entityTypeId#,
+			#position#,
+			(select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#countryCode#),
+			#address#,
+			#otherDetails#,
+			#industryCode#,
+			#reIds#,
+			#subjectName#,
+			#updatedBy#,
+			SYSDATE,
+			#isisSubjectId#,
+			#isReplicated#,
+			#subReportTypeId#
+		)
+		</insert>
+		
+		<insert id="insertSubjectJuno" parameterClass="com.worldcheck.atlas.vo.SubjectDetails">
+			insert into RG_SUBJECT (
+			SUBJECT_ID, 
+			CRN, 
+			CMS_SUBJECT_ID, 
+			SUBJECT_NAME, 
+			REPORT_SUBJECT_NAME, 
+			ENTITY_TYPE_ID, 
+			IS_PRIMARY_SUB
+			) values (
+			#subjectId#,
+			#crn#, 
+			#subjectId#,
+			#subjectName#,
+			#subjectName#,
+			#entityTypeId#,
+			#primarySub#)
+		</insert>
+  
+		 <!-- This Query is used to update subject details to CMS_SUBJECT table -->
+
+	   <update id="UpdateSubject" parameterClass="com.worldcheck.atlas.vo.SubjectDetails">
+			  UPDATE 
+					CMS_SUBJECT
+			  SET
+									
+					CMS_SUBJECT.SUBJECT_NAME = #subjectName#,
+					CMS_SUBJECT.IS_PRIMARY_SUB = #primarySub#,
+					CMS_SUBJECT.ENTITY_TYPE_ID = #entityTypeId#,
+					CMS_SUBJECT.POSITION = #position#,
+					CMS_SUBJECT.COUNTRY_ID =( select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#countryCode#),
+					CMS_SUBJECT.ADDRESS = #address#,
+					CMS_SUBJECT.OTHER_DETAILS = #otherDetails#,
+					CMS_SUBJECT.RE_IDS = #reIds#,
+					CMS_SUBJECT.REPORT_SUBJECT_NAME = #subjectName#,
+					CMS_SUBJECT.SUB_REPORT_TYPE_ID = #subReportTypeId#,
+					CMS_SUBJECT.UPDATED_BY = #updatedBy#,
+					CMS_SUBJECT.UPDATED_ON = SYSDATE
+					
+			  WHERE
+					CMS_SUBJECT.CRN = #crn# and
+					CMS_SUBJECT.SUBJECT_ID = #subjectId#
+		</update>
+		
+	    <update id="updateSubjectJuno" parameterClass="com.worldcheck.atlas.vo.SubjectDetails">
+	    	UPDATE 
+			  RG_SUBJECT
+			SET
+			  SUBJECT_NAME = case when REPORT_ORDER = 10000 then #subjectName# else SUBJECT_NAME end,
+			  REPORT_SUBJECT_NAME = case when REPORT_ORDER = 10000 then #subjectName# else REPORT_SUBJECT_NAME end,
+			  IS_PRIMARY_SUB = #primarySub#,
+			  ENTITY_TYPE_ID = #entityTypeId#
+			WHERE
+			  CRN = #crn# and
+			  CMS_SUBJECT_ID = #subjectId#
+		</update>
+
+		<!-- This Query is used to get subject details for a case. -->
+
+		<!--Edited By 6027481 for BI-293 4 fields  SUBJECT_FEE, currency_code, isis_subject_id,is_subj_level_subrpt_req-->
+		<select id="crnDetail" resultMap="caseDetail" parameterClass="java.util.HashMap">
+
+			SELECT * FROM (SELECT 	a.*, ROWNUM rn FROM (SELECT CASE.CRN crn,CSM.DESCRIPTION,SUB.SUBJECT_ID,SUB.SUBJECT_NAME subjectName,SUB.IS_PRIMARY_SUB,SUB.ENTITY_TYPE_ID,
+			SUB.POSITION ,SUB.COUNTRY_ID , SUB.ADDRESS,SUB.OTHER_DETAILS,SUB.INDUSTRY_CODE,SUB.REPORT_SUBJECT_NAME,SUB.REPORT_ORDER,SUB.RE_IDS,SUB.UPDATED_BY,
+			to_char(SUB.UPDATED_ON,'yyyy-mm-dd HH24:MI:SS') UPDATED_ON  ,COUNT.COUNTRY,COUNT.COUNTRY_MASTER_ID,COUNT.CODE,ENTITY.ENTITY_NAME,
+			DECODE(case.is_subj_level_subrpt_req,'1',(SELECT srtm.sub_report FROM cms_subreport_type_master srtm WHERE srtm.subreport_type_master_id = sub.sub_report_type_id),' ') sub_report, NVL(SUBJECT_FEE, 0) as subject_fee, ca.currency_code,sub.isis_subject_id, case.is_subj_level_subrpt_req
+			FROM CMS_CLIENTCASE CASE,CMS_SUBJECT SUB ,  CMS_COUNTRY_MASTER COUNT,CMS_ENTITYTYPE_MASTER ENTITY , CMS_CASE_STATUS_MASTER CSM, CMS_ACCOUNTS ca
+			WHERE 	CASE.CRN=#crn# AND SUB.CRN=CASE.CRN  AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID and SUB.ENTITY_TYPE_ID = ENTITY.ENTITY_TYPE_ID 
+			AND CASE.CASE_STATUS_ID = CSM.CASE_STATUS_ID and sub.crn= ca.crn
+			ORDER BY SUB.IS_PRIMARY_SUB desc,  
+							
+			CASE WHEN (SELECT SUB.ENTITY_TYPE_ID    
+				FROM CMS_CLIENTCASE CASE,CMS_SUBJECT SUB ,  CMS_COUNTRY_MASTER COUNT,CMS_ENTITYTYPE_MASTER ENTITY , CMS_ACCOUNTS ca     
+				WHERE 	CASE.CRN=#crn# AND SUB.CRN=CASE.CRN  AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID and  sub.crn= ca.crn
+				and SUB.ENTITY_TYPE_ID = ENTITY.ENTITY_TYPE_ID       AND SUB.IS_PRIMARY_SUB = 1) = 1 THEN sub.entity_type_id      
+			END  ,
+			  
+			CASE WHEN (SELECT SUB.ENTITY_TYPE_ID    
+				FROM CMS_CLIENTCASE CASE,CMS_SUBJECT SUB ,  CMS_COUNTRY_MASTER COUNT,CMS_ENTITYTYPE_MASTER ENTITY   , CMS_ACCOUNTS ca  
+				WHERE 	CASE.CRN=#crn# AND SUB.CRN=CASE.CRN  AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID and  sub.crn= ca.crn
+				and SUB.ENTITY_TYPE_ID = ENTITY.ENTITY_TYPE_ID       AND SUB.IS_PRIMARY_SUB = 1) = 2 THEN sub.entity_type_id 
+			 
+			END  desc, upper(subject_name) asc,
+			<!--upper($sort$) $dir$, -->
+			SUB.SUBJECT_ID ASC) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+			
+		</select>
+
+		
+		
+		<!--Start BI-293 added by 6035037 -->
+		<select id="subjectDetailsForCRN" resultMap="subjectAList" parameterClass="java.util.HashMap">
+
+			select CCC.CRN CRN,decode(CCC.IS_SUBJ_LEVEL_SUBRPT_REQ,1,'true',0,'false','false') IS_SUBJ_LEVEL_SUBRPT_REQ,CS.ISIS_SUBJECT_ID isis_subject_id, 
+			CS.SUBJECT_ID SUBJECT_ID,CS.SUBJECT_NAME subjectName,CS.ENTITY_TYPE_ID ENTITY_TYPE_ID,CS.COUNTRY_ID COUNTRY_ID,
+			(select CCM.COUNTRY from CMS_COUNTRY_MASTER CCM where CCM.COUNTRY_MASTER_ID = CS.COUNTRY_ID)Country_Name,
+			(Select SUB_REPORT_CODE from CMS_SUBREPORT_TYPE_MASTER csrpt where csrpt.subreport_type_master_id =  CS.SUB_REPORT_TYPE_ID) subReportTypeId,
+			(select CSTM.SUB_REPORT from CMS_SUBREPORT_TYPE_MASTER CSTM where CSTM.SUBREPORT_TYPE_MASTER_ID = CS.SUB_REPORT_TYPE_ID)sub_report,
+			NVL(CS.SUBJECT_FEE,0) subject_fee, CA.currency_code currency_code, cs.UPDATED_BY
+			FROM CMS_CLIENTCASE CCC,CMS_SUBJECT CS , cms_accounts CA
+			 where  CCC.crn = #crn# and CCC.CRN = CS.CRN and CCC.IS_SUBJ_LEVEL_SUBRPT_REQ = 1 and CA.crn = ccc.crn
+			 ORDER BY cs.is_primary_sub DESC, upper(subjectName) asc 
+			
+		</select>
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<select id="crnDetailWithoutPagination" resultMap="caseDetail" parameterClass="java.util.HashMap">
+
+			SELECT 	CASE.CRN,CSM.DESCRIPTION,SUB.SUBJECT_ID,SUB.SUBJECT_NAME subjectName,SUB.IS_PRIMARY_SUB,SUB.ENTITY_TYPE_ID,
+			SUB.POSITION ,SUB.COUNTRY_ID , SUB.ADDRESS,SUB.OTHER_DETAILS,SUB.INDUSTRY_CODE,SUB.REPORT_SUBJECT_NAME,SUB.REPORT_ORDER,SUB.RE_IDS,SUB.UPDATED_BY,
+			to_char(SUB.UPDATED_ON,'yyyy-mm-dd HH24:MI:SS') UPDATED_ON,COUNT.COUNTRY,COUNT.COUNTRY_MASTER_ID,COUNT.CODE,ENTITY.ENTITY_NAME
+			FROM CMS_CLIENTCASE CASE,CMS_SUBJECT SUB ,  CMS_COUNTRY_MASTER COUNT,CMS_ENTITYTYPE_MASTER ENTITY,CMS_CASE_STATUS_MASTER CSM
+			WHERE 	CASE.CRN=#crn# AND SUB.CRN=CASE.CRN  AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID and SUB.ENTITY_TYPE_ID = ENTITY.ENTITY_TYPE_ID AND CASE.CASE_STATUS_ID = CSM.CASE_STATUS_ID
+			ORDER BY SUB.IS_PRIMARY_SUB DESC, upper(SUB.SUBJECT_NAME) ASC
+							
+		</select>
+
+		<!-- This Query is used to get total subject ocunt for a case. -->
+
+		<select id="getSubjectCountForCase" resultClass="java.lang.Integer">
+
+			SELECT count(*) "SUBJECTCOUNT" FROM CMS_CLIENTCASE CASE,CMS_SUBJECT SUB WHERE CASE.CRN=#crn# AND SUB.CRN=CASE.CRN
+			
+		</select>
+		
+		<!-- This Query is used to delete subjects for a case  from CMS_SUBJECT -->
+
+		<delete id="deleteSubject" parameterClass="java.util.List">
+			<!-- DELETE FROM CMS_SUBJECT WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_SUBJECT WHERE SUBJECT_ID in 
+			<iterate open="(" close=")" conjunction=",">
+			#subjectIDString[]#
+			</iterate>
+		</delete> 
+		
+
+       <!-- This Query is used to delete deactivated Risk details for a case  on subject edit Added By Saurabh Mittal -->
+  
+         <delete id="deleteOldRisksOnSubjectEdit" parameterClass="java.util.Map">
+			<!-- DELETE FROM CMS_SUBJECT WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_PROFILE WHERE CRN=#crn# AND SUBJECT_ID=#subjectId# AND
+			RISK_CODE in 
+			<iterate property="riskCodeList" open="(" close=")" conjunction=",">
+			#riskCodeList[]#
+			</iterate>
+		</delete> 
+
+
+		   <delete id="deleteCaseLevelAggr" parameterClass="java.util.Map">
+			<!-- DELETE FROM CMS_SUBJECT WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_AGGREGATION WHERE CRN=#crn# AND RISK_TYPE=1 AND
+			RISK_CATEGORY_ID in 
+			<iterate property="categoryList" open="(" close=")" conjunction=",">
+			#categoryList[]#
+			</iterate>
+		</delete>
+
+		
+		 <delete id="deleteSubLevelCategoryAggr" parameterClass="java.util.Map">
+			<!-- DELETE FROM CMS_SUBJECT WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_AGGREGATION WHERE CRN=#crn# AND RISK_TYPE=2 AND SUBJECT_ID=#subjectId# AND
+			RISK_CATEGORY_ID in 
+			<iterate property="categoryList" open="(" close=")" conjunction=",">
+			#categoryList[]#
+			</iterate>
+		</delete>
+
+		
+
+           <!-- This Query is used to delete deactivated Risk details for a case  on subject edit Added By Saurabh Mittal -->
+  
+         <delete id="deleteOldCaseRisksOnSubjectEdit" parameterClass="java.util.Map">
+			<!-- DELETE FROM CMS_SUBJECT WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_PROFILE WHERE CRN=#crn# AND RISK_TYPE=1 AND
+			RISK_CODE in 
+			<iterate property="riskCodeList" open="(" close=")" conjunction=",">
+			#riskCodeList[]#
+			</iterate>
+		</delete>
+
+
+		           <!-- This Query is used to delete deactivated Risk details for a case  on subject Add Added By Saurabh Mittal -->
+  
+         <delete id="deleteOldCaseRisksOnSubjectAdd" parameterClass="java.util.Map">
+			<!-- DELETE FROM CMS_SUBJECT WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_PROFILE WHERE CRN=#crn# AND RISK_TYPE=1 AND IS_RISK_MANDATORY=0 AND
+			RISK_CODE in 
+			<iterate property="riskCodeList" open="(" close=")" conjunction=",">
+			#riskCodeList[]#
+			</iterate>
+		</delete>
+
+
+		           <!-- This Query is used to delete deactivated Country for a case  on subject edit Added By Saurabh Mittal -->
+  
+         <delete id="deleteCaseHasCntryBrkDown" parameterClass="java.util.List">
+			<!-- DELETE FROM CMS_SUBJECT WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_PROFILE_HAS_CNTRY_BD WHERE
+			RISK_PROFILE_ID in 
+			<iterate open="(" close=")" conjunction=",">
+			#profileList[]#
+			</iterate>
+		</delete>
+
+		
+
+
+     <!-- This Query is used to delete deactivated Risk details for a case of has Country breakdown type  on subject edit-->
+  
+         <delete id="deleteOldRisksOnSubjectEditCntryBrkDown" parameterClass="java.util.Map">
+			<!-- DELETE FROM CMS_SUBJECT WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_PROFILE_HAS_CNTRY_BD WHERE CRN=#crn# AND SUBJECT_ID=#subjectId# AND
+			RISK_CODE in 
+			<iterate property="riskCodeList" open="(" close=")" conjunction=",">
+			#riskCodeList[]#
+			</iterate>
+		</delete> 
+
+
+     <!-- This Query is used to delete deactivated Risk details for a case of has Country breakdown type  on subject edit-->
+  
+         <update id="updateRisksOnCountryChange" parameterClass="java.util.Map">
+			<!-- DELETE FROM CMS_SUBJECT WHERE SUBJECT_ID in ($subjectIDString$) -->
+			UPDATE CMS_RISK_PROFILE_HAS_CNTRY_BD
+			SET COUNTRY_MASTER_ID = (select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#countryCode#)
+			WHERE CRN=#crn# AND SUBJECT_ID=#subjectId# AND
+			RISK_CODE in 
+			<iterate property="commonRiskCodeList" open="(" close=")" conjunction=",">
+			#commonRiskCodeList[]#
+			</iterate>
+		</update> 
+
+
+	<!-- This Query is used to delete risks associated to given subject for a case  from CMS_RISK_PROFILE SAURABH MITTAL -->
+
+		<delete id="deleteRisksAssociatedToSubject" parameterClass="java.util.List">
+			<!-- DELETE FROM CMS_SUBJECT WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_PROFILE WHERE SUBJECT_ID in 
+			<iterate open="(" close=")" conjunction=",">
+			#subjectIDString[]#
+			</iterate>
+			and risk_type=2
+		</delete> 
+
+			<!-- This Query is used to delete risks AGGREGATION associated to given subject for a case  from CMS_RISK_AGGREGATION SAURABH MITTAL -->
+
+		<delete id="deleteCategoryWiseRiskAggregationForSubject" parameterClass="java.util.List">
+			<!-- DELETE FROM CMS_RISK_AGGREGATION WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_AGGREGATION WHERE SUBJECT_ID in 
+			<iterate open="(" close=")" conjunction=",">
+			#subjectIDString[]#
+			</iterate>
+		</delete> 
+
+					<!-- This Query is used to delete risks AGGREGATION associated to given subject for a case  from CMS_RISK_AGGREGATION SAURABH MITTAL -->
+
+		<delete id="deleteISISCategoryWiseRiskAggregationForSubject" parameterClass="java.lang.Integer">
+			<!-- DELETE FROM CMS_RISK_AGGREGATION WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_AGGREGATION WHERE SUBJECT_ID=#subjectId#
+		</delete> 
+
+
+			<!-- This Query is used to delete risks AGGREGATION associated to given subject for a case  from CMS_RISK_EACH_SUBJECT_AGGRN SAURABH MITTAL -->
+
+		<delete id="deleteEachSubjectRiskAggregation" parameterClass="java.util.List">
+			<!-- DELETE FROM CMS_RISK_EACH_SUBJECT_AGGRN WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_EACH_SUBJECT_AGGRN WHERE SUBJECT_ID in 
+			<iterate open="(" close=")" conjunction=",">
+			#subjectIDString[]#
+			</iterate>
+		</delete> 
+
+					<!-- This Query is used to delete risks AGGREGATION associated to given subject for a case  from CMS_RISK_EACH_SUBJECT_AGGRN SAURABH MITTAL -->
+
+		<delete id="deleteISISEachSubjectRiskAggregation" parameterClass="java.lang.Integer">
+			<!-- DELETE FROM CMS_RISK_EACH_SUBJECT_AGGRN WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_EACH_SUBJECT_AGGRN WHERE SUBJECT_ID=#subjectId#
+		</delete> 
+
+       <!-- This Query is used to delete risks associated to given subject for a case  from CMS_RISK_PROFILE for ISIS Saurabh Mittal -->
+
+		<delete id="deleteIsIsRisksAssociatedToSubject" parameterClass="java.lang.Integer">
+			<!-- DELETE FROM CMS_SUBJECT WHERE SUBJECT_ID in ($subjectIDString$) -->
+			DELETE FROM CMS_RISK_PROFILE WHERE SUBJECT_ID=#subjectId# and risk_type=2
+		</delete> 
+
+					
+<!-- Added By Saurabh Mittal -->						
+
+		<select id="getRiskDetailsNeedToBeDelete" parameterClass="java.util.List" resultMap="deletedRisksAssociatedToSubjectMap">
+			SELECT DISTINCT CRN, SUBJECT_ID, RISK_CODE, IS_RISK_MANDATORY  FROM CMS_RISK_PROFILE WHERE SUBJECT_ID in 
+			<iterate open="(" close=")" conjunction=",">
+			#subjectIDString[]#
+			</iterate>
+			 and RISK_TYPE=2 and attribute_id is not null
+		</select> 
+
+		<!-- Added By Saurabh Mittal -->						
+
+		<select id="getCaseLevelRiskDetailsForDeletedSubjects" parameterClass="java.util.List" resultMap="deletedCaseRisksAssociatedToSubjectMap">
+			SELECT DISTINCT CRN, SUBJECT_ID, RISK_CODE, IS_RISK_MANDATORY  FROM CMS_RISK_PROFILE WHERE SUBJECT_ID in 
+			<iterate open="(" close=")" conjunction=",">
+			#subjectIDString[]#
+			</iterate>
+			 and RISK_TYPE=1 AND attribute_id is null
+		</select> 
+
+
+				<!-- Added By Saurabh Mittal -->						
+
+		<select id="getCaseLevelRiskDetailsWithoutCntryForDeletedSubjects" parameterClass="java.util.List" resultMap="deletedCaseRisksAssociatedToSubjectMap">
+			SELECT DISTINCT CRN, SUBJECT_ID, RISK_CODE, IS_RISK_MANDATORY  FROM CMS_RISK_PROFILE WHERE SUBJECT_ID in 
+			<iterate open="(" close=")" conjunction=",">
+			#subjectIDString[]#
+			</iterate>
+			 and RISK_TYPE=1 AND attribute_id is not null
+		</select> 
+
+		<!-- Added By Saurabh Mittal -->						
+
+		<select id="getISISCaseLevelRiskDetailsForDeletedSubjects" parameterClass="java.lang.Integer" resultMap="deletedCaseRisksAssociatedToSubjectMap">
+			SELECT DISTINCT CRN, SUBJECT_ID, RISK_CODE, IS_RISK_MANDATORY  FROM CMS_RISK_PROFILE WHERE SUBJECT_ID=#subjectId#
+			 and RISK_TYPE=1 AND attribute_id is null
+		</select> 
+
+    
+				<!-- Added By Saurabh Mittal -->						
+
+		<select id="getISISCaseLevelRiskDetailsWithoutCntryForDeletedSubjects" parameterClass="java.lang.Integer" resultMap="deletedCaseRisksAssociatedToSubjectMap">
+			SELECT DISTINCT CRN, SUBJECT_ID, RISK_CODE, IS_RISK_MANDATORY  FROM CMS_RISK_PROFILE WHERE SUBJECT_ID=#subjectId#
+			 and RISK_TYPE=1 AND attribute_id is not null
+		</select> 
+
+						<!-- Added By Saurabh Mittal -->						
+
+		<select id="getCaseLevelCategoryFromProfileForSubject" parameterClass="java.util.List" resultMap="deletedCategoryAssociatedToSubjectMap">
+			SELECT DISTINCT CRN, SUBJECT_ID, RISK_CATEGORY_ID FROM CMS_RISK_PROFILE WHERE SUBJECT_ID in 
+			<iterate open="(" close=")" conjunction=",">
+				#subjectIDString[]#
+			</iterate>
+			 and RISK_TYPE=1
+		</select> 
+
+						<!-- Added By Saurabh Mittal -->						
+
+		<select id="getISISCaseLevelCategoryFromProfileForSubject" parameterClass="java.lang.Integer" resultMap="deletedCategoryAssociatedToSubjectMap">
+			SELECT DISTINCT CRN, SUBJECT_ID, RISK_CATEGORY_ID FROM CMS_RISK_PROFILE WHERE SUBJECT_ID=#subjectId#
+			 and RISK_TYPE=1
+		</select> 
+
+	   	<select id="getISISRiskDetailsNeedToBeDelete" parameterClass="java.lang.Integer" resultMap="deletedRisksAssociatedToSubjectMap">
+			SELECT DISTINCT CRN, SUBJECT_ID, RISK_CODE, IS_RISK_MANDATORY  FROM CMS_RISK_PROFILE WHERE SUBJECT_ID=#subjectId# and risk_type=2 and attribute_id is not null
+		</select> 
+
+         <select id="getCntryBrkDownRiskDetailsNeedToBeDelete" parameterClass="java.util.List" resultMap="deletedCntryBrkDownRisksAssociatedToSubjectMap">
+			SELECT distinct crp.RISK_PROFILE_ID, crp.CRN, crp.SUBJECT_ID, crp.RISK_CODE, crphs.COUNTRY_MASTER_ID 
+			FROM CMS_RISK_PROFILE_HAS_CNTRY_BD crphs, CMS_RISK_PROFILE crp WHERE 
+			crp.RISK_PROFILE_ID = crphs.RISK_PROFILE_ID AND crp.RISK_TYPE=2 AND  crp.SUBJECT_ID in
+			<iterate open="(" close=")" conjunction=",">
+			#subjectIDString[]#
+			</iterate>
+			and crp.risk_type=2 and crp.attribute_id is null
+		</select> 
+
+		 <select id="getCntryBrkDownISISRiskDetailsNeedToBeDelete" parameterClass="java.lang.Integer" resultMap="deletedCntryBrkDownRisksAssociatedToSubjectMap">
+			SELECT distinct crp.RISK_PROFILE_ID, crp.CRN, crp.SUBJECT_ID, crp.RISK_CODE, crphs.COUNTRY_MASTER_ID 
+			FROM CMS_RISK_PROFILE_HAS_CNTRY_BD crphs, CMS_RISK_PROFILE crp WHERE 
+			crp.RISK_PROFILE_ID = crphs.RISK_PROFILE_ID AND crp.RISK_TYPE=2 AND crp.SUBJECT_ID=#subjectId# and risk_type=2 AND crp.attribute_id is null
+		</select> 
+
+<!-- End -->
+		<!-- This Query is used to delete subject level risk for a case  from CMS_RISK_PROFILE Saurabh Mittal -->
+
+		<delete id="deleteSubjectLevelCntryBrkDownRisk" parameterClass="com.worldcheck.atlas.vo.DeleteSubjectLevelRiskVO">
+			DELETE FROM CMS_RISK_PROFILE WHERE RISK_PROFILE_ID=#profileId#
+		</delete> 
+
+
+		
+		<!-- This Query is used to delete subject level risk countries entry for a case  from CMS_RISK_CNTRY_BRK_DOWN table Saurabh Mittal-->
+
+		<delete id="deleteSubjectLevelCntryBrkDownRiskCountry" parameterClass="com.worldcheck.atlas.vo.DeleteSubjectLevelRiskVO">
+			DELETE FROM CMS_RISK_PROFILE_HAS_CNTRY_BD WHERE RISK_PROFILE_ID=#profileId#
+		</delete> 
+		
+
+		<!-- This Query is used to delete subject level risk for a case  from CMS_RISK_PROFILE Saurabh Mittal -->
+
+		<delete id="deleteSubjectLevelRiskOldDetails" parameterClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			DELETE FROM CMS_RISK_PROFILE WHERE SUBJECT_ID = #subjectId#
+			AND RISK_CODE=#riskCode#
+		</delete> 
+		
+		<!-- This Query is used to get subjectID list for a case. -->
+
+		<select id="subjectIdList" resultClass="java.lang.String" parameterClass="java.lang.String">
+			
+			SELECT 	SUB.SUBJECT_ID FROM CMS_SUBJECT SUB WHERE SUB.CRN=#crn#
+			
+		</select>
+		
+		<!-- This Query is used to get subject industry code for a given subject ID. -->
+
+		<select id="subjectIndCode" resultClass="java.lang.String" parameterClass="java.lang.String">
+			
+			SELECT 	SUB.INDUSTRY_CODE FROM CMS_SUBJECT SUB WHERE SUB.SUBJECT_ID=#subId#
+			
+		</select>
+
+		<resultMap id="matchingSubjectListSubjectMap" class="com.worldcheck.atlas.vo.SubjectDetails">
+			<!-- <result property="subjectId" column="SUBJECT_ID"/> -->
+			<result property="subjectName" column="SUBJECT_NAME"/>
+			<result property="primarySub" column="IS_PRIMARY_SUB"/>
+			<!-- <result property="countryId" column="COUNTRY_ID"/> -->
+			<result property="countryVO" resultMap="Subject.countryMasterVO"/>
+		</resultMap>
+		
+		<resultMap id="matchingSubjectListCaseMap" class="com.worldcheck.atlas.vo.CaseDetails" groupBy="crn">
+			<result property="crn" column="CRN"/>
+			<result property="isLegacyData" column="ISLEGACYDATA"/>
+			<result property="subjectList" resultMap="Subject.matchingSubjectListSubjectMap"/>
+		</resultMap>
+		
+		<!-- This Query is used to get all matching subject crn list for given subject name(Used for associate suject pop-up) -->
+		
+		<select id="matchingSubjectList" resultMap="matchingSubjectListCaseMap" parameterClass="java.util.HashMap">
+			
+			<!-- SELECT SUB.CRN,SUB.SUBJECT_ID,SUB.SUBJECT_NAME,SUB.IS_PRIMARY_SUB,SUB.COUNTRY_ID,COUNTRY.COUNTRY,COUNTRY.COUNTRY_MASTER_ID,COUNTRY.CODE FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNTRY  WHERE CRN IN (SELECT CRN FROM (SELECT 	a.*, ROWNUM rn FROM (SELECT SUB.CRN FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNTRY  WHERE CRN IN (SELECT CRN FROM CMS_SUBJECT WHERE UPPER(SUBJECT_NAME) LIKE UPPER('%'||#subjectName#||'%')) AND COUNTRY.COUNTRY_MASTER_ID=SUB.COUNTRY_ID AND SUB.CRN NOT IN (SELECT CRN FROM CMS_ASC_SUBJECT WHERE SUBJECT_ID=#subjectID#) AND SUB.CRN NOT IN (#crn#) GROUP BY CRN) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#) AND 
+			COUNTRY.COUNTRY_MASTER_ID=SUB.COUNTRY_ID  ORDER BY TO_NUMBER(SUBSTR(SUB.CRN,1,INSTR(SUB.CRN, '\')-1)) ASC -->
+			  SELECT SUB.CRN, 0 as ISLEGACYDATA,SUB.SUBJECT_NAME,SUB.IS_PRIMARY_SUB,
+			COUNTRY.COUNTRY,
+			COUNTRY.COUNTRY_MASTER_ID,COUNTRY.CODE FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNTRY  
+			WHERE CRN IN(
+                                     
+		   SELECT CRN FROM (SELECT 	a.*, ROWNUM rn FROM (select p.crn from (SELECT sub.crn FROM CMS_SUBJECT SUB  WHERE SUB.CRN IN ((SELECT SUB.CRN FROM CMS_SUBJECT SUB,CMS_CLIENTCASE CLIENTCASE WHERE UPPER(SUBJECT_NAME)
+			LIKE UPPER('%'||#subjectName#||'%') AND SUB.CRN=CLIENTCASE.CRN AND 
+                        CLIENTCASE.CASE_STATUS_ID!=(SELECT CASE_STATUS_ID FROM CMS_CASE_STATUS_MASTER WHERE UPPER(DESCRIPTION) ='CANCELLED')) MINUS (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+			SUBJECT_ID=#subjectID#)) AND SUB.CRN <![CDATA[ <> ]]> #crn# GROUP BY CRN
+                        
+            UNION
+                        
+            SELECT sub.crn FROM SUBJECT_MV SUB  WHERE CRN IN ((SELECT SUB.CRN FROM SUBJECT_MV SUB,CLIENTCASE_MV CASE WHERE UPPER(SUBJECTNAME)
+			LIKE UPPER('%'||#subjectName#||'%') AND SUB.CRN=CASE.CRN AND 
+                        CASE.STATUSCODE!=(SELECT STATUS_CODE FROM CMS_CASE_STATUS_MASTER WHERE UPPER(DESCRIPTION) ='CANCELLED')) MINUS (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+			SUBJECT_ID=#subjectID#)) AND SUB.CRN <![CDATA[ <> ]]> #crn# GROUP BY CRN) p) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start# ) AND COUNTRY.COUNTRY_MASTER_ID=SUB.COUNTRY_ID
+                        
+                        UNION
+                        
+                        SELECT SUB.CRN,1 as ISLEGACYDATA,SUB.SUBJECTNAME as SUBJECT_NAME,SUB.ISPRIMARYSUB as IS_PRIMARY_SUB,
+			COUNTRY.COUNTRY,
+			COUNTRY.COUNTRY_MASTER_ID,COUNTRY.CODE FROM SUBJECT_MV SUB,CMS_COUNTRY_MASTER COUNTRY  
+			WHERE CRN IN 
+                        
+             (
+                                     
+		   SELECT CRN FROM (SELECT 	a.*, ROWNUM rn FROM (select p.crn from (SELECT sub.crn FROM CMS_SUBJECT SUB  WHERE SUB.CRN IN ((SELECT SUB.CRN FROM CMS_SUBJECT SUB,CMS_CLIENTCASE CLIENTCASE WHERE UPPER(SUBJECT_NAME)
+			LIKE UPPER('%'||#subjectName#||'%') AND SUB.CRN=CLIENTCASE.CRN AND 
+                        CLIENTCASE.CASE_STATUS_ID!=(SELECT CASE_STATUS_ID FROM CMS_CASE_STATUS_MASTER WHERE UPPER(DESCRIPTION) ='CANCELLED')) MINUS (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+			SUBJECT_ID=#subjectID#)) AND SUB.CRN <![CDATA[ <> ]]> #crn# GROUP BY CRN
+                        
+            UNION
+                        
+            SELECT sub.crn FROM SUBJECT_MV SUB  WHERE CRN IN ((SELECT SUB.CRN FROM SUBJECT_MV SUB,CLIENTCASE_MV CASE WHERE UPPER(SUBJECTNAME)
+			LIKE UPPER('%'||#subjectName#||'%') AND SUB.CRN=CASE.CRN AND 
+                        CASE.STATUSCODE!=(SELECT STATUS_CODE FROM CMS_CASE_STATUS_MASTER WHERE UPPER(DESCRIPTION) ='CANCELLED')) MINUS (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+			SUBJECT_ID=#subjectID#)) AND SUB.CRN <![CDATA[ <> ]]> #crn# GROUP BY CRN) p) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start# ) AND COUNTRY.CODE=SUB.COUNTRYID
+
+		</select>
+
+		<!-- This Query is used to get all matching subject crn list for given subject name for subject add section (Used for associate suject pop-up) -->
+		
+		<select id="matchingSubjectListForAddSubject" resultMap="matchingSubjectListCaseMap" parameterClass="java.util.HashMap">
+			
+			<!-- SELECT SUB.CRN,SUB.SUBJECT_ID,SUB.SUBJECT_NAME,SUB.IS_PRIMARY_SUB,SUB.COUNTRY_ID,COUNTRY.COUNTRY,COUNTRY.COUNTRY_MASTER_ID,COUNTRY.CODE FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNTRY  WHERE CRN IN (SELECT SUB.CRN FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNTRY  WHERE CRN IN (SELECT CRN FROM CMS_SUBJECT WHERE UPPER(SUBJECT_NAME) LIKE UPPER('%'||#subjectName#||'%')) AND COUNTRY.COUNTRY_MASTER_ID=SUB.COUNTRY_ID AND SUB.CRN NOT IN (SELECT CRN FROM CMS_ASC_SUBJECT WHERE SUBJECT_ID=#subjectID#) AND SUB.CRN NOT IN (#crn#) GROUP BY CRN) AND 
+			COUNTRY.COUNTRY_MASTER_ID=SUB.COUNTRY_ID  ORDER BY TO_NUMBER(SUBSTR(SUB.CRN,1,INSTR(SUB.CRN, '\')-1)) ASC -->
+
+			select a.* from (
+			SELECT SUB.CRN,0 as ISLEGACYDATA,SUB.SUBJECT_NAME,SUB.IS_PRIMARY_SUB,
+			COUNTRY.COUNTRY,
+			COUNTRY.COUNTRY_MASTER_ID,COUNTRY.CODE FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNTRY  
+			WHERE CRN IN (SELECT sub.crn FROM CMS_SUBJECT SUB  WHERE SUB.CRN IN(((SELECT SUB.CRN FROM CMS_SUBJECT SUB,CMS_CLIENTCASE CLIENTCASE WHERE UPPER(SUBJECT_NAME)
+			LIKE UPPER('%'||#subjectName#||'%') AND SUB.CRN=CLIENTCASE.CRN AND 
+                        CLIENTCASE.CASE_STATUS_ID!=(SELECT CASE_STATUS_ID FROM CMS_CASE_STATUS_MASTER WHERE UPPER(DESCRIPTION) ='CANCELLED') ) MINUS (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+			SUBJECT_ID=#subjectID#))) AND SUB.CRN <![CDATA[ <> ]]> #crn# GROUP BY CRN) AND 
+			COUNTRY.COUNTRY_MASTER_ID=SUB.COUNTRY_ID 
+
+			UNION
+
+			SELECT SUB.CRN,1 as ISLEGACYDATA,SUB.SUBJECTNAME as SUBJECT_NAME,SUB.ISPRIMARYSUB as IS_PRIMARY_SUB,
+			COUNTRY.COUNTRY,
+			COUNTRY.COUNTRY_MASTER_ID,COUNTRY.CODE FROM SUBJECT@LEGACY SUB,CMS_COUNTRY_MASTER COUNTRY  
+			WHERE CRN IN (SELECT sub.crn FROM SUBJECT_MV SUB  WHERE SUB.CRN IN (((SELECT SUB.CRN FROM SUBJECT_MV SUB,CLIENTCASE_MV CASE WHERE UPPER(SUBJECTNAME)
+			LIKE UPPER('%'||#subjectName#||'%') AND SUB.CRN=CASE.CRN AND 
+                        CASE.STATUSCODE!=(SELECT STATUS_CODE FROM CMS_CASE_STATUS_MASTER WHERE UPPER(DESCRIPTION) ='CANCELLED')) MINUS (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+			SUBJECT_ID=#subjectID#))) AND SUB.CRN <![CDATA[ <> ]]> #crn#   GROUP BY CRN)
+			AND COUNTRY.CODE=SUB.COUNTRYID  
+
+			) a ORDER BY TO_NUMBER(SUBSTR(a.CRN,1,INSTR(a.CRN, '\')-1)) ASC
+			
+		</select>
+		
+		<!-- This Query is used to insert associate cases for a subject to CMS_ASC_SUBJECT -->
+			
+		<insert id="insertAssCaseList" parameterClass="java.util.HashMap">
+			<selectKey resultClass="int" type="pre" keyProperty="ascSubjectID">
+				SELECT CMS_ASSOSUBJECT_SEQ.NEXTVAL AS VALUE FROM DUAL
+		   </selectKey>
+			insert into CMS_ASC_SUBJECT (
+				ASC_SUBJECT_ID,
+				CRN,
+				SUBJECT_ID,
+				IS_LEGACY,
+				UPDATED_BY,
+				UPDATED_ON
+			)values (
+				#ascSubjectID#,
+				 #crn#,
+				#subjectID#,
+				#isLegacy#,
+				#currentUser#,
+				SYSDATE
+			)
+		
+		</insert>
+  		
+
+ <!-- Added By Saurabh Mittal -->
+
+	   	<insert id="associateCountryBreakDownCaseWithRisk" parameterClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			
+				<selectKey resultClass="long" type="pre" keyProperty="countryBrkDownId">
+				   SELECT CMS_RISK_PROFILE_HAS_CNTRYSEQ.NEXTVAL AS VALUE FROM DUAL
+				</selectKey>
+			
+			INSERT INTO CMS_RISK_PROFILE_HAS_CNTRY_BD (
+			CNTRY_BD_ID,
+			RISK_PROFILE_ID,
+			ATTRIBUTE_ID,
+			ATTRIBUTE_VALUE,
+			COUNTRY_MASTER_ID,
+			UPDATEDON	
+			)values
+			(
+			#countryBrkDownId#,
+			#profileId#,
+			#attributeId#,
+			#attributeValue#,
+			(select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#countryCode#),
+			sysdate
+			)       
+	   </insert>
+
+ <!-- End -->
+
+     <update id="updateCountryBreakDownCaseWithRisk" parameterClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			
+			
+			update CMS_RISK_PROFILE_HAS_CNTRY_BD SET
+			COUNTRY_MASTER_ID=(select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#countryCode#),
+			UPDATEDON = sysdate
+			WHERE SUBJECT_ID=#subjectId#
+			AND CRN = #crn#	
+			AND RISK_CODE=#riskCode#
+	   </update>
+
+	    
+         <delete id="deleteOldCountryOnUpdateSubHasCntryBrkdown" parameterClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			
+			
+			delete from CMS_RISK_PROFILE_HAS_CNTRY_BD 
+			WHERE SUBJECT_ID=#subjectId#
+			AND CRN = #crn#	
+			AND RISK_CODE = #riskCode#
+	   </delete>
+
+
+<!-- Added By Saurabh Mittal -->
+
+	   	<insert id="associateSubjectLevelRisk" parameterClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			
+				<selectKey resultClass="long" type="pre" keyProperty="profileId">
+				   SELECT CMS_RISK_PROFILE_SEQ.NEXTVAL AS VALUE FROM DUAL
+				</selectKey>
+			
+			INSERT INTO CMS_RISK_PROFILE (
+			RISK_PROFILE_ID,
+			RISK_CATEGORY_ID,
+			RISK_CODE,
+			RISK_TYPE,
+			CRN,
+			SUBJECT_ID,
+			ATTRIBUTE_ID,
+			ATTRIBUTE_VALUE,
+			IS_RISK_MANDATORY,
+			IS_RISK_APPLIED,
+			VISIBLE_TO_CLIENT,
+			UPDATEDON	
+			)values
+			(
+			#profileId#,
+			#riskCategoryId#,
+			#riskCode#,
+			#riskType#,
+			#crn#,
+			#subjectId#,
+			#attributeId#,
+			#attributeValue#,
+			#isRiskMandatory#,
+			#isRiskApplied#,
+			#visibleToClient#,
+			sysdate
+			)       
+	   </insert>
+
+
+
+
+ 
+<!-- Added By Saurabh Mittal -->
+
+	   	<insert id="associateSubjectLevelRiskCntryBrkdown" parameterClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			
+				<selectKey resultClass="long" type="pre" keyProperty="countryBrkDownId">
+				   SELECT CMS_RISK_PROFILE_HAS_CNTRYSEQ.NEXTVAL AS VALUE FROM DUAL
+				</selectKey>
+			
+			INSERT INTO CMS_RISK_PROFILE_HAS_CNTRY_BD (
+			CNTRY_BD_ID,
+			RISK_PROFILE_ID,
+			ATTRIBUTE_ID,
+			ATTRIBUTE_VALUE,
+			COUNTRY_MASTER_ID,
+			UPDATEDON	
+			)values
+			(
+			#countryBrkDownId#,
+			#profileId#,
+			#attributeId#,
+			#attributeValue#,
+			(select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#countryCode#),
+			sysdate
+			)       
+	   </insert>
+
+ 	   <select id="getAttributeValueForCateogry" parameterClass="java.lang.Long" resultMap="categoryAttributeValueMap">
+	   SELECT  att_map.attribute_id,val_map.Default_Value value FROM cms_risk_category_attr_map att_map,
+			 CMS_RISK_ATTR_DEFAULT_VAL_MAP val_map where val_map.Attribute_ID = att_map.attribute_id
+			and att_map.risk_category_id=#riskCategoryId#
+	   </select>
+
+   <!-- Added By Saurabh Mittal --> 
+	   
+   <insert id="associateSubjectLevelRiskHistory" parameterClass="com.worldcheck.atlas.vo.RiskProfileHistoryVO">
+		
+	<selectKey resultClass="long" type="pre" keyProperty="historyId">
+       SELECT CMS_RISK_PROFILE_HISTORY_SEQ.NEXTVAL AS VALUE FROM DUAL
+    </selectKey>
+		
+		INSERT INTO CMS_RISK_PROFILE_HISTORY (
+		HISTORY_ID,
+		RISK_CATEGORY_ID,
+		RISK_CODE,
+		CRN,
+		NEW_VALUE,
+		ACTION,
+		TASK,
+		SUBJECT_ID,
+		COUNTRY_MASTER_ID,
+		UPDATEDON
+		)values
+		(
+		#historyId#,
+		#riskCategoryId#,
+		#riskCode#,
+		#crn#,
+		#newValue#,
+		#action#,
+		#task#,
+		#subjectId#,
+		(select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#countryCode#),
+		sysdate
+		)       
+   </insert>
+
+<!-- Added By Saurabh Mittal -->
+
+      <insert id="associateSubjectLevelDeleteRiskHistory" parameterClass="com.worldcheck.atlas.vo.RiskProfileHistoryVO">
+		
+	<selectKey resultClass="long" type="pre" keyProperty="historyId">
+       SELECT CMS_RISK_PROFILE_HISTORY_SEQ.NEXTVAL AS VALUE FROM DUAL
+    </selectKey>
+		
+		INSERT INTO CMS_RISK_PROFILE_HISTORY (
+		HISTORY_ID,
+		RISK_CODE,
+		CRN,
+		ACTION,
+		TASK,
+		SUBJECT_ID,
+		COUNTRY_MASTER_ID,
+		UPDATEDON
+		)values
+		(
+		#historyId#,
+		#riskCode#,
+		#crn#,
+		#action#,
+		#task#,
+		#subjectId#,
+		(select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#countryCode#),
+		sysdate
+		)       
+   </insert>
+      
+
+<!-- Added By Saurabh Mittal -->
+
+ <insert id="associateDeleteSubjectRiskHistory" parameterClass="com.worldcheck.atlas.vo.RiskProfileHistoryVO">
+		
+	<selectKey resultClass="long" type="pre" keyProperty="historyId">
+       SELECT CMS_RISK_PROFILE_HISTORY_SEQ.NEXTVAL AS VALUE FROM DUAL
+    </selectKey>
+		
+		INSERT INTO CMS_RISK_PROFILE_HISTORY (
+		HISTORY_ID,
+		RISK_CODE,
+		CRN,
+		ACTION,
+		TASK,
+		SUBJECT_ID,
+		COUNTRY_MASTER_ID,
+		UPDATEDON
+		)values
+		(
+		#historyId#,
+		#riskCode#,
+		#crn#,
+		#action#,
+		#task#,
+		#subjectId#,
+		#countryMasterId#,
+		sysdate
+		)       
+   </insert>
+
+			
+		<!-- This Query is used to update subject industries for case -->
+  	
+		<update id="updateSubInd" parameterClass="java.util.HashMap">
+			  UPDATE 
+					CMS_SUBJECT
+
+			  SET
+									
+					CMS_SUBJECT.INDUSTRY_CODE = #industryCode# ,
+					CMS_SUBJECT.UPDATED_BY = #currentUser# ,
+					CMS_SUBJECT.UPDATED_ON = SYSDATE 
+					
+			  WHERE
+					CMS_SUBJECT.SUBJECT_ID = #subjectID#
+		</update>
+		
+		<!-- This query is used to delete subject risk for a subejct -->
+
+		<delete id="deleteSubRisk" parameterClass="java.lang.String">
+			DELETE FROM CMS_SUBJECT_RISK WHERE SUBJECT_ID=#subjectID#
+		</delete>
+		
+		<!-- This query is used to insert subject risk to CMS_SUBJECT_RISK -->
+			
+		<insert id="insertSubRisk" parameterClass="java.util.HashMap">
+			 <selectKey resultClass="int" type="pre" keyProperty="subjectRiskId">
+				SELECT CMS_SUBJECT_RISK_SEQ.NEXTVAL AS VALUE FROM DUAL
+		   </selectKey>
+			insert into CMS_SUBJECT_RISK (
+				SUBJECT_RISK_ID,
+				SUBJECT_ID,
+				RISK_CODE,
+				UPDATED_BY,
+				UPDATED_ON
+			)values (
+				 #subjectRiskId#,
+				#subjectID#,
+				#riskID#,
+				#currentUser#,
+				SYSDATE
+			)
+		</insert>
+		
+		<!-- This query is used to delete subject res for a subject -->
+
+		<delete id="deleteResForSub" parameterClass="java.lang.String">
+			DELETE RE_IDS FROM CMS_SUBJECT_RE WHERE SUBJECT_ID=#subjectId#
+		</delete> 
+		
+		<!-- This query is used to inser subject res for a subject -->
+
+		<insert id="insertResForSub" parameterClass="java.util.HashMap">
+			insert into CMS_ASC_SUBJECT (
+				CRN,
+				SUBJECT_ID,
+				UPDATED_BY,
+				UPDATED_ON
+			)values (
+				 #crn#,
+				#subjectId#,
+				#updatedBy#,
+				#updatedOn#
+			)
+		</insert>
+  	
+  		<!-- This query is used to get subject detail for a given subject -->
+
+		<select id="subjectDetail" resultMap="subjectDet" parameterClass="java.lang.Integer">
+			
+			<!-- SELECT 	SUB.CRN,SUB.SUBJECT_ID,SUB.SUBJECT_NAME,SUB.IS_PRIMARY_SUB,SUB.ENTITY_TYPE_ID,
+			SUB.POSITION ,SUB.COUNTRY_ID , SUB.ADDRESS,SUB.OTHER_DETAILS,SUB.UPDATED_BY,
+			to_char(SUB.UPDATED_ON,'yyyy-mm-dd HH24:MI:SS')  UPDATED_ON,SUB.RE_IDS,COUNT.COUNTRY,COUNT.COUNTRY_MASTER_ID,COUNT.CODE,COUNT.IS_ENG_COUNTRY,ENTITY.ENTITY_NAME,ENTITY.ENTITY_TYPE_ID 
+			FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNT,CMS_ENTITYTYPE_MASTER ENTITY,CMS_INDUSTRY_MASTER IND 
+			WHERE 	SUB.SUBJECT_ID=#subId# AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID and SUB.ENTITY_TYPE_ID = ENTITY.ENTITY_TYPE_ID -->
+
+			SELECT 	SUB.CRN,CASE.IS_ISIS,SUB.SUBJECT_ID,SUB.SUBJECT_NAME,SUB.IS_PRIMARY_SUB,SUB.ENTITY_TYPE_ID,
+			SUB.POSITION ,SUB.COUNTRY_ID , SUB.ADDRESS,SUB.OTHER_DETAILS,SUB.UPDATED_BY,SUB.ISIS_SUBJECT_ID,
+			to_char(SUB.UPDATED_ON,'yyyy-mm-dd HH24:MI:SS')  UPDATED_ON,SUB.RE_IDS,COUNT.COUNTRY,COUNT.COUNTRY_MASTER_ID,COUNT.CODE,COUNT.IS_ENG_COUNTRY,ENTITY.ENTITY_NAME,ENTITY.ENTITY_TYPE_ID,CASE.IS_SUBJ_LEVEL_SUBRPT_REQ,
+			(select srpt.sub_report from cms_SUBREPORT_TYPE_MASTER srpt where srpt.subreport_type_master_id =  SUB.SUB_REPORT_TYPE_ID ) sub_report_Desc,SUB.SUB_REPORT_TYPE_ID,
+			(Select rtm.report_type from cms_report_type_master rtm where rtm.report_type_master_id = CASE.report_type_id)  reportType,NVL(SUB.SUBJECT_FEE,0) subject_fee
+			FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNT,CMS_ENTITYTYPE_MASTER ENTITY,CMS_CLIENTCASE CASE
+			WHERE 	SUB.SUBJECT_ID=#subId# AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID and SUB.ENTITY_TYPE_ID = ENTITY.ENTITY_TYPE_ID 
+			AND SUB.CRN=CASE.CRN
+
+
+
+		</select>
+
+		<select id="isisSubjectDetail" resultMap="subjectDet" parameterClass="java.lang.String">
+			
+			<!-- SELECT 	SUB.CRN,SUB.SUBJECT_ID,SUB.SUBJECT_NAME,SUB.IS_PRIMARY_SUB,SUB.ENTITY_TYPE_ID,
+			SUB.POSITION ,SUB.COUNTRY_ID , SUB.ADDRESS,SUB.OTHER_DETAILS,SUB.UPDATED_BY,
+			to_char(SUB.UPDATED_ON,'yyyy-mm-dd HH24:MI:SS')  UPDATED_ON,SUB.RE_IDS,COUNT.COUNTRY,COUNT.COUNTRY_MASTER_ID,COUNT.CODE,COUNT.IS_ENG_COUNTRY,ENTITY.ENTITY_NAME,ENTITY.ENTITY_TYPE_ID 
+			FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNT,CMS_ENTITYTYPE_MASTER ENTITY,CMS_INDUSTRY_MASTER IND 
+			WHERE 	SUB.SUBJECT_ID=#subId# AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID and SUB.ENTITY_TYPE_ID = ENTITY.ENTITY_TYPE_ID -->
+
+			SELECT 	SUB.CRN,CASE.IS_ISIS,SUB.SUBJECT_ID,SUB.SUBJECT_NAME,SUB.IS_PRIMARY_SUB,SUB.ENTITY_TYPE_ID,
+			SUB.POSITION ,SUB.COUNTRY_ID , SUB.ADDRESS,SUB.OTHER_DETAILS,SUB.UPDATED_BY,SUB.ISIS_SUBJECT_ID,
+			to_char(SUB.UPDATED_ON,'yyyy-mm-dd HH24:MI:SS')  UPDATED_ON,SUB.RE_IDS,COUNT.COUNTRY,COUNT.COUNTRY_MASTER_ID,COUNT.CODE,COUNT.IS_ENG_COUNTRY,ENTITY.ENTITY_NAME,ENTITY.ENTITY_TYPE_ID,
+			(select srpt.sub_report from cms_SUBREPORT_TYPE_MASTER srpt where srpt.subreport_type_master_id =  SUB.SUB_REPORT_TYPE_ID ) sub_report_Desc,SUB.SUB_REPORT_TYPE_ID, CASE.IS_SUBJ_LEVEL_SUBRPT_REQ,
+			(Select rtm.report_type from cms_report_type_master rtm where rtm.report_type_master_id = CASE.report_type_id)  reportType,NVL(SUB.SUBJECT_FEE,0) subject_fee
+			FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNT,CMS_ENTITYTYPE_MASTER ENTITY,CMS_CLIENTCASE CASE
+			WHERE 	SUB.ISIS_SUBJECT_ID=#subId# AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID and SUB.ENTITY_TYPE_ID = ENTITY.ENTITY_TYPE_ID 
+			AND SUB.CRN=CASE.CRN
+
+
+
+		</select>
+		
+		<!-- This query is used to get subject Res for a given subject -->
+
+		<select id="getReList" resultClass="java.lang.String" parameterClass="java.lang.String">
+			SELECT RE_IDS FROM CMS_SUBJECT WHERE SUBJECT_ID=#SUBJECTID#
+		</select>
+		
+		<!-- This query is sued to get countryIdName map -->
+		
+		<select id="countryIdName" resultMap="countryMasterVO" parameterClass="java.lang.String">
+			SELECT MASTER.COUNTRY_MASTER_ID, MASTER.COUNTRY  
+			 FROM    CMS_COUNTRY_MASTER MASTER , CMS_SUBJECT SUB 
+			 WHERE SUB.SUBJECT_ID=#subId# AND SUB.COUNTRY_ID=MASTER.COUNTRY_MASTER_ID
+		</select>
+		
+		<!-- This query is used to get subject risk. -->
+		
+		<select id="subjectRiskList" resultMap="risksMasterVO" parameterClass="java.lang.String">
+			SELECT A.RISK,A.RISK_CODE,DECODE(B.RISK_CODE,A.RISK_CODE,'1','0') "RISK_STATUS" 
+			FROM CMS_RISK_MASTER A, CMS_SUBJECT_RISK B WHERE A.RISK_CODE=B.RISK_CODE(+) AND B.SUBJECT_ID(+)=#subId#
+		</select>
+		
+		<!--  This query is used to get re id, name map.-->
+
+		<select id="reMap" resultMap="reMasterVO" parameterClass="java.lang.String">
+				SELECT RE_MASTER_ID,NAME FROM CMS_RE_MASTER
+		</select>
+
+		<resultMap id="reBITeamMasterVO" class="com.worldcheck.atlas.vo.masters.ResearchElementMasterVO">
+			<result property="researchElementcode" column="RE_MASTER_ID"/>
+			<result property="biTeam" column="BI_TEAM"/>
+		</resultMap>
+
+		
+
+		<select id="reBITeamMap" resultMap="reBITeamMasterVO" parameterClass="java.lang.String">
+				SELECT RE_MASTER_ID,BI_TEAM FROM CMS_RE_MASTER
+		</select>
+		
+		<!-- this query is used to get all associate cases for a suject from CMS_ASC_SUBJECT -->
+
+		<select id="assCaseList"  resultMap="caseDetails" parameterClass="java.util.HashMap">
+				<!-- SELECT * FROM (SELECT 	a.*, ROWNUM rn FROM (SELECT CRN,SUBJECT_NAME FROM CMS_SUBJECT WHERE CRN IN (SELECT CRN FROM CMS_ASC_SUBJECT WHERE SUBJECT_ID=#subjectID#) AND IS_PRIMARY_SUB=1) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start# ORDER BY TO_NUMBER(SUBSTR(CRN,1,INSTR(CRN, '\')-1)) ASC -->
+				    
+				SELECT * FROM (SELECT 	a.*, ROWNUM rn FROM (
+				SELECT CRN,SUBJECT_NAME,0 as IS_LEGACY FROM CMS_SUBJECT WHERE CRN IN (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+				SUBJECT_ID=#subjectID# AND IS_LEGACY=0) AND IS_PRIMARY_SUB=1
+				UNION
+				SELECT CRN,SUBJECTNAME,1 as IS_LEGACY FROM SUBJECT_MV WHERE CRN IN (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+				SUBJECT_ID=#subjectID# AND IS_LEGACY=1) AND ISPRIMARYSUB=1 )
+				a WHERE ROWNUM  <![CDATA[ <= ]]> #limit#) 
+				WHERE rn  <![CDATA[ >= ]]> #start# ORDER BY TO_NUMBER(SUBSTR(CRN,1,INSTR(CRN, '\')-1)) ASC
+		</select>
+		
+		<!--  This query is sused to for validation of subject and team(Used when user delete a subject)-->
+
+		 <select id="subjectValidation"  resultMap="teamDetail" parameterClass="java.util.Map">
+			SELECT DISTINCT A.TEAM_ID,B.TEAM_TYPE FROM CMS_SUB_TEAM_RE_MAP A,CMS_TEAM_TYPE B,CMS_TEAM_DETAILS C WHERE A.CRN=#crn# AND A.SUBJECT_ID=#subjectID#  
+			 AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID <![CDATA[ <> ]]> #subjectID# AND CRN=#crn#) 
+			 AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_TEAM_DETAILS WHERE TEAM_TYPE_ID =(SELECT TEAM_TYPE_ID FROM CMS_TEAM_TYPE WHERE upper(TEAM_TYPE)='SUPPORTING - BI'))
+			 AND A.TEAM_ID=C.TEAM_ID AND B.TEAM_TYPE_ID=C.TEAM_TYPE_ID
+		</select> 
+
+		<select id="subjectValidationForBI"  resultMap="teamDetail" parameterClass="java.util.Map">
+			SELECT DISTINCT A.TEAM_ID,B.TEAM_TYPE FROM CMS_SUB_TEAM_RE_MAP A,CMS_TEAM_TYPE B,CMS_TEAM_DETAILS C WHERE A.CRN=#crn# AND A.SUBJECT_ID=#subjectID#  
+			 AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID <![CDATA[ <> ]]> #subjectID# AND CRN=#crn#) 
+			 AND A.TEAM_ID IN (SELECT TEAM_ID FROM CMS_TEAM_DETAILS WHERE TEAM_TYPE_ID =(SELECT TEAM_TYPE_ID FROM CMS_TEAM_TYPE WHERE upper(TEAM_TYPE)='SUPPORTING - BI'))
+			 AND A.TEAM_ID=C.TEAM_ID AND B.TEAM_TYPE_ID=C.TEAM_TYPE_ID
+		</select> 
+
+		<select id="updateSubjectREValidation"  resultClass="com.worldcheck.atlas.vo.report.TeamDetailsVO" parameterClass="java.util.Map">
+			SELECT decode(team_type,   'Supporting - Internal',   CONCAT(CONCAT('Supporting 
+			',   rownum),   ' (Internal)'),   'Supporting - BI',   CONCAT(CONCAT('Supporting ',   rownum),   ' (BI)'),   'Supporting - Vendor',   CONCAT(CONCAT('Supporting ',   rownum),   ' (Vendor)'),   team_type) teamType,
+			team_id teamid
+			FROM
+			(SELECT DISTINCT A.TEAM_ID,B.TEAM_TYPE ,B.team_type_id FROM CMS_SUB_TEAM_RE_MAP A,CMS_TEAM_TYPE B,CMS_TEAM_DETAILS C WHERE A.CRN=#crn# AND A.SUBJECT_ID=#subjectID#  AND A.RE_ID IN ($re_Ids$)
+			AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID <![CDATA[ <> ]]> #subjectID# AND CRN=#crn#)  
+			AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID = #subjectID# AND CRN=#crn# AND RE_ID  NOT IN ($re_Ids$)) 
+			AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_TEAM_DETAILS WHERE TEAM_TYPE_ID =(SELECT TEAM_TYPE_ID FROM CMS_TEAM_TYPE WHERE upper(TEAM_TYPE)='SUPPORTING - BI') )
+			AND A.TEAM_ID=C.TEAM_ID AND B.TEAM_TYPE_ID=C.TEAM_TYPE_ID
+			ORDER BY B.team_type_id desc)
+		</select> 
+
+		<select id="updateSubjectBIREValidation"  resultMap="teamDetail" parameterClass="java.util.Map">
+			SELECT DISTINCT A.TEAM_ID,B.TEAM_TYPE FROM CMS_SUB_TEAM_RE_MAP A,CMS_TEAM_TYPE B,CMS_TEAM_DETAILS C WHERE A.CRN=#crn# AND A.SUBJECT_ID=#subjectID#  AND A.RE_ID IN ($re_Ids$)
+			 AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID <![CDATA[ <> ]]> #subjectID# AND CRN=#crn#)  
+			 AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID = #subjectID# AND CRN=#crn# AND RE_ID  NOT IN ($re_Ids$)) 
+			 AND A.TEAM_ID IN (SELECT TEAM_ID FROM CMS_TEAM_DETAILS WHERE TEAM_TYPE_ID =(SELECT TEAM_TYPE_ID FROM CMS_TEAM_TYPE WHERE upper(TEAM_TYPE)='SUPPORTING - BI') )
+			 AND A.TEAM_ID=C.TEAM_ID AND B.TEAM_TYPE_ID=C.TEAM_TYPE_ID
+		</select> 
+		
+		<!-- This query is used to get primasry subject id for a case.-->
+
+		<select id="primarySubj"  resultClass="java.lang.Integer" parameterClass="java.lang.String">
+			SELECT SUBJECT_ID FROM CMS_SUBJECT WHERE IS_PRIMARY_SUB=1 AND CRN=#CRN#
+		</select> 
+		
+		<!-- This query is used to delete assocaite case for subject -->
+		<delete id="deleteAssCRN" parameterClass="java.util.Map">
+			DELETE FROM CMS_ASC_SUBJECT WHERE CRN=#crn# AND SUBJECT_ID=#subjectID#
+		</delete>
+		
+		<!--  This query is used to get risk code,name  map -->
+
+		<select id="RISK_MASTER" resultMap="resultRisksMasterVO">
+			  SELECT RISK_CODE,RISK FROM CMS_RISK_MASTER WHERE STATUS = 1 order by RISK_CODE
+		</select>
+	 
+		<resultMap id="resubGrpMasterMap" class="com.worldcheck.atlas.vo.masters.REMasterVO"  groupBy="subGroupID">
+			<result property="rEMasterId" column="RE_MASTER_ID"/>
+			<result property="isIndividual" column="IS_INDIVIDUAL"/>
+			<result property="groupId" column="GROUP_ID"/>
+			<result property="name" column="NAME"/>
+			<result property="entityTypeId" column="ENTITY_TYPE_ID"/>
+			<result property="subGroupID" column="SUB_GROUP_ID"/>
+			<result property="groupName" column="GROUP_NAME"/>
+			<result property="subGrpElement" resultMap="Subject.reSubMasterMap"/>
+
+		</resultMap>
+		
+		
+
+		<resultMap id="reSubMasterMap" class="com.worldcheck.atlas.vo.masters.REMasterVO" >
+			<result property="rEMasterId" column="RE_MASTER_ID"/>
+			<result property="isIndividual" column="IS_INDIVIDUAL"/>
+			<result property="removeEnglish" column="REMOVE_ENGLISH"/>
+			<result property="biTeam" column="BI_TEAM"/>
+			<result property="groupId" column="GROUP_ID"/>
+			<result property="name" column="NAME"/>
+			<result property="entityTypeId" column="ENTITY_TYPE_ID"/>
+			<result property="subGroupID" column="SUB_GROUP_ID"/>
+			<result property="groupName" column="GROUP_NAME"/>
+		</resultMap>
+		
+		<!-- This resultMap is used to get Res for given entity type. -->
+
+		<resultMap id="reMasterMap" class="com.worldcheck.atlas.vo.masters.REMasterVO"  groupBy="groupId">
+			<result property="rEMasterId" column="RE_MASTER_ID"/>
+			<result property="isIndividual" column="IS_INDIVIDUAL"/>
+			<result property="removeEnglish" column="REMOVE_ENGLISH"/>
+			<result property="biTeam" column="BI_TEAM"/>
+			<result property="groupId" column="GROUP_ID"/>
+			<result property="name" column="NAME"/>
+			<result property="entityTypeId" column="ENTITY_TYPE_ID"/>
+			<result property="subGroupID" column="SUB_GROUP_ID"/>
+			<result property="groupName" column="GROUP_NAME"/>
+			<result property="subGrpIDList" resultMap="Subject.resubGrpMasterMap"/>
+
+		</resultMap>
+			
+		<!-- This Query is used to get Res for given entity type. -->
+
+		<select id="reForEntityType" resultMap="reMasterMap"  parameterClass="java.lang.String">
+			  SELECT RE_MASTER_ID,
+					IS_INDIVIDUAL,
+					REMOVE_ENGLISH,
+					BI_TEAM,
+					GROUP_ID,
+					NAME,
+					ENTITY_TYPE_ID,
+					SUB_GROUP_ID,
+					GROUP_NAME,
+					decode(GROUP_NAME,null,1,2) tempGroupName 
+
+				FROM CMS_RE_MASTER re 
+				WHERE ENTITY_TYPE_ID=#entity# AND STATUS=1
+				ORDER BY tempGroupName,upper(GROUP_NAME),upper(NAME)
+		</select>
+		
+		<!-- This query is used to get REs for report type. -->
+
+		<select id="reForReportType" resultClass="com.worldcheck.atlas.vo.masters.REMasterVO" parameterClass="java.lang.String">
+			SELECT 	RE_ID "rEMasterId" FROM CMS_REPORT_TYPE_MAP WHERE REPORT_TYPE_ID=(SELECT REPORT_TYPE_ID FROM CMS_CLIENTCASE WHERE CRN=#CRN#)
+		</select>
+
+		<resultMap id="caseReportMap" class="com.worldcheck.atlas.vo.CaseDetails">
+			<result property="subReportTypeId" column="SUB_REPORT_TYPE_ID"/>
+			<result property="reportTypeId" column="REPORT_TYPE_ID"/>
+			<result property="clientCode" column="CLIENT_CODE"/>
+			
+		</resultMap>
+
+		<resultMap id="SubjectColor" class="com.worldcheck.atlas.vo.SubjectDetails">
+			<result property="subjectId" column="SUBJECT_ID"/>
+		</resultMap>
+
+		<!-- This query is used to get Sub Report Type for crn -->
+		
+		<select id="getCaseReport" resultMap="caseReportMap" parameterClass="java.lang.String">
+			SELECT SUB_REPORT_TYPE_ID,REPORT_TYPE_ID,CLIENT_CODE FROM CMS_CLIENTCASE WHERE CRN=#CRN#
+		</select>
+
+		<!-- This query is used to get REs for sub report type. -->
+
+		<select id="getReForSubReport" resultClass="com.worldcheck.atlas.vo.masters.REMasterVO" parameterClass="java.lang.Integer">
+			SELECT 	RE_ID "rEMasterId" FROM CMS_RE_SUBREPORT_TYPE_MAP WHERE SUBREPORT_TYPE_ID=#subReportTypeId#
+		</select>
+
+		<!-- This Query is used to update primary subject details -->
+
+		<update id="UpdatePrimarySubject" parameterClass="com.worldcheck.atlas.vo.SubjectDetails">
+			UPDATE 
+			CMS_SUBJECT
+			SET
+				CMS_SUBJECT.IS_PRIMARY_SUB = 0,
+				CMS_SUBJECT.UPDATED_BY = #updatedBy#,
+				CMS_SUBJECT.UPDATED_ON = SYSDATE
+			WHERE
+				CMS_SUBJECT.IS_PRIMARY_SUB=1  AND
+				CMS_SUBJECT.CRN = #crn# 
+		</update>
+		
+		<update id="updatePrimarySubjectJuno" parameterClass="java.lang.String">
+			UPDATE 
+			RG_SUBJECT
+			SET
+				IS_PRIMARY_SUB = 0
+			WHERE
+				IS_PRIMARY_SUB=1 AND
+				CRN = #crn# 
+		</update>
+
+		<!-- This resul map is used to get subject industry details for a case. -->
+
+		<resultMap id="subjectIndustryDetails" class="com.worldcheck.atlas.vo.SubjectDetails">
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="subjectName" column="subjectName"/>
+			<result property="industryCode" column="INDUSTRY_CODE"/>
+			<result property="primarySub" column="IS_PRIMARY_SUB"/>
+			<result property="indVO" resultMap="Subject.industryMasterVO"/>
+		</resultMap>
+		
+		<!-- This Query is used to get subject industry details for a case. -->
+
+		<select id="getCaseSubjectIndustry" resultMap="subjectIndustryDetails" parameterClass="java.util.Map">
+			SELECT * FROM (SELECT 	a.*, ROWNUM rn FROM (SELECT SUB.SUBJECT_ID,SUB.SUBJECT_NAME subjectName,SUB.IS_PRIMARY_SUB,decode(SUB.INDUSTRY_CODE,null,' ',SUB.INDUSTRY_CODE) INDUSTRY_CODE,decode(IND.INDUSTRY,null,' ',IND.INDUSTRY) INDUSTRY FROM CMS_SUBJECT SUB,CMS_INDUSTRY_MASTER IND WHERE SUB.CRN=#crn# AND  SUB.ENTITY_TYPE_ID=#entity# AND SUB.INDUSTRY_CODE=IND.INDUSTRY_CODE(+) ORDER BY SUB.IS_PRIMARY_SUB DESC, upper($sort$) $dir$) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+		</select>
+			
+		<!-- This Query is used to get total subject industry count.-->
+
+		<select id="getSubjectIndustryCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+			SELECT count(*) "INDUSTRYCOUNT" FROM CMS_SUBJECT WHERE CRN=#crn# AND ENTITY_TYPE_ID=#entity#
+		</select>
+		
+
+		<resultMap id="primarySubcountryMasterVO" class="com.worldcheck.atlas.vo.masters.CountryMasterVO">
+			<result property="countryMasterId" column="COUNTRY_MASTER_ID"/>
+			<result property="country" column="COUNTRY"/>
+			<result property="countryCode" column="CODE"/>
+			<result property="englishCountry" column="IS_ENG_COUNTRY"/>
+		</resultMap>
+		<!-- This result map is used  to get primary subject details -->
+		
+		<resultMap id="primarySubjectDetailMap" class="com.worldcheck.atlas.vo.SubjectDetails">
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="subjectName" column="SUBJECT_NAME"/>
+			<result property="entityTypeId" column="ENTITY_TYPE_ID"/>
+			<result property="reIds" column="RE_IDS"/>
+			<result property="countryId" column="COUNTRY_ID"/>
+			<result property="countryVO" resultMap="Subject.primarySubcountryMasterVO"/>
+		</resultMap>
+		
+		<!-- This Query is ussed to get primary subject details -->
+
+		<select id="primarySubjectDetail"  resultMap="primarySubjectDetailMap" parameterClass="java.lang.String">
+
+			SELECT SUB.SUBJECT_NAME,SUB.SUBJECT_ID,SUB.ENTITY_TYPE_ID,SUB.RE_IDS,SUB.COUNTRY_ID,COUNT.COUNTRY,COUNT.COUNTRY_MASTER_ID,COUNT.CODE,COUNT.IS_ENG_COUNTRY FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNT WHERE IS_PRIMARY_SUB=1 AND CRN=#CRN# AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID
+
+		</select> 
+		
+		<!-- START Used For getting user list for notification purpose -->
+		<select id="getCaseManager" resultClass="java.lang.String"  parameterClass="java.lang.String">
+			SELECT DISTINCT(CCC.CASE_MGR_ID) username  FROM CMS_CLIENTCASE CCC  WHERE CRN=#crn#
+		</select>
+
+		<!-- <select id="getReviewer1" resultClass="java.lang.String"  parameterClass="java.util.HashMap">
+			SELECT DISTINCT(REVIEWER1) from cms_team_details  where crn=#crn# AND TEAM_TYPE_ID in  
+			<iterate property="team_ID" open="(" close=")" conjunction=",">
+			#team_ID[]#
+			</iterate>
+		</select>
+
+		<select id="getReviewer2" resultClass="java.lang.String"  parameterClass="java.util.HashMap">
+			SELECT  DISTINCT(REVIEWER2) from cms_team_details  where crn=#crn# AND TEAM_TYPE_ID in 
+			<iterate property="team_ID" open="(" close=")" conjunction=",">
+			#team_ID[]#
+			</iterate>
+		</select>
+
+		<select id="getReviewer3" resultClass="java.lang.String"  parameterClass="java.util.HashMap">
+			SELECT  DISTINCT(REVIEWER3) from cms_team_details  where crn=#crn# AND TEAM_TYPE_ID in 
+			<iterate property="team_ID" open="(" close=")" conjunction=",">
+			#team_ID[]#
+			</iterate>
+		</select> -->
+
+		<select id="getManager" resultClass="java.lang.String"  parameterClass="java.util.HashMap">
+			<!-- SELECT DISTINCT(MANAGER_ID) from cms_team_details  where crn=#crn# AND TEAM_TYPE_ID in ($team_ID$) -->
+			<!-- SELECT DISTINCT(MANAGER_ID) from cms_team_details  where crn=#crn# AND TEAM_TYPE_ID in 
+			<iterate property="team_ID" open="(" close=")" conjunction=",">
+			#team_ID[]#
+			</iterate>-->
+			SELECT DISTINCT(ctd.MANAGER_ID) FROM cms_team_details ctd
+			,cms_team_type ctt
+			WHERE ctd.CRN=#crn# 
+			and team_type in ('Supporting - Vendor')
+			and ctd.team_type_id = ctt.team_type_id
+			and ctd.MANAGER_ID is not null
+			
+		</select>
+
+		<select id="getAnalyst" resultClass="java.lang.String"  parameterClass="java.util.HashMap">
+			<!-- SELECT DISTINCT(PERFORMER) FROM CMS_SUB_TEAM_RE_MAP  WHERE CRN=#crn# AND TEAM_ID in ($team_ID$) -->
+			<!-- SELECT DISTINCT(PERFORMER) FROM CMS_SUB_TEAM_RE_MAP  WHERE CRN=#crn# AND TEAM_ID in 
+			<iterate property="team_ID" open="(" close=")" conjunction=",">
+			#team_ID[]#
+			</iterate> -->
+			SELECT DISTINCT(cstrm.PERFORMER) FROM CMS_SUB_TEAM_RE_MAP cstrm,cms_team_details ctd
+			,cms_team_type ctt
+			WHERE cstrm.CRN=#crn# 
+			and team_type in ('Primary','Supporting - Internal','Supporting - BI')
+			and ctd.team_id = cstrm.team_id
+			and ctd.team_type_id = ctt.team_type_id
+			and cstrm.performer is not null
+		</select>
+		
+		<select id="getReviewers" resultClass="java.lang.String"  parameterClass="java.lang.String">
+		select cum.login_id username from cms_user_master cum, (SELECT team_id,
+		  CASE pivot 	  
+		  WHEN 1
+		  THEN reviewer1
+		  WHEN 2
+		  THEN reviewer2
+		  WHEN 3
+		  THEN reviewer3
+		  ELSE NULL
+		  END subject
+		  FROM cms_team_details ctd,(SELECT rownum pivot from dual
+		  CONNECT BY LEVEL  &lt;= 3)
+		  where ctd.crn =#crn#
+		  order by team_id)
+		  where cum.login_id(+) = subject
+		  AND subject is not null
+		</select>
+		<!-- END Used For getting user list for notification purpose -->
+
+		<!-- This Query is used to get RE_IDS for a given subject -->
+
+		<select id="getResForsubject" resultClass="java.lang.String"  parameterClass="java.lang.Integer">
+			SELECT RE_IDS FROM CMS_SUBJECT  WHERE SUBJECT_ID=#subject_ID#
+		</select>
+		
+		<resultMap id="subjectColorVo" class="com.worldcheck.atlas.vo.SubjectDetails">
+			<result property="color" column="COLOR"/>
+			<result property="isClicked" column="ISCLICKED"/>
+			
+		</resultMap>
+		<!-- This resultMap is used by  selectTopTenCounties for getting top ten countries.-->
+
+		<resultMap id="selectTop10CountiesVO" class="com.worldcheck.atlas.vo.masters.CountryMasterVO">
+			<result property="country" column="COUNTRY"/>
+			<result property="countryCode" column="COUNTRY_CODE"/>
+			<result property="englishCountry" column="IS_ENG_COUNTRY"/>
+		</resultMap>
+		
+		<!-- This Query is used to get top ten countries from  DW_TOP10_COUNTRY-->
+
+		<select id="selectTopTenCounties" resultMap="selectTop10CountiesVO" >
+			SELECT COUNTRY,COUNTRY_CODE,IS_ENG_COUNTRY FROM DW_TOP10_COUNTRY
+		</select>
+		
+		<!-- This Query is used to get subject risk for a given subject -->
+
+		<select id="selectRiskForSubject" resultMap="resultRisksMasterVO"  parameterClass="java.lang.Integer">
+			SELECT SUBJECT.SUBJECT_ID,RISK.RISK_CODE,RISK.RISK FROM CMS_SUBJECT_RISK SUBJECT,CMS_RISK_MASTER RISK WHERE SUBJECT_ID =#subject_ID# AND SUBJECT.RISK_CODE=RISK.RISK_CODE 
+		</select>
+		
+		<!-- This Query is used to get count for Matching associate cases for a subject -->
+
+		<select id="getMatchingAssociateCasesCount" resultClass="java.lang.Integer" parameterClass="java.util.HashMap">
+		
+			<!-- SELECT COUNT(*) FROM CMS_CLIENTCASE WHERE CRN IN (SELECT CRN FROM CMS_SUBJECT WHERE UPPER(SUBJECT_NAME) 
+			LIKE UPPER('%'||#subjectName#||'%')) AND 
+			CRN NOT IN (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+			SUBJECT_ID=#subjectID#) AND CRN NOT IN (#crn#) --> 
+
+			select
+		    (select count(CRN) from  (SELECT sub.crn FROM CMS_SUBJECT SUB  WHERE SUB.CRN IN ((SELECT SUB.CRN FROM CMS_SUBJECT SUB,CMS_CLIENTCASE CLIENTCASE WHERE UPPER(SUBJECT_NAME)
+			LIKE UPPER('%'||#subjectName#||'%') AND SUB.CRN=CLIENTCASE.CRN AND 
+                        CLIENTCASE.CASE_STATUS_ID!=(SELECT CASE_STATUS_ID FROM CMS_CASE_STATUS_MASTER WHERE UPPER(DESCRIPTION) ='CANCELLED')) MINUS (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+			SUBJECT_ID=#subjectID#)) AND SUB.CRN <![CDATA[ <> ]]> (#crn#) GROUP BY CRN) )
+			+
+			(select count(CRN) from  (SELECT sub.crn FROM SUBJECT_MV SUB  WHERE SUB.CRN IN ((SELECT SUB.CRN FROM SUBJECT_MV SUB,CLIENTCASE_MV CASE WHERE UPPER(SUBJECTNAME)
+			LIKE UPPER('%'||#subjectName#||'%')  AND SUB.CRN=CASE.CRN AND 
+                        CASE.STATUSCODE!=(SELECT STATUS_CODE FROM CMS_CASE_STATUS_MASTER WHERE UPPER(DESCRIPTION) ='CANCELLED') ) MINUS (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+			SUBJECT_ID=#subjectID#)) AND SUB.CRN <![CDATA[ <> ]]> #crn# GROUP BY CRN) ) as count from dual
+			
+
+
+		</select>
+		
+		<!-- This Query is used to get count for Matching associate cases for a subject -->
+
+		<select id="getAssociatedSubjectCount" resultClass="java.lang.Integer" parameterClass="java.util.HashMap">
+		  select
+		    (select count(CRN) from  (SELECT sub.crn FROM CMS_SUBJECT SUB  WHERE SUB.CRN IN ((SELECT SUB.CRN FROM CMS_SUBJECT SUB,CMS_CLIENTCASE CLIENTCASE WHERE UPPER(SUBJECT_NAME)
+			LIKE UPPER('%'||#subjectName#||'%') AND SUB.CRN=CLIENTCASE.CRN AND 
+                        CLIENTCASE.CASE_STATUS_ID!=(SELECT CASE_STATUS_ID FROM CMS_CASE_STATUS_MASTER WHERE UPPER(DESCRIPTION) ='CANCELLED')) MINUS (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+			SUBJECT_ID=#subjectID#)) AND SUB.CRN <![CDATA[ <> ]]> (#crn#) GROUP BY CRN) )
+			+
+			(select count(CRN) from  (SELECT sub.crn FROM SUBJECT_MV SUB  WHERE SUB.CRN IN ((SELECT SUB.CRN FROM SUBJECT_MV SUB,CLIENTCASE_MV CASE WHERE UPPER(SUBJECTNAME)
+			LIKE UPPER('%'||#subjectName#||'%')  AND SUB.CRN=CASE.CRN AND 
+                        CASE.STATUSCODE!=(SELECT STATUS_CODE FROM CMS_CASE_STATUS_MASTER WHERE UPPER(DESCRIPTION) ='CANCELLED') ) MINUS (SELECT CRN FROM CMS_ASC_SUBJECT WHERE 
+			SUBJECT_ID=#subjectID#)) AND SUB.CRN <![CDATA[ <> ]]> #crn# GROUP BY CRN) ) as count from dual
+			
+
+
+		</select>
+		
+		<!-- This Query is used to get associate cases count for a subject -->
+
+		<select id="getAsscciateCaseCount" resultClass="java.lang.Integer" parameterClass="java.lang.Integer">
+			SELECT COUNT(*) FROM CMS_ASC_SUBJECT WHERE SUBJECT_ID=#subjectID#
+		</select>
+		
+		<!-- This Query is used to get associate cases count for a subject -->
+		
+		<select id="getDisAsscciateCaseCount" resultClass="java.lang.Integer" parameterClass="java.lang.Integer">
+			SELECT COUNT(*) FROM CMS_ASC_SUBJECT WHERE SUBJECT_ID=#subjectID#
+		</select>
+		
+		<!-- This Query is used for Add/Edit subject validation(Subject Name, Country and Entity Type vombination validation) -->
+
+		<select id="addEditSubjectValidation" resultClass="java.lang.Integer" parameterClass="java.util.HashMap">
+			SELECT COUNT(*) FROM CMS_SUBJECT WHERE CRN=#crn# AND SUBJECT_NAME=#subjectName# AND SUBJECT_ID != #subjectID# AND COUNTRY_ID=(select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where COUNTRY=#countryName#) AND ENTITY_TYPE_ID=#entityType#
+		</select>
+		
+		<!-- This query is used to get Country Risk Level for clinet country -->
+		<select id="getRiskLevelForClientCountry" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+			SELECT RISK_LEVEL_ID FROM CMS_COUNTRY_MASTER WHERE COUNTRY_MASTER_ID =(SELECT COUNTRY_MASTER_ID FROM CMS_CLIENT_MASTER WHERE CLIENT_CODE=#clientCode#)
+		</select>
+		
+		<!-- <resultMap id="ReportTypeClientCodeMap" class="com.worldcheck.atlas.vo.CaseDetails">
+			<result property="reportTypeId" column="REPORT_TYPE_ID"/>
+			<result property="clientCodes" column="CLIENT_CODES"/>
+		</resultMap> -->
+
+		<select id="getReportType" resultClass="java.lang.Integer">
+			SELECT REPORT_TYPE_ID FROM CMS_RPT_CLIENT_MAP
+		</select>
+
+		<select id="getClientCodes" resultClass="java.lang.String" parameterClass="java.lang.Integer">
+			SELECT CLIENT_CODES FROM CMS_RPT_CLIENT_MAP WHERE REPORT_TYPE_ID=#reportTypeId#
+		</select>
+
+
+		<select id="getResForSpecificReportType" resultClass="java.lang.String"  parameterClass="java.util.HashMap">
+			SELECT RE_ID FROM CMS_CNTRY_RE_MAP WHERE REPORT_TYPE_ID=#reportTypeId# AND RISK_LEVEL_ID=#riskLevel# AND IS_PRIMARY_SUB=#primaryCode# AND ENTITY_TYPE=#entityType# AND IS_SPECIFIC=#isSpecific#
+		</select>
+
+		<select id="getResForSpecificSubReportType" resultClass="java.lang.String"  parameterClass="java.util.HashMap">
+			SELECT RE_ID FROM CMS_CNTRY_RE_MAP WHERE SUB_REPORT_TYPE_ID=#subReportTypeId# AND RISK_LEVEL_ID=#riskLevel# AND IS_PRIMARY_SUB=#primaryCode# AND ENTITY_TYPE=#entityType# AND IS_SPECIFIC=#isSpecific#
+		</select>
+
+		<select id="getPIIDForCRN" resultClass="java.lang.Long" parameterClass="java.lang.String">
+			SELECT PID FROM CMS_CLIENTCASE WHERE CRN=#crn#
+		</select>
+
+		<select id="getReportTypeForFCPA" resultClass="java.lang.Integer" parameterClass="java.util.HashMap">
+			SELECT DISTINCT REPORT_TYPE_ID FROM CMS_CNTRY_RE_MAP WHERE ENTITY_TYPE=#entityType# AND IS_SPECIFIC=#isSpecific#
+		</select>
+
+		<select id="getReIdsForFCPAReportType" resultClass="java.lang.String" parameterClass="java.util.HashMap">
+			SELECT RE_ID FROM CMS_CNTRY_RE_MAP WHERE REPORT_TYPE_ID=#reportTypeId# AND IS_PRIMARY_SUB=#primaryCode# AND ENTITY_TYPE=#entityType# AND IS_SPECIFIC=#isSpecific#
+		</select>
+
+		<select id="getReIdsForFCPASubReportType" resultClass="java.lang.String" parameterClass="java.util.HashMap">
+			SELECT RE_ID FROM CMS_CNTRY_RE_MAP WHERE SUB_REPORT_TYPE_ID=#subReportTypeId# AND IS_PRIMARY_SUB=#primaryCode# AND ENTITY_TYPE=#entityType# AND IS_SPECIFIC=#isSpecific#
+
+		</select>
+
+		<update id="updateISISPrimarySubject" parameterClass="com.worldcheck.atlas.isis.vo.SubjectDetailsVO">
+			UPDATE 
+			CMS_SUBJECT
+			SET
+				CMS_SUBJECT.IS_PRIMARY_SUB = 0,
+				CMS_SUBJECT.UPDATED_BY = #updatedBy#,
+				CMS_SUBJECT.UPDATED_ON = SYSDATE
+			WHERE
+				CMS_SUBJECT.IS_PRIMARY_SUB=1  AND
+				CMS_SUBJECT.CRN = #crn# 
+		</update>
+		
+		<insert id="insertISISSubject" parameterClass="com.worldcheck.atlas.isis.vo.SubjectDetailsVO">
+			<selectKey resultClass="int" type="pre" keyProperty="subjectId">
+				SELECT CMS_SUBJECT_SEQ.NEXTVAL AS VALUE FROM DUAL
+		   </selectKey>
+			INSERT INTO CMS_SUBJECT (
+			CRN,
+			SUBJECT_ID,
+			SUBJECT_NAME,
+			IS_PRIMARY_SUB,
+			ENTITY_TYPE_ID,
+			POSITION,
+			COUNTRY_ID,
+			ADDRESS,
+			OTHER_DETAILS,
+			RE_IDS,
+			REPORT_SUBJECT_NAME,
+			ISIS_SUBJECT_ID,
+			UPDATED_BY,
+			UPDATED_ON,
+			SUB_REPORT_TYPE_ID,
+			SUBJECT_FEE
+			)values (
+			#crn#,
+			#subjectId#,
+			#subjectName#,
+			#primarySubject#,
+			#entityType#,
+			#subjectPosition#,
+			(select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#countryCode#),
+			#address#,
+			#otherDetails#,
+			#reIds#,
+			#subjectName#,
+			#isisSubjectID#,
+			#updatedBy#,
+			SYSDATE,
+			#slSubreportID#,
+			#slBudget#
+		)
+		</insert> 
+		
+		<insert id="insertISISSubjectJuno" parameterClass="com.worldcheck.atlas.isis.vo.SubjectDetailsVO">
+			insert into RG_SUBJECT (
+			SUBJECT_ID, 
+			CRN, 
+			CMS_SUBJECT_ID, 
+			SUBJECT_NAME, 
+			REPORT_SUBJECT_NAME, 
+			ENTITY_TYPE_ID, 
+			IS_PRIMARY_SUB
+			) values (
+			#subjectId#,
+			#crn#, 
+			#subjectId#,
+			#subjectName#,
+			#subjectName#,
+			#entityType#,
+			#primarySubject#)
+		</insert>
+
+		
+			<insert id="insertSubjectColor" parameterClass="com.worldcheck.atlas.vo.SubjectColorVO">
+		<selectKey resultClass="int" type="pre" keyProperty="color_Id">
+					SELECT CMS_SUBJECT_COLOR_SEQ.nextval AS VALUE FROM DUAL
+		</selectKey>
+			insert into CMS_SUBJECT_COLOR_DETAILS(ID,SUBJECT_ID,CRN,COLOR,ISCLICKED) 
+			values(#color_Id#,#subjectId#,#crn#,#color#,#isClicked#)
+		</insert>
+		
+		<insert id="addColorDetails" parameterClass="com.worldcheck.atlas.vo.TaskColorVO">
+			<selectKey resultClass="int" type="pre" keyProperty="colorId">
+					SELECT CMS_COLOR_STATUS_SEQ.nextval AS VALUE FROM DUAL
+		    </selectKey>
+		   INSERT INTO CMS_COLOR_DETAILS(ID,CRN,TASK_NAME,TASK_STATUS,COLOR)
+			VALUES (#colorId#,#crn#,#taskName#,#taskStatus#,#color#)							
+		</insert>
+		
+		
+
+		<select id="getSubjectColor" resultClass="com.worldcheck.atlas.vo.SubjectDetails" parameterClass="java.lang.Integer">
+			SELECT COLOR,ISCLICKED FROM CMS_SUBJECT_COLOR_DETAILS WHERE SUBJECT_ID=#subjectId# 
+		</select>
+		
+		<select id="subjectIdCountForCase" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+			SELECT count(*) FROM CMS_SUBJECT_COLOR_DETAILS WHERE SUBJECT_ID=#subjectId# 
+		</select>
+		
+		<select id="getCRNCount" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+			SELECT count(*) FROM CMS_COLOR_DETAILS WHERE CRN=#crn# 
+		</select>
+
+		<update id="updateISISSubject" parameterClass="com.worldcheck.atlas.isis.vo.SubjectDetailsVO">
+			  UPDATE 
+					CMS_SUBJECT
+			  SET
+									
+					CMS_SUBJECT.SUBJECT_NAME = #subjectName#,
+					CMS_SUBJECT.IS_PRIMARY_SUB = #primarySubject#,
+					CMS_SUBJECT.ENTITY_TYPE_ID = #entityType#,
+					CMS_SUBJECT.POSITION = #subjectPosition#,
+					CMS_SUBJECT.COUNTRY_ID =( select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#countryCode#),
+					CMS_SUBJECT.ADDRESS = #address#,
+					CMS_SUBJECT.OTHER_DETAILS = #otherDetails#,
+					CMS_SUBJECT.RE_IDS = #reIds#,
+					CMS_SUBJECT.REPORT_SUBJECT_NAME = #subjectName#,
+					CMS_SUBJECT.UPDATED_BY = #updatedBy#,
+					CMS_SUBJECT.UPDATED_ON = SYSDATE,
+					CMS_SUBJECT.SUB_REPORT_TYPE_ID = #slSubreportID#
+					<!--  Commented for CBD Issue by 6035037 -->
+					<!--CMS_SUBJECT.SUBJECT_FEE = $slBudget$  -->
+					
+			  WHERE
+					CMS_SUBJECT.CRN = #crn# and
+					CMS_SUBJECT.ISIS_SUBJECT_ID = #isisSubjectID#
+		</update>
+		
+	    <update id="updateISISSubjectJuno" parameterClass="com.worldcheck.atlas.isis.vo.SubjectDetailsVO">
+	    	UPDATE 
+			  RG_SUBJECT
+			SET
+			  SUBJECT_NAME = case when REPORT_ORDER = 10000 then #subjectName# else SUBJECT_NAME end,
+			  REPORT_SUBJECT_NAME = case when REPORT_ORDER = 10000 then #subjectName# else REPORT_SUBJECT_NAME end,
+			  IS_PRIMARY_SUB = #primarySubject#,
+			  ENTITY_TYPE_ID = #entityType#
+			WHERE
+			  CRN = #crn# and
+			  CMS_SUBJECT_ID = #subjectId#
+		</update>
+
+		<delete id="deleteISISSubject" parameterClass="java.lang.String">
+			DELETE FROM CMS_SUBJECT WHERE ISIS_SUBJECT_ID = #isisSubjectId#
+			
+		</delete> 
+
+		<select id="getCountryFromCode" resultClass="java.lang.String" parameterClass="java.lang.String">
+			SELECT COUNTRY FROM CMS_COUNTRY_MASTER WHERE CODE=#countryCode#
+		</select>
+
+		 <resultMap id="legacyDataMap" class="com.worldcheck.atlas.vo.SubjectDetails">
+			<result property="crn" column="crn"/>
+			<result property="subjectId" column="subjectId"/>
+			<result property="primarySub" column="isPrimarySubject"/>
+			<result property="subjectName" column="subjectName"/>
+			<result property="countryCode" column="countryId"/>
+			<result property="entityTypeId" column="entityTypeCode"/>
+			<result property="position" column="position"/>
+			<result property="address" column="address"/>
+			<result property="otherDetails" column="otherdetails"/>
+			<result property="countryName" column="countryName"/>
+			<result property="entityName" column="entityType"/>
+		</resultMap>
+
+		<select id="getLegacyCaseSubjectList" resultMap="legacyDataMap" parameterClass="java.util.HashMap">
+			SELECT * FROM (SELECT 	a.*, ROWNUM rn FROM (select subject.crn as crn,subject.subjectid as subjectId,subject.ISPRIMARYSUB as isPrimarySubject,subject.subjectname as subjectName,subject.countryid as countryId,subject.entitytypecode as entityTypeCode,subject.POSITION as position, 
+			subject.ADDRESS as address,subject.OTHERDETAILS as otherdetails,country.description as countryName,entity.description as entityType from subject_mv subject,countrymaster@legacy country,entitytypemaster@legacy entity 
+			where subject.countryid=country.countryid and subject.entitytypecode=entity.entitytypecode and subject.crn=#crn#) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start# ORDER BY isPrimarySubject DESC
+		</select>
+
+		<resultMap id="legacyREDataMap" class="com.worldcheck.atlas.vo.SubjectDetails">
+			<result property="subjectId" column="subjectId"/>
+			<result property="reIds" column="reIds"/>
+		</resultMap>
+
+		<select id="getLegacySubjectRE" resultMap="legacyREDataMap" parameterClass="java.lang.String">
+			select subjectid as subjectId,wm_concat(re.str) as reIds from subjectre@legacy subjectre,reMaster@legacy re where 
+			crn=#crn# and subjectre.reid=re.id group by subjectid
+		</select>
+
+		<select id="getLegacyCaseSubjectListCount" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+			select count(subjectId) from subject_mv where crn=#crn#
+		</select>
+		
+		<resultMap id="legacyPastRecordMap" class="com.worldcheck.atlas.vo.SubjectDetails">
+			<result property="crn" column="crn"/>
+			<result property="subjectName" column="subjectName"/>
+		</resultMap>
+
+		<select id="getLegacyPastRecords" resultMap="legacyPastRecordMap" parameterClass="java.util.HashMap">
+			SELECT * FROM (SELECT 	a.*, ROWNUM rn FROM (select crn,subjectName from subject_mv where crn In(select pastcrn from 
+			SUBJECTPASTRECORD@LEGACY where crn =#crn# and subjectId=#subjectId#) and ISPRIMARYSUB=1) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+		</select>
+     <!-- Added By Saurabh Mittal 16-09-2014  -->
+		<resultMap id="CaseLevelRiskCategoryMap" class="com.worldcheck.atlas.vo.masters.RiskCategoryMasterVO">
+			<result property="category" column="risk_category_name"/>
+			<result property="riskCategoryId" column="risk_category_id"/>
+		</resultMap>
+
+		<select id="getCaseLevelRiskCategory" resultMap="CaseLevelRiskCategoryMap" parameterClass="java.lang.String">
+			SELECT Risk_Category_Name,risk_category_id FROM CMS_RISK_CATEGORY_MASTER WHERE Risk_category_id in(select crm_tbl.risk_Category_id from CMS_RISK_MASTER_TBL crm_tbl, CMS_RISK_PROFILE crp
+			WHERE crm_tbl.Risk_category_id = crp.Risk_category_id and crm_tbl.Risk_code = crp.Risk_code and crp.CRN=#crn# and crm_tbl.Risk_Type=1)
+		</select>
+		
+		<resultMap id="SubjectLevelRiskCategoryMap" class="com.worldcheck.atlas.vo.task.SubjecListForLeftNavigationVO">
+			<result property="subjectName" column="subject_name"/>
+			<result property="subjectId" column="subject_id"/>
+		</resultMap>
+
+		<select id="getSubjectLevelRiskCategory" resultMap="SubjectLevelRiskCategoryMap" parameterClass="java.lang.String">
+			SELECT subject_name,subject_id from CMS_SUBJECT cs WHERE cs.CRN=#crn#
+		</select>
+
+<select id="getSubjectLevelRiskCategoryForResearch" resultMap="SubjectLevelRiskCategoryMap" parameterClass="java.util.Map">
+			SELECT subject_name,subject_id from CMS_SUBJECT cs WHERE cs.CRN=#crn#
+			<isEqual prepend="AND" property="taskName" compareValue="Research Task">
+						cs.subject_id in(select distinct cstrm.subject_id from CMS_SUB_TEAM_RE_MAP cstrm where cstrm.crn = #crn# and cstrm.performer = #performer# 
+						and cstrm.team_id=(select
+							cms_team_details.team_id from cms_team_details where
+							team_type_id=#teamTypeId# and
+							cms_team_details.crn=#crn# 
+							<isEqual prepend="AND" property="teamTypeId" compareValue="2">
+								INSTRB(cms_team_details.analysts,#performer#,1,1)>0
+							</isEqual>
+					))
+					</isEqual>
+					<isEqual prepend="AND" property="taskName" compareValue="BI Research Task">
+						cs.subject_id in(select distinct cstrm.subject_id from CMS_SUB_TEAM_RE_MAP cstrm where cstrm.crn = #crn# and cstrm.performer = #performer#
+						and cstrm.team_id=(select
+							cms_team_details.team_id from cms_team_details where
+							team_type_id=#teamTypeId# and
+							cms_team_details.crn=#crn# 
+							<isEqual prepend="AND" property="teamTypeId" compareValue="3">
+								cms_team_details.manager_id=#performer#
+							</isEqual>
+					))
+					</isEqual>
+					<isEqual prepend="AND" property="taskName" compareValue="Vendor Research Task">
+						cs.subject_id in(select distinct cstrm.subject_id from CMS_SUB_TEAM_RE_MAP cstrm where cstrm.crn = #crn# and cstrm.performer = #performer#
+						and cstrm.team_id=(select
+							cms_team_details.team_id from cms_team_details where
+							team_type_id=#teamTypeId# and
+							cms_team_details.crn=#crn# 
+							<isEqual prepend="AND" property="teamTypeId" compareValue="4">
+								cms_team_details.manager_id=#performer#
+					</isEqual>
+					))
+					</isEqual>
+					 <isEqual property="taskName" compareValue="Review Task">
+						<isNotNull property="teamId">
+							<isNotEqual property="teamName" compareValue="Primary">			
+								<isNotEmpty prepend="AND" property="teamId">
+									 cs.subject_id in(select distinct cstrm.subject_id from CMS_SUB_TEAM_RE_MAP cstrm where cstrm.crn = #crn# and cstrm.TEAM_ID=#teamId#)
+								</isNotEmpty>
+							 </isNotEqual>
+						 </isNotNull>
+					</isEqual>
+
+		</select>
+
+     <!-- Ended By Saurabh Mitttal -->
+
+		<select id="getLegacyPastRecordsCount" resultClass="java.lang.Integer" parameterClass="java.util.HashMap">
+			select count(crn) from subject_mv where crn In(select pastcrn from 
+			SUBJECTPASTRECORD@LEGACY where crn =#crn# and subjectId=#subjectId#) and ISPRIMARYSUB=1
+		</select>
+
+		<select id="getUpdateOnForSubject" resultClass="java.util.Date" parameterClass="java.lang.Integer">
+			select to_char(updated_on,'yyyy-mm-dd HH24:MI:SS') from CMS_subject where subject_id=#subjectId#
+		</select>
+
+		<select id="getISISCase" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+			
+			 select IS_ISIS from cms_clientcase where crn=#crn#
+			
+		</select>
+
+		<resultMap id="subjectIndustryForISIS" class="com.worldcheck.atlas.vo.SubjectDetails"  groupBy="subjectId">
+			<result property="crn" column="CRN"/>
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="isisSubjectId" column="ISIS_SUBJECT_ID"/>
+			<result property="industryCode" column="industry_code"/>
+			<result property="industryName" column="industry"/>
+			
+		</resultMap>
+
+		<select id="getSubjectsIndustryForISIS"  resultMap="subjectIndustryForISIS" parameterClass="java.lang.String">
+
+			select subject.crn,subject.subject_id,subject.isis_subject_id,subject.industry_code,industry.industry "industry"
+			from cms_subject subject,cms_industry_master industry 
+			where crn =#crn# and subject.industry_code is not null and subject.industry_code=industry.industry_code
+
+		</select>
+
+		<resultMap id="subjectsRisksForISIS" class="com.worldcheck.atlas.vo.SubjectDetails"  groupBy="subjectId">
+			<result property="crn" column="CRN"/>
+			<result property="subjectId" column="SUBJECT_ID"/>
+			<result property="isisSubjectId" column="ISIS_SUBJECT_ID"/>
+			<result property="subjectRisk" resultMap="Subject.resultRisksMasterVO"/>
+			
+		</resultMap>
+
+		<select id="getSubjectsRisksForISIS" resultMap="subjectsRisksForISIS" parameterClass="java.lang.String">
+
+			select subject.crn,subject.subject_id,subject.isis_subject_id,risk.risk_code,riskMaster.risk from cms_subject subject,cms_subject_risk risk,cms_risk_master riskMaster 
+			where subject.crn=#crn# and subject.subject_id=risk.subject_id and risk.risk_code=riskMaster.risk_Code
+
+		</select>
+
+		<select id="getNonPridifferentEntitySub"  resultMap="primarySubjectDetailMap" parameterClass="java.util.HashMap">
+		
+			SELECT SUB.SUBJECT_NAME,SUB.SUBJECT_ID,SUB.ENTITY_TYPE_ID,SUB.RE_IDS,SUB.COUNTRY_ID,COUNT.COUNTRY,COUNT.COUNTRY_MASTER_ID,COUNT.CODE,COUNT.IS_ENG_COUNTRY FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNT WHERE  subject_id in (select min(subject_id) from cms_subject where crn =#crn# and entity_type_id <![CDATA[ <> ]]> #primarySubEntity# AND IS_PRIMARY_SUB=0) AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID
+
+		</select> 
+		
+		<select id="getFirstSubjectOfSameEntity"  resultMap="primarySubjectDetailMap" parameterClass="java.util.HashMap">
+		
+			SELECT SUB.SUBJECT_NAME,SUB.SUBJECT_ID,SUB.ENTITY_TYPE_ID,SUB.RE_IDS,SUB.COUNTRY_ID,COUNT.COUNTRY,COUNT.COUNTRY_MASTER_ID,COUNT.CODE,COUNT.IS_ENG_COUNTRY FROM CMS_SUBJECT SUB,CMS_COUNTRY_MASTER COUNT WHERE  subject_id in (select min(subject_id) from cms_subject where crn =#crn# and entity_type_id=#subEntity#) AND SUB.COUNTRY_ID=COUNT.COUNTRY_MASTER_ID
+
+		</select> 
+		
+
+		<resultMap id="reDetailMapVO" class="com.worldcheck.atlas.vo.masters.REMasterVO">
+			<result property="rEMasterId" column="RE_MASTER_ID"/>
+			<result property="name" column="NAME"/>
+			<result property="entityTypeId" column="ENTITY_TYPE_ID"/>
+		</resultMap>
+
+		<select id="reDetailMap" resultMap="reDetailMapVO" parameterClass="java.lang.String">
+				SELECT RE_MASTER_ID,NAME,ENTITY_TYPE_ID FROM CMS_RE_MASTER
+		</select>
+
+		<select id="selectSubjectRiskCodes" resultClass="java.lang.String"  parameterClass="java.lang.Integer">
+			select risk_code from cms_subject_risk where subject_id=#subjectId# 
+		</select>
+
+		<insert id="insertSubjectRisks" parameterClass="java.util.HashMap">
+			INSERT INTO cms_subject_risk
+			(SUBJECT_RISK_ID,SUBJECT_ID,  UPDATED_BY,UPDATED_ON,RISK_CODE)
+			SELECT
+			CMS_SUBJECT_RISK_SEQ.NEXTVAL,inner_view.*
+			FROM
+			<iterate property="subjectList" conjunction="UNION ALL"  open="("
+				close=")">
+				<iterate property="subjectList[].subjectRisk" conjunction="UNION ALL" >
+					SELECT #subjectList[].subjectId# SUBJECT_ID, #subjectList[].updatedBy#
+					UPDATED_BY,SYSDATE UPDATED_ON,#subjectList[].subjectRisk[].riskCode# RISK_CODE FROM DUAL
+				</iterate>
+			</iterate>
+			inner_view
+		</insert>
+
+		<select id="getCaseStatus" resultClass="java.lang.String" parameterClass="java.lang.String">
+			select status.DESCRIPTION from cms_clientcase case,cms_case_status_master status 
+			where case.crn=#crn# and case.case_status_id=status.case_status_id
+		</select>
+		
+		<select id="getActiveREIds" resultClass="java.lang.Integer">
+			select RE_MASTER_ID from cms_re_master where status=1
+
+		</select>
+
+		<select id="getAllRisks" resultMap="resultRisksMasterVO">
+			  SELECT RISK_CODE,RISK FROM CMS_RISK_MASTER order by RISK_CODE
+		</select>
+		
+		<select id="isWatchListedSubject" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+			select count(*) from cms_watchlist_subjects where UPPER(subject_name)= UPPER(#subjectName#)			
+		</select>
+		
+		<select id="getCaseManagerId" resultClass="java.lang.String" parameterClass="java.lang.String">
+			 select case_mgr_id from cms_clientcase where crn=#crn# 			
+		</select>
+
+		<select id="watchList" resultClass="java.lang.String">
+			 select subject_name from cms_watchlist_subjects			
+		</select>
+		
+		<!-- Added by Himanshu CR-2(Part-3) R1.3.2 -->
+		
+		<select id="getCountryListForCode" parameterClass="java.lang.String" resultClass="java.lang.String">
+			select wm_concat(COUNTRY) from cms_country_master where COUNTRY_MASTER_ID in
+			((select COUNTRY_MASTER_ID from CMS_SUBREP_EXCLUDE_COUNTRY 
+			where CLIENT_MASTER_ID = (select CLIENT_MASTER_ID from cms_client_master where CLIENT_CODE=#clientCode#)))			
+		</select>
+		
+		<select id="getREListForClientCode" parameterClass="java.lang.String" resultClass="java.lang.String">
+			select wm_concat(RE_MASTER_ID) from CMS_SUBREP_CHECKRE 
+			where CLIENT_MASTER_ID = (select CLIENT_MASTER_ID from cms_client_master where CLIENT_CODE=#clientCode#) 			
+		</select>
+		
+		<select id="getListOfSubjectForReplication" parameterClass="java.util.HashMap" resultClass="com.worldcheck.atlas.vo.SubjectDetails">
+			select CODE countryCode, wm_concat(RE_MASTER_ID) reIds from CMS_SUBREP_INSERTDETAILS 
+			where CLIENT_MASTER_ID = (select CLIENT_MASTER_ID from cms_client_master where CLIENT_CODE=#clientCode#) AND ENTITY_TYPE_ID=#entityTypeId#
+			group by CODE
+		</select> 
+		
+         <!-- Query to get case client and report details for given CRN Saurabh Mittal -->
+
+		 <select id="caseDetailsForRiskProfile" parameterClass="java.lang.String" resultMap="caseDetailsMapForRiskProfile">
+	     	SELECT CLIENT_CODE,REPORT_TYPE_ID,SUB_REPORT_TYPE_ID FROM CMS_CLIENTCASE WHERE CRN=#crn#
+	      </select>
+
+         
+		<!-- Added By Saurabh Mittal -->
+		 
+	<select id="checkCountryBreakDown" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationVO">
+			SELECT  cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			att_map.risk_category_id, map.visible_to_client, att_map.attribute_id,
+			(Select Default_Value from CMS_RISK_ATTR_DEFAULT_VAL_MAP where Attribute_ID=att_map.attribute_id) Value FROM cms_risk_master_tbl cms_risk_mst,cms_risk_category_attr_map att_map,
+			cms_risk_mapping map WHERE cms_risk_mst.risk_category_id = att_map.risk_category_id AND map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 1 AND map.risk_group=1 AND cms_risk_mst.has_cntry_brkdown=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isGreaterThan>
+			</isNotNull>
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isGreaterThan>
+			</isNotNull>
+			)
+				              
+	</select> 
+
+	<!-- Added By Saurabh Mittal -->
+
+	   <select id="getSubjectLevelRiskMapping" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationVO">
+			SELECT distinct cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			att_map.risk_category_id,map.visible_to_client, att_map.attribute_id, map.visible_to_client,
+			(Select Default_Value from CMS_RISK_ATTR_DEFAULT_VAL_MAP where Attribute_ID=att_map.attribute_id) Value FROM cms_risk_master_tbl cms_risk_mst,cms_risk_category_attr_map att_map,
+			cms_risk_mapping map WHERE cms_risk_mst.risk_category_id = att_map.risk_category_id AND map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 2 AND map.risk_group=1 AND cms_risk_mst.RISK_IS_ACTIVE=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isGreaterThan>
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,subject_country FROM cms_risk_mapping_country) cmcnt ON crm.mapping_id = cmcnt.mapping_id
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isGreaterThan>
+			</isNotNull>
+			AND (cmcnt.subject_country = (select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#subjectCountry#) OR cmcnt.subject_country =-1)
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			AND crm.SUBJECT_TYPE=#subjectType#) AND map.mapping_status=1
+
+
+				              
+	</select> 
+
+	<!-- Added By Saurabh Mittal -->
+ 
+    <select id="getCountryBrkDownCaseLevelRiskDetails" parameterClass="java.lang.String" resultMap="getCountryBrkDownCaseLevelRiskMap">
+		SELECT risk_profile_id,risk_category_id,risk_code,crn,risk_type from cms_risk_profile where crn=#crn# and risk_type=1 and attribute_id is null
+	
+	</select>
+
+	    <select id="getCountryBrkDownCaseLevelRiskOldDetails" parameterClass="java.lang.String" resultMap="oldCaseLevelDetailsCntryBrkDownMap">
+	<!--	SELECT risk_profile_id,risk_category_id,risk_code,crn,risk_type from cms_risk_profile where crn=#crn# and risk_type=1 and attribute_id is null -->
+	select distinct crp.RISK_PROFILE_ID, crp.RISK_CODE,crp.CRN,crp.IS_RISK_MANDATORY,(SELECT CODE FROM CMS_COUNTRY_MASTER WHERE COUNTRY_MASTER_ID=crphc.COUNTRY_MASTER_ID) COUNTRYCODE from
+	  CMS_RISK_PROFILE crp,CMS_RISK_PROFILE_HAS_CNTRY_BD crphc Where 
+	  crp.RISK_PROFILE_ID = crphc.RISK_PROFILE_ID and crp.CRN=#crn#  and crp.RISK_TYPE=1 and crp.attribute_id is null
+	</select>
+
+	<!-- Added By Saurabh Mittal -->
+
+	   <select id="getSubjectLevelRiskMappingWithCntryBrkDown" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationCntryBrkDownVO">
+			SELECT distinct cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			cms_risk_mst.risk_category_id,map.visible_to_client FROM cms_risk_master_tbl cms_risk_mst,cms_risk_mapping map 
+			WHERE map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 2 AND map.risk_group=1 AND cms_risk_mst.has_cntry_brkdown=1 AND cms_risk_mst.RISK_IS_ACTIVE=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isGreaterThan>
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,subject_country FROM cms_risk_mapping_country) cmcnt ON crm.mapping_id = cmcnt.mapping_id
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isGreaterThan>
+			</isNotNull>
+			AND (cmcnt.subject_country = (select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#subjectCountry#) OR cmcnt.subject_country =-1)
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			AND crm.SUBJECT_TYPE=#subjectType#) AND map.mapping_status=1
+				              
+	</select> 
+
+
+<!-- Added By Saurabh Mittal -->
+
+	   <select id="getCaseLevelRiskMappingWithCntryBrkDown" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationCntryBrkDownVO">
+			SELECT distinct cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			cms_risk_mst.risk_category_id, map.visible_to_client FROM cms_risk_master_tbl cms_risk_mst,cms_risk_mapping map 
+			WHERE map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 1 AND map.risk_group=1 AND cms_risk_mst.has_cntry_brkdown=1 AND cms_risk_mst.RISK_IS_ACTIVE=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isGreaterThan>
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isGreaterThan>
+			</isNotNull>
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			) AND map.mapping_status=1
+				              
+	</select> 
+
+
+	<!-- Added By Saurabh Mittal -->
+
+	   <select id="getCaseLevelRiskMappingWithCntryBrkDownForDelete" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationCntryBrkDownVO">
+			SELECT distinct cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			cms_risk_mst.risk_category_id, map.visible_to_client FROM cms_risk_master_tbl cms_risk_mst,cms_risk_mapping map 
+			WHERE map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 1 AND cms_risk_mst.has_cntry_brkdown=1 AND map.risk_group=1 AND cms_risk_mst.RISK_IS_ACTIVE=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isGreaterThan>
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isGreaterThan>
+			</isNotNull>
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			) AND map.mapping_status=1
+				              
+	</select> 
+
+
+
+<!-- Added By Saurabh Mittal -->
+
+	   <select id="getSubjectLevelRiskMappingForAggregation" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="subAdditionRiskAggregationVO">
+			SELECT distinct cms_risk_mst.risk_type,
+			cms_risk_mst.risk_category_id FROM cms_risk_master_tbl cms_risk_mst,cms_risk_mapping map 
+			WHERE map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 2 AND map.risk_group=1 AND cms_risk_mst.RISK_IS_ACTIVE=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isGreaterThan>
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,subject_country FROM cms_risk_mapping_country) cmcnt ON crm.mapping_id = cmcnt.mapping_id
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isGreaterThan>
+			</isNotNull>
+			AND (cmcnt.subject_country = (select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#subjectCountry#) OR cmcnt.subject_country =-1)
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			AND crm.SUBJECT_TYPE=#subjectType#) AND map.mapping_status=1
+				              
+	</select> 
+
+
+<!-- Added By Saurabh Mittal -->
+	   <select id="getSubjectLevelRiskMappingWithoutCntryBrkDown" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationVO">
+			SELECT distinct cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			att_map.risk_category_id, map.visible_to_client, att_map.attribute_id,
+			(Select Default_Value from CMS_RISK_ATTR_DEFAULT_VAL_MAP where Attribute_ID=att_map.attribute_id) Value FROM cms_risk_master_tbl cms_risk_mst,cms_risk_category_attr_map att_map,
+			cms_risk_mapping map WHERE cms_risk_mst.risk_category_id = att_map.risk_category_id AND map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 2 AND map.risk_group=1 AND cms_risk_mst.HAS_CNTRY_BRKDOWN=0 AND cms_risk_mst.RISK_IS_ACTIVE=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isGreaterThan>
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,subject_country FROM cms_risk_mapping_country) cmcnt ON crm.mapping_id = cmcnt.mapping_id
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isGreaterThan>
+			</isNotNull>
+			AND (cmcnt.subject_country = (select COUNTRY_MASTER_ID from CMS_COUNTRY_MASTER where CODE=#subjectCountry#) OR cmcnt.subject_country =-1)
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			AND crm.SUBJECT_TYPE=#subjectType#) AND map.mapping_status=1
+				              
+	</select> 
+
+    <!-- End -->
+
+
+ <!-- Added By Saurabh Mittal -->
+	   <select id="getCaseLevelRiskMappingWithoutCntryBrkDown" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationVO">
+			SELECT distinct cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			att_map.risk_category_id, map.visible_to_client, att_map.attribute_id,
+			(Select Default_Value from CMS_RISK_ATTR_DEFAULT_VAL_MAP where Attribute_ID=att_map.attribute_id) Value FROM cms_risk_master_tbl cms_risk_mst,cms_risk_category_attr_map att_map,
+			cms_risk_mapping map WHERE cms_risk_mst.risk_category_id = att_map.risk_category_id AND map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 1 AND map.risk_group=1 AND cms_risk_mst.HAS_CNTRY_BRKDOWN=0 AND cms_risk_mst.RISK_IS_ACTIVE=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isGreaterThan>
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isGreaterThan>
+			</isNotNull>
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			) AND map.mapping_status=1
+				              
+	</select> 
+
+    <!-- End -->
+
+
+	 <!-- Added By Saurabh Mittal -->
+	   <select id="getCaseLevelRiskMappingWithoutCntryBrkDownForDelete" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationVO">
+			SELECT distinct cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			att_map.risk_category_id, map.visible_to_client, att_map.attribute_id,
+			(Select Default_Value from CMS_RISK_ATTR_DEFAULT_VAL_MAP where Attribute_ID=att_map.attribute_id) Value FROM cms_risk_master_tbl cms_risk_mst,cms_risk_category_attr_map att_map,
+			cms_risk_mapping map WHERE cms_risk_mst.risk_category_id = att_map.risk_category_id AND map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 1 AND map.risk_group=1 AND cms_risk_mst.has_cntry_brkdown=0 AND cms_risk_mst.RISK_IS_ACTIVE=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isGreaterThan>
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isGreaterThan>
+			</isNotNull>
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			) AND map.mapping_status=1
+				              
+	</select> 
+
+    <!-- End -->
+
+
+
+	<!-- Added By Saurabh Mittal -->
+	   <select id="getAllCaseLevelRiskMapping" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationVO">
+			SELECT  cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			att_map.risk_category_id,map.visible_to_client, att_map.attribute_id,
+			(Select Default_Value from CMS_RISK_ATTR_DEFAULT_VAL_MAP where Attribute_ID=att_map.attribute_id) Value FROM cms_risk_master_tbl cms_risk_mst,cms_risk_category_attr_map att_map,
+			cms_risk_mapping map WHERE cms_risk_mst.risk_category_id = att_map.risk_category_id AND map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 1 AND map.risk_group=1 AND cms_risk_mst.RISK_IS_ACTIVE=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isGreaterThan>
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isGreaterThan>
+			</isNotNull>
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			) AND map.mapping_status=1
+				              
+	</select> 
+
+    <!-- End -->
+
+
+ <!-- Added By Saurabh Mittal -->
+	<select id="getSubjectLevelRiskOldDetailsCntryBrkDown" parameterClass="com.worldcheck.atlas.vo.SubjectDetails" resultMap="oldSubjectLevelDetailsCntryBrkDownMap">
+	  select distinct crp.RISK_PROFILE_ID, crp.RISK_CODE,crp.SUBJECT_ID,crp.CRN,crp.IS_RISK_MANDATORY, (SELECT CODE FROM CMS_COUNTRY_MASTER WHERE COUNTRY_MASTER_ID=crphc.COUNTRY_MASTER_ID) COUNTRYCODE from
+	  CMS_RISK_PROFILE crp,CMS_RISK_PROFILE_HAS_CNTRY_BD crphc Where 
+	  crp.RISK_PROFILE_ID = crphc.RISK_PROFILE_ID and crp.CRN=#crn#  and crp.SUBJECT_ID=#subjectId# and crp.RISK_TYPE=2 and crp.attribute_id is null
+
+	</select>
+
+
+	<select id="getISISSubjectLevelRiskOldDetailsCntryBrkDown" parameterClass="com.worldcheck.atlas.isis.vo.SubjectDetailsVO" resultMap="oldSubjectLevelDetailsCntryBrkDownMap">
+	  select distinct crp.RISK_PROFILE_ID, crp.RISK_CODE,crp.SUBJECT_ID,crp.CRN,(SELECT CODE FROM CMS_COUNTRY_MASTER WHERE COUNTRY_MASTER_ID=crphc.COUNTRY_MASTER_ID) COUNTRYCODE from
+	  CMS_RISK_PROFILE crp,CMS_RISK_PROFILE_HAS_CNTRY_BD crphc Where 
+	  crp.RISK_PROFILE_ID = crphc.RISK_PROFILE_ID and crp.CRN=#crn#  and crp.SUBJECT_ID=#subjectId# and crp.RISK_TYPE=2 and crp.attribute_id is null
+
+	</select>
+
+	<!-- Added By Saurabh Mittal -->
+
+<select id="getSubjectLevelRiskCategoryDetails" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="subUpdationRiskAggregationVO">
+select temp2.CRN,temp2.RISK_CATEGORY_ID,temp2.SUBJECT_ID,
+(CASE 
+WHEN temp2.duplicate_count=1
+THEN (SELECT AGGREGATE_VALUE FROM 
+(SELECT DISTINCT CRN,RISK_CATEGORY_ID,SUBJECT_ID,AGGREGATE_VALUE FROM
+(SELECT CRN,RISK_CATEGORY_ID,SUBJECT_ID,AGGREGATE_VALUE_CALCULATION(CRN,RISK_CATEGORY_ID,SUBJECT_ID) AGGREGATE_VALUE FROM CMS_RISK_PROFILE WHERE CRN=#crn# AND SUBJECT_ID=#subjectId# and RISK_TYPE=2 AND ATTRIBUTE_ID IN(1,2,3,4,5,7)
+ UNION ALL 
+SELECT crp.CRN,crp.RISK_CATEGORY_ID,crp.SUBJECT_ID,AGGREGATE_VALUE_CAL_HAS_CNTRY(crp.RISK_PROFILE_ID,crp.RISK_CATEGORY_ID,crp.SUBJECT_ID) AGGREGATE_VALUE FROM CMS_RISK_PROFILE crp,CMS_RISK_PROFILE_HAS_CNTRY_BD crphc  WHERE crp.RISK_PROFILE_ID =crphc.RISK_PROFILE_ID AND crp.CRN=#crn# AND crp.SUBJECT_ID=#subjectId#
+and crp.RISK_TYPE=2 and crphc.ATTRIBUTE_ID IN(1,2,3,4,5,7)))temp where temp.CRN=temp2.CRN AND temp.SUBJECT_ID=temp2.SUBJECT_ID AND temp.RISK_CATEGORY_ID=temp2.RISK_CATEGORY_ID)
+ELSE 1
+END) AGG_VALUE
+from
+(select CRN,RISK_CATEGORY_ID,SUBJECT_ID,count(*) duplicate_count from (SELECT DISTINCT CRN,RISK_CATEGORY_ID,SUBJECT_ID,AGGREGATE_VALUE FROM
+(SELECT CRN,RISK_CATEGORY_ID,SUBJECT_ID,AGGREGATE_VALUE_CALCULATION(CRN,RISK_CATEGORY_ID,SUBJECT_ID) AGGREGATE_VALUE FROM CMS_RISK_PROFILE WHERE CRN=#crn# AND SUBJECT_ID=#subjectId# and RISK_TYPE=2 AND ATTRIBUTE_ID IN(1,2,3,4,5,7)
+ UNION ALL 
+SELECT crp.CRN,crp.RISK_CATEGORY_ID,crp.SUBJECT_ID,AGGREGATE_VALUE_CAL_HAS_CNTRY(crp.RISK_PROFILE_ID,crp.RISK_CATEGORY_ID,crp.SUBJECT_ID) AGGREGATE_VALUE FROM CMS_RISK_PROFILE crp,CMS_RISK_PROFILE_HAS_CNTRY_BD crphc  WHERE crp.RISK_PROFILE_ID =crphc.RISK_PROFILE_ID AND crp.CRN=#crn# AND crp.SUBJECT_ID=#subjectId#
+and crp.RISK_TYPE=2 and crphc.ATTRIBUTE_ID IN(1,2,3,4,5,7))) group by CRN,RISK_CATEGORY_ID,SUBJECT_ID) temp2
+
+</select>
+
+	<!-- Added By Saurabh Mittal -->
+
+<select id="getCaseLevelRiskCategoryDetails" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="subUpdationRiskCaseLevelCategoryAggregationMap">
+select temp2.CRN,temp2.RISK_CATEGORY_ID,
+(CASE 
+WHEN temp2.duplicate_count=1
+THEN (SELECT AGGREGATE_VALUE FROM 
+(SELECT DISTINCT CRN,RISK_CATEGORY_ID,AGGREGATE_VALUE FROM
+(SELECT CRN,RISK_CATEGORY_ID,CASE_AGGR_VALUE_CALCULATION(CRN,RISK_CATEGORY_ID,0) AGGREGATE_VALUE FROM CMS_RISK_PROFILE WHERE CRN=#crn# AND RISK_TYPE=1 AND ATTRIBUTE_ID IN(1,2,3,4,5,7)
+ UNION ALL 
+SELECT crp.CRN,crp.RISK_CATEGORY_ID,AGGREGATE_VALUE_CAL_HAS_CNTRY(crp.RISK_PROFILE_ID,crp.RISK_CATEGORY_ID,0) AGGREGATE_VALUE FROM CMS_RISK_PROFILE crp,CMS_RISK_PROFILE_HAS_CNTRY_BD crphc  WHERE crp.RISK_PROFILE_ID =crphc.RISK_PROFILE_ID AND crp.CRN=#crn# AND crp.RISK_TYPE=1
+and crphc.ATTRIBUTE_ID IN(1,2,3,4,5,7)))temp where temp.CRN=temp2.CRN  AND temp.RISK_CATEGORY_ID=temp2.RISK_CATEGORY_ID)
+ELSE 1
+END) AGG_VALUE
+from
+(select CRN,RISK_CATEGORY_ID,count(*) duplicate_count from (SELECT DISTINCT CRN,RISK_CATEGORY_ID,AGGREGATE_VALUE FROM
+(SELECT CRN,RISK_CATEGORY_ID,CASE_AGGR_VALUE_CALCULATION(CRN,RISK_CATEGORY_ID,0) AGGREGATE_VALUE FROM CMS_RISK_PROFILE WHERE CRN=#crn# AND RISK_TYPE=1 AND ATTRIBUTE_ID IN(1,2,3,4,5,7)
+ UNION ALL 
+SELECT crp.CRN,crp.RISK_CATEGORY_ID,AGGREGATE_VALUE_CAL_HAS_CNTRY(crp.RISK_PROFILE_ID,crp.RISK_CATEGORY_ID,0) AGGREGATE_VALUE FROM CMS_RISK_PROFILE crp,CMS_RISK_PROFILE_HAS_CNTRY_BD crphc  WHERE crp.RISK_PROFILE_ID =crphc.RISK_PROFILE_ID AND crp.CRN=#crn# AND crp.RISK_TYPE=1
+and crphc.ATTRIBUTE_ID IN(1,2,3,4,5,7))) group by CRN,RISK_CATEGORY_ID) temp2
+
+</select>
+
+
+
+<select id="getSubjectLevelAggragationDetails" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="subRiskAggregationDetailsMap">
+	select RISK_AGGREGATION_ID,RISK_CATEGORY_ID,AGGREGATE_VALUE from CMS_RISK_AGGREGATION WHERE CRN=#crn# AND SUBJECT_ID=#subjectId# and RISK_TYPE=2
+</select>
+
+
+<select id="getCaseLevelAggragationDetails" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="subRiskAggregationDetailsMap">
+	select RISK_AGGREGATION_ID,RISK_CATEGORY_ID,AGGREGATE_VALUE from CMS_RISK_AGGREGATION WHERE CRN=#crn# AND RISK_TYPE=1
+</select>
+
+	
+
+	<!-- End -->
+
+	<!-- End -->
+
+	<!-- Added By Saurabh Mittal -->
+
+		<select id="getSubjectLevelCountryForRiskCodeCntryBrkDown" parameterClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO" resultClass="java.lang.String">
+	  select distinct (SELECT CODE FROM CMS_COUNTRY_MASTER WHERE COUNTRY_MASTER_ID=crphc.COUNTRY_MASTER_ID) COUNTRYCODE from CMS_RISK_PROFILE_HAS_CNTRY_BD crphc,
+	  CMS_RISK_PROFILE crp Where 
+	  crphc.RISK_PROFILE_ID = crp.RISK_PROFILE_ID and crp.CRN=#crn#  and crp.SUBJECT_ID=#subjectId# and crp.RISK_CODE =#riskCode# and crp.RISK_TYPE=2
+
+	</select>
+
+	<!-- Added By Saurabh Mittal -->
+
+		<select id="getCaseLevelCountryForRiskCodeCntryBrkDown" parameterClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO" resultClass="java.lang.String">
+	  select distinct (SELECT CODE FROM CMS_COUNTRY_MASTER WHERE COUNTRY_MASTER_ID=crphc.COUNTRY_MASTER_ID) COUNTRYCODE from CMS_RISK_PROFILE_HAS_CNTRY_BD crphc,
+	  CMS_RISK_PROFILE crp Where 
+	  crphc.RISK_PROFILE_ID = crp.RISK_PROFILE_ID and crp.CRN=#crn# and crp.RISK_CODE =#riskCode# and crp.RISK_TYPE=1
+        
+	</select>
+
+	<!-- Added By Saurabh Mittal -->
+
+		<select id="getSubjectLevelRiskOldDetails" parameterClass="com.worldcheck.atlas.vo.SubjectDetails" resultMap="oldSubjectLevelDetailsMap">
+	  select distinct crp.RISK_CODE,crp.SUBJECT_ID,crp.CRN, crp.IS_RISK_MANDATORY from CMS_RISK_PROFILE crp Where 
+	   crp.CRN=#crn#  and crp.SUBJECT_ID=#subjectId# and crp.RISK_TYPE=2 and crp.attribute_id is not null
+
+	</select>
+
+	<select id="getCaseLevelRiskOldDetails" parameterClass="com.worldcheck.atlas.vo.SubjectDetails" resultMap="oldCaseLevelDetailsMap">
+	    select distinct crp.RISK_CODE, crp.IS_RISK_MANDATORY, crp.CRN from CMS_RISK_PROFILE crp Where 
+	    crp.CRN=#crn# and crp.RISK_TYPE=1 and crp.attribute_id is not null
+	</select>
+
+	<select id="getSubREs" parameterClass="com.worldcheck.atlas.vo.SubjectDetails" resultMap="getSubREListMap">
+	SELECT SUBJECT_ID,RE_IDS FROM CMS_SUBJECT WHERE crn=#crn# and SUBJECT_ID!=#subjectId# order by SUBJECT_ID
+	</select>
+
+ <!--   <select id="getSubREsForSubjectList" parameterClass="java.util.List" resultMap="getSubREListMap">
+	SELECT SUBJECT_ID,RE_IDS FROM CMS_SUBJECT WHERE SUBJECT_ID IN
+	<iterate open="(" close=")" conjunction=",">
+			#subjectIDStringList[]#
+	</iterate>
+	</select> -->
+
+	    <select id="getISISSubREsForSubjectList" parameterClass="java.lang.Integer" resultMap="getSubREListMap">
+	SELECT SUBJECT_ID,RE_IDS FROM CMS_SUBJECT WHERE SUBJECT_ID=#subjectId#
+	
+	</select>
+
+    <select id="getSubREstoDelete" parameterClass="java.util.Map" resultMap="getSubREListMap">
+	SELECT SUBJECT_ID,RE_IDS FROM CMS_SUBJECT WHERE crn=#crn# AND SUBJECT_ID NOT IN
+	<iterate property="subjectIDStringList" open="(" close=")" conjunction=",">
+			#subjectIDStringList[]#
+	</iterate>
+	</select>
+
+	    <select id="getISISSubREstoDelete" parameterClass="java.util.Map" resultMap="getSubREListMap">
+	SELECT SUBJECT_ID,RE_IDS FROM CMS_SUBJECT WHERE crn=#crn# AND SUBJECT_ID!=#subjectId#
+	</select>
+
+<!--	  <select id="getSubREstoDeleteWithoutBrkDown" parameterClass="java.util.Map" resultMap="getSubREListMap">
+	SELECT SUBJECT_ID,RE_IDS FROM CMS_SUBJECT WHERE crn=#crn# AND SUBJECT_ID NOT IN
+	<iterate property="subjectIDStringList" open="(" close=")" conjunction=",">
+			#subjectIDStringList[]#
+	</iterate>
+	</select> -->
+
+
+		  <select id="getISISSubREstoDeleteWithoutBrkDown" parameterClass="java.util.Map" resultMap="getSubREListMap">
+	SELECT SUBJECT_ID,RE_IDS FROM CMS_SUBJECT WHERE crn=#crn# AND SUBJECT_ID!=to_number(#subjectId#)
+	</select>
+
+		  <select id="getAllSubREs" parameterClass="java.util.Map" resultMap="getSubREListMap">
+	SELECT SUBJECT_ID,RE_IDS FROM CMS_SUBJECT WHERE crn=#crn# and SUBJECT_ID NOT IN
+	<iterate property="subjectIDStringList" open="(" close=")" conjunction=",">
+			#subjectIDStringList[]#
+	</iterate>
+	</select>
+
+  		  <select id="getISISAllSubREs" parameterClass="java.util.Map" resultMap="getSubREListMap">
+		SELECT SUBJECT_ID,RE_IDS FROM CMS_SUBJECT WHERE crn=#crn# and SUBJECT_ID!=#subjectId#
+	</select>
+
+		<select id="getSubREsBrkDown" parameterClass="com.worldcheck.atlas.vo.SubjectDetails" resultMap="getSubREListMap">
+		SELECT SUBJECT_ID,RE_IDS FROM CMS_SUBJECT WHERE crn=#crn# AND SUBJECT_ID!=#subjectId#
+	</select>
+
+
+
+	    <select id="getProfileIdList" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	     SELECT DISTINCT RISK_PROFILE_ID FROM CMS_RISK_PROFILE crp where crp.crn=#crn# and
+	crp.RISK_CODE IN
+	<iterate property="riskCodeList" open="(" close=")" conjunction=",">
+			#riskCodeList[]#
+	</iterate>
+	and crp.attribute_id is null
+	</select>
+
+<!--	<select id="getSubjectLevelAllRisks" parameterClass="com.worldcheck.atlas.vo.SubjectDetails" resultMap="oldCaseLevelDetailsMap">
+	    select distinct crp.RISK_CODE,crp.CRN from CMS_RISK_PROFILE crp Where 
+	    crp.CRN=#crn# and crp.RISK_TYPE=2 and and SUBJECT_ID!=#subjectId# crp.attribute_id is not null
+	</select> -->
+
+  <!--  <select id="getISISSubjectLevelRiskOldDetails" parameterClass="com.worldcheck.atlas.isis.vo.SubjectDetailsVO" resultMap="oldSubjectLevelDetailsMap">
+	  select distinct crp.RISK_CODE,crp.SUBJECT_ID,crp.CRN from CMS_RISK_PROFILE crp Where 
+	   crp.CRN=#crn#  and crp.SUBJECT_ID=#subjectId# and crp.RISK_TYPE=2 and crp.attribute_id is not null
+
+	</select> -->
+  <!-- End -->
+   
+
+  <!-- Added By Saurabh Mittal -->
+
+    <select id="isCaseLevelRiskCountryAlreadyExist" parameterClass="java.lang.Long" resultClass="java.lang.String">
+	  select distinct (SELECT CODE FROM CMS_COUNTRY_MASTER WHERE COUNTRY_MASTER_ID=crp.COUNTRY_MASTER_ID) COUNTRYCODE from CMS_RISK_PROFILE_HAS_CNTRY_BD crp
+	  Where crp.RISK_PROFILE_ID=#profileId#
+	</select>
+
+
+<!-- Added by saurabh mittal -->
+
+
+
+
+<select id="getTotalAggregationId" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+	select TOTAL_AGGREGATION_ID from CMS_RISK_TOTAL_AGGREGATION where CRN=#crn#
+</select>
+
+<select id="getEachSubjectAggregationId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+	select SUBJECT_AGGREGATION_ID from CMS_RISK_EACH_SUBJECT_AGGRN where SUBJECT_ID=#subjectId#
+</select>
+
+
+<select id="getAtrributeValuesCaseAggr" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+	select AGGREGATE_VALUE from CMS_RISK_AGGREGATION where CRN=#crn# and RISK_TYPE=1
+</select>
+
+
+<select id="getAtrributeValuesSubAggr" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+	select AGGREGATE_VALUE from CMS_RISK_AGGREGATION where CRN=#crn# AND RISK_TYPE=2
+</select>
+
+		
+<!-- Added By Saurabh Mittal For Case Level Risk Association -->
+
+<!-- Query to get the Risk Details associated to a Particular Case Saurabh Mittal -->
+
+    <select id="getRiskCode" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationVO">
+
+			SELECT distinct cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			att_map.risk_category_id, map.visible_to_client, att_map.attribute_id,(Select Default_Value from CMS_RISK_ATTR_DEFAULT_VAL_MAP where Attribute_ID=att_map.attribute_id) Value FROM cms_risk_master_tbl cms_risk_mst,cms_risk_category_attr_map att_map,
+			cms_risk_mapping map WHERE cms_risk_mst.risk_category_id = att_map.risk_category_id AND map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 1 AND map.risk_group=1 AND cms_risk_mst.has_cntry_brkdown=0 AND cms_risk_mst.RISK_IS_ACTIVE=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+				<isGreaterThan property="subReportType" compareValue="0">	
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			    </isGreaterThan>
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			 </isGreaterThan>
+			</isNotNull>
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			) AND map.mapping_status=1
+				              
+	</select> 
+
+	<!-- End -->
+
+
+	<!-- Query to get the Risk Details associated to a Particular Case in case of has country break down Saurabh Mittal -->
+
+    <select id="getRiskCodeHasCntryBrkDown" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationCntryBrkDownVO">
+
+			SELECT distinct cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			cms_risk_mst.risk_category_id,map.visible_to_client FROM cms_risk_master_tbl cms_risk_mst,
+			cms_risk_mapping map WHERE map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 1 AND map.risk_group=1 AND cms_risk_mst.has_cntry_brkdown=1 AND cms_risk_mst.RISK_IS_ACTIVE=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isGreaterThan>
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isGreaterThan>
+			</isNotNull>
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			) AND map.mapping_status=1
+				              
+	</select> 
+
+	<!-- End -->
+
+  <!-- Added by saurabh mittal -->
+
+   	<insert id="insertCaseAdditionTotalRiskAggr" parameterClass="com.worldcheck.atlas.vo.TotalRiskAggregationVO">
+
+	<selectKey resultClass="int" type="pre" keyProperty="totalAggregationId">
+       SELECT CMS_RISK_TOTAL_AGGREGATION_SEQ.NEXTVAL AS VALUE FROM DUAL
+    </selectKey>
+
+			INSERT INTO CMS_RISK_TOTAL_AGGREGATION (
+			TOTAL_AGGREGATION_ID,
+			CRN,
+			OVERALL_CASE_LEVEL_AGGRN,
+			OVERALL_CRN_LEVEL_AGGRN,
+			OVERALL_SUBJECT_LEVEL_AGGRN,
+			UPDATEDBY
+			)values (
+			#totalAggregationId#,
+			#crn#,
+			#overallCaseLvlAggr#,
+			#overallCrnLvlAggr#,
+			#overallSubLvlAggr#,
+			SYSDATE
+		)
+		</insert>
+
+
+
+		   <!-- Query to insert the Risk details associated to a particular case into PROFILE table Saurabh Mittal -->
+
+   	<insert id="associateRiskAtCaseCreation" parameterClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+		
+	<selectKey resultClass="long" type="pre" keyProperty="profileId">
+       SELECT CMS_RISK_PROFILE_SEQ.NEXTVAL AS VALUE FROM DUAL
+    </selectKey>
+		
+		INSERT INTO CMS_RISK_PROFILE (
+		RISK_PROFILE_ID,
+		RISK_CATEGORY_ID,
+		RISK_CODE,
+		RISK_TYPE,
+		CRN,
+		SUBJECT_ID,
+		ATTRIBUTE_ID,
+		ATTRIBUTE_VALUE,
+		IS_RISK_MANDATORY,
+		IS_RISK_APPLIED,
+		VISIBLE_TO_CLIENT,
+		UPDATEDON
+		)values
+		(
+		#profileId#,
+		#riskCategoryId#,
+		#riskCode#,
+		#riskType#,
+		#crn#,
+		#subjectId#,
+		#attributeId#,
+		#attributeValue#,
+		#isRiskMandatory#,
+		#isRiskApplied#,
+		#visibleToClient#,
+		sysdate
+		)       
+   </insert>
+
+
+		   <!-- Query to update the Risk details associated to a particular case into PROFILE table Saurabh Mittal 21-05-2015 -->
+
+   	<update id="updateCaseLevelRisk" parameterClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+		UPDATE CMS_RISK_PROFILE SET
+		IS_RISK_MANDATORY=#isRiskMandatory#,
+		SUBJECT_ID=#subjectId#,
+		UPDATEDON=sysdate
+		WHERE 
+		RISK_CODE=#riskCode# AND
+		CRN = #crn#     
+   </update>
+
+   	<update id="updateSubjectLevelRisk" parameterClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+		UPDATE CMS_RISK_PROFILE SET
+		IS_RISK_MANDATORY=#isRiskMandatory#,
+		SUBJECT_ID=#subjectId#,
+		UPDATEDON=sysdate
+		WHERE 
+		RISK_CODE=#riskCode# AND
+		CRN = #crn#
+		
+   </update>
+
+
+
+   <!-- Query to insert the case level risk history into CMS_RISK_PROFILE_HISTORY Saurabh Mittal -->
+
+
+<insert id="insertCaseLevelRiskHistory" parameterClass="com.worldcheck.atlas.vo.RiskProfileHistoryVO">
+		
+	<selectKey resultClass="long" type="pre" keyProperty="historyId">
+       SELECT CMS_RISK_PROFILE_HISTORY_SEQ.NEXTVAL AS VALUE FROM DUAL
+    </selectKey>
+		
+		INSERT INTO CMS_RISK_PROFILE_HISTORY (
+		HISTORY_ID,
+		RISK_CATEGORY_ID,
+		RISK_CODE,
+		CRN,
+		NEW_VALUE,
+		ACTION,
+		TASK,
+		UPDATEDON
+		)values
+		(
+		#historyId#,
+		#riskCategoryId#,
+		#riskCode#,
+		#crn#,
+		#newValue#,
+		#action#,
+		#task#,
+		sysdate
+		)       
+   </insert>
+
+
+   	   <select id="getAlreadyAssociatedRisks" parameterClass="java.lang.String" resultMap="oldCaseLevelDetailsMap">
+       Select distinct CRN,Risk_Code,IS_RISK_MANDATORY from CMS_RISK_PROFILE where CRN=#crn# and RISK_TYPE=1              
+		</select> 
+
+	<!-- End -->
+
+		<!-- End -->
+
+
+	   <select id="getAlreadyAggregatedCategory" parameterClass="java.lang.String" resultClass="java.lang.String">
+       Select RISK_CATEGORY_ID from CMS_RISK_AGGREGATION where CRN=#crn# and RISK_TYPE=1	 	              
+		</select> 
+
+
+	<select id="getCaseLevelRiskAggregation" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="subAdditionRiskAggregationVO">
+
+			SELECT distinct cms_risk_mst.risk_type,
+			cms_risk_mst.risk_category_id FROM cms_risk_master_tbl cms_risk_mst,
+			cms_risk_mapping map WHERE map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 1 AND map.risk_group=1 AND cms_risk_mst.RISK_IS_ACTIVE=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isGreaterThan>
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			<isGreaterThan property="subReportType" compareValue="0">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isGreaterThan>
+			</isNotNull>
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			) AND map.mapping_status=1
+				              
+	</select> 
+     
+		 <!-- Added By Juheen.For Risk CR. -->
+		  <select id="getAttributeName" parameterClass="java.lang.Long" resultClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+	     	select attr_map.attribute_id attributeId, attr_master.attribute_name attributeName,attr_value.default_value attributeValue
+			from cms_risk_category_attr_master attr_master,
+			cms_risk_category_attr_map attr_map ,CMS_RISK_ATTR_DEFAULT_VAL_MAP attr_value
+			where attr_master.attribute_id = attr_map.attribute_id
+			and attr_master.attribute_id = attr_value.attribute_id
+			and attr_map.risk_category_id = #riskCategoryId#
+	      </select>
+		  
+
+	<!-- End -->
+
+		<!-- End by Himanshu -->
+		
+		<!-- Query to get report details for given CRN U6027780 BI-293 -->
+
+		 <select id="ReportTypeForCase" parameterClass="java.lang.String" resultMap="subjectRPTDetails">
+	     	SELECT REPORT_TYPE_ID,
+				(select r.Report_TYPE from cms_report_type_master r  
+				where r.REPORT_TYPE_MASTER_ID = c.REPORT_TYPE_ID) as REPORT_TYPE, c.IS_SUBJ_LEVEL_SUBRPT_REQ
+				FROM CMS_CLIENTCASE c where c.crn=#crn#
+	      </select>
+		
+		<!-- Query to get case client and report details for given CRN U6027780 BI-293 -->
+		 <select id="caseDtlsForRiskProfile" parameterClass="com.worldcheck.atlas.isis.vo.SubjectDetailsVO" resultMap="caseDetailsMapForRiskProfile">
+	     	SELECT CLIENT_CODE,REPORT_TYPE_ID,decode(NVL(is_subj_level_subrpt_req,0),0, SUB_REPORT_TYPE_ID, (select s.sub_report_type_id from cms_subject s where s.subject_id = #subjectId#)) FROM CMS_CLIENTCASE = #crn# 
+	      </select>
+		
+		
+		<!--Added By 6027481 for BI-293 -->
+		
+		
+		<!--  Add by 6035037 for BI-293 -->     
+		
+		<select id="slSubreportFlag" resultClass="java.lang.String" parameterClass="java.lang.String">
+			
+			SELECT 	CCC.IS_SUBJ_LEVEL_SUBRPT_REQ from CMS_CLIENTCASE CCC where CCC.CRN=#crn#
+			
+		</select>
+		
+		
+	<parameterMap id="getParameterMap" class="java.util.Map">
+		
+		<parameter property="strSubject" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="strBudget" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="strOut" jdbcType="INTEGER" javaType="java.lang.String" mode="OUT"/>
+		
+	</parameterMap>
+	<procedure id="updateSubjectBudget" parameterMap="getParameterMap">
+
+		{ call SUBJECT_LEVEL_BUDGET( ?,?,?)} 
+   </procedure>
+		<!--End -->	
+		
+	</sqlMap>

@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="GccGOCVO">
+	<insert id="insert" parameterClass="com.worldcheck.juno.vo.component.GccGOCVO">
+	  <selectKey keyProperty="id"
+				 resultClass="long">
+		SELECT RG_GCC_SUMMARY_SEQ.NEXTVAL from dual
+	  </selectKey>
+	  insert into RG_GCC_SUMMARY (
+		GCC_SUMMARY_ID,CASE_ID,SUBJECT_ID,PROCESSCYCLEID,TEAM_ID,
+		DOCUMENT_NO,FORM_TYPE_DATASET,UPDATED_ON,UPDATED_BY,TABLE_BOTTOM_NOTES,
+		SAME_NAME_IND,REPORT_INCLUDE_IND,IS_AUTO_SAVED,LOCK_ARRANGMENT_IND,RISK_SUMMARY,ENTERED_DATE,GCC_COMP_TYPE,GRID_UPDATED_ON
+		)values (
+		#id#,#crn#,#subjectId#,#processCycleId#,#teamTypeId#,
+		(select NVL(MAX(DOCUMENT_NO),0)
+		FROM RG_GCC_SUMMARY
+		WHERE SUBJECT_ID = #subjectId#
+		AND CASE_ID = #crn#
+		AND PROCESSCYCLEID = #processCycleId#)+1,'GOC',sysdate,#updateBy#,#tableBottomNotes#,
+		#identifiedSubject#,'Y','N','N',#summaryOfRisk#,#date#,#gccType#,sysdate
+		)
+	</insert>
+	<insert id="insertDetailsForGccGOC" parameterClass="com.worldcheck.juno.vo.component.GccGOCVO">
+			INSERT INTO RG_GCC_GOCDOC_DETAILS (GOC_DOC_ID,LINK,SOURCE,ARTICLE_TEXT,HEADLINE,GCC_SUMMARY_ID)
+		values (RG_GCC_GOCDOC_DETAILS_SEQ.NEXTVAL, #link#,#source#,#articleText#,#headLine#,#id#		
+              )
+	
+	</insert>
+	<insert id="insertRisksForRecord" parameterClass="com.worldcheck.juno.vo.component.GccWCRiskVO">
+		INSERT INTO RG_GCC_WCDOC_RISK_MAP (GCC_WCDOC_RISK_MAP_ID, RISK_CODE, GCC_SUMMARY_ID)
+		SELECT RG_GCC_WCDOC_RISK_MAP_SEQ.NEXTVAL, #riskVO.code#,#gccGOCVO.id#
+		FROM dual
+		WHERE NOT EXISTS (SELECT GCC_WCDOC_RISK_MAP_ID
+                    FROM RG_GCC_WCDOC_RISK_MAP
+                    WHERE GCC_SUMMARY_ID = #gccGOCVO.id#
+					AND RISK_CODE = #riskVO.code#
+              )
+    </insert>
+	
+	<insert id="insertAutoSave" parameterClass="com.worldcheck.juno.vo.component.GccGOCVO">
+	  <selectKey keyProperty="autoSaveId"
+				 resultClass="long">
+		SELECT RG_GCC_SUMMARY_SEQ.NEXTVAL from dual
+	  </selectKey>
+	  insert into RG_GCC_SUMMARY (
+		GCC_SUMMARY_ID,CASE_ID,SUBJECT_ID,PROCESSCYCLEID,TEAM_ID,ENTERED_DATE,
+		FORM_TYPE_DATASET,UPDATED_ON,UPDATED_BY,TABLE_BOTTOM_NOTES,
+		SAME_NAME_IND,REPORT_INCLUDE_IND,IS_AUTO_SAVED,LOCK_ARRANGMENT_IND,PARENT_RECORD_ID,GCC_COMP_TYPE
+		)values (
+		#autoSaveId#,#crn#,#subjectId#,#processCycleId#,#teamTypeId#,#date#,
+		'GOC',sysdate,#updateBy#,#tableBottomNotes#,
+		#identifiedSubject#,'Y','Y','N',#id#,#gccType#
+		)
+	</insert>
+	
+	<update id="update" parameterClass="com.worldcheck.juno.vo.component.GccGOCVO">
+		UPDATE RG_GCC_SUMMARY
+		SET
+		PROCESSCYCLEID = #processCycleId#,
+		UPDATED_ON = sysdate,
+		UPDATED_BY = #updateBy#,
+		TABLE_BOTTOM_NOTES = #tableBottomNotes#,
+		SAME_NAME_IND =	#identifiedSubject#,
+		RISK_SUMMARY = #summaryOfRisk#,
+		ENTERED_DATE = #date#,
+		IS_AUTO_SAVED = 'N',
+		PARENT_RECORD_ID = null,
+		DOCUMENT_NO = #rdNumber#
+		WHERE GCC_SUMMARY_ID = #id#
+	</update>
+	<update id="updateDetailsForGccGOC" parameterClass="com.worldcheck.juno.vo.component.GccGOCVO">
+			UPDATE RG_GCC_GOCDOC_DETAILS 
+			SET
+			LINK = #link#,
+			SOURCE = #source#,
+			ARTICLE_TEXT = #articleText#,
+			HEADLINE = #headLine#
+			WHERE GCC_SUMMARY_ID = #id#
+	</update>
+	<update id="updateAutoSave" parameterClass="com.worldcheck.juno.vo.component.GccGOCVO">
+		UPDATE RG_GCC_SUMMARY 
+		SET
+		PROCESSCYCLEID = #processCycleId#,
+		UPDATED_ON = sysdate,
+		UPDATED_BY = #updateBy#,
+		TABLE_BOTTOM_NOTES = #tableBottomNotes#,
+		SAME_NAME_IND = #identifiedSubject#,
+		RISK_SUMMARY = #summaryOfRisk#,
+		ENTERED_DATE = #date#,
+		IS_AUTO_SAVED = 'Y',
+		PARENT_RECORD_ID = #id#
+		WHERE GCC_SUMMARY_ID = #autoSaveId#
+	</update>
+	
+	<resultMap id="riskCat" class="com.worldcheck.juno.vo.component.RiskVO">
+		<result property="code" column="RISK_CODE" />
+		<result property="name" column="RISK" />
+	</resultMap>
+	
+	<resultMap id="gccRiskSet" class="com.worldcheck.juno.vo.component.GccWCRiskVO" groupBy="id">
+		<result property="id" column="GCC_WCDOC_RISK_MAP_ID" />
+		<result property="parentId" column="GCC_SUMMARY_ID" />
+		<result property="riskVO" resultMap="GccGOCVO.riskCat" />
+	</resultMap>
+	
+	<resultMap id="gccList" class="com.worldcheck.juno.vo.component.GccGOCVO" groupBy="id">
+		<result property="id" column="GCC_SUMMARY_ID" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="subjectName" column="REPORT_SUBJECT_NAME" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="isAutoSave" column="IS_AUTO_SAVED" />
+		<result property="entered" column="ENTERED_DATE" />
+		<result property="gccWcdocId" column="GCC_WCDOC_ID" />
+		<result property="gccGocDocId" column="GOC_DOC_ID" />
+		<result property="summaryOfRisk" column="RISK_SUMMARY" />
+		<result property="teamTypeId" column="TEAM_ID" />
+		<result property="identifiedSubject" column="SAME_NAME_IND" />
+		<result property="formType" column="FORM_TYPE_DATASET" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="rdNumber" column="DOCUMENT_NO" />
+		<result property="gccId" column="GCC_ID" />
+		<result property="gccType" column="GCC_COMP_TYPE" />
+		<result property="includeExcludeIdentifire" column="REPORT_INCLUDE_IND" />
+		<result property="gccRiskSet" resultMap="GccGOCVO.gccRiskSet" notNullColumn="GCC_WCDOC_RISK_MAP_ID" />
+	</resultMap>
+		<select id="getSearchCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+
+		SELECT count(*)
+		FROM RG_GCC_SUMMARY rg
+		,CMS_CASECYCLE cc, RG_SUBJECT cs
+		WHERE
+		CASE_ID=#crn# and
+		rg.PROCESSCYCLEID = cc.CASECYCLE_ID and rg.SUBJECT_ID
+		= cs.SUBJECT_ID
+		AND upper(rg.IS_AUTO_SAVED)=upper('N')
+		<isNotNull property="componentType">
+			<isNotEqual prepend="AND" property="componentType" compareValue="">
+				rg.GCC_COMP_TYPE=#componentType# 
+			</isNotEqual>
+		</isNotNull>
+		</select>
+	<select id="listByCRN" resultMap="gccList">
+            SELECT * FROM (SELECT a.*, ROWNUM rn FROM (SELECT rg.GCC_SUMMARY_ID,rg.IS_AUTO_SAVED,rg.RISK_SUMMARY,
+            rg.FORM_TYPE_DATASET,rg.CASE_ID,rg.SUBJECT_ID,
+            cs.REPORT_SUBJECT_NAME,rg.PROCESSCYCLEID,cc.DESCRIPTION,
+            to_date(to_char(rg.UPDATED_ON, 'dd/mm/yyyy HH:MI:SS AM'),'dd/mm/yyyy HH:MI:SS AM') UPDATED_ON,rg.UPDATED_BY,rg.TABLE_BOTTOM_NOTES,
+            rg.DOCUMENT_NO,rg.GCC_ID,rg.SAME_NAME_IND,
+            rg.PRINT_ORDER,rg.LOCK_ARRANGMENT_IND,rg.REPORT_INCLUDE_IND,rg.GCC_COMP_TYPE,
+            rg.TEAM_ID,to_date(to_char(rg.ENTERED_DATE, 'dd/mm/yyyy HH:MI:SS AM'),'dd/mm/yyyy HH:MI:SS AM')ENTERED_DATE,
+            rgwcdtl.GCC_WCDOC_ID,rggocdtl.GOC_DOC_ID,rgwcrk.GCC_WCDOC_RISK_MAP_ID,
+            rgwcrk.RISK_CODE,
+			risk.RISK         
+            FROM RG_GCC_SUMMARY rg
+            JOIN CMS_CASECYCLE cc ON cc.CASECYCLE_ID = rg.PROCESSCYCLEID
+            JOIN RG_SUBJECT cs ON cs.SUBJECT_ID = rg.SUBJECT_ID
+            LEFT OUTER JOIN RG_GCC_WCDOC_RISK_MAP rgwcrk ON rgwcrk.GCC_SUMMARY_ID = rg.GCC_SUMMARY_ID
+            LEFT OUTER JOIN RG_GCC_WCDOC_DETAILS rgwcdtl ON rgwcdtl.GCC_SUMMARY_ID = rg.GCC_SUMMARY_ID
+            LEFT OUTER JOIN RG_GCC_GOCDOC_DETAILS rggocdtl ON rggocdtl.GCC_SUMMARY_ID = rg.GCC_SUMMARY_ID
+            LEFT OUTER JOIN CMS_RISK_MASTER risk1 ON risk1.RISK_CODE = rgwcrk.RISK_CODE
+            WHERE
+            rg.CASE_ID = #crn# AND upper(rg.IS_AUTO_SAVED)=upper('N')
+            order by rg.SUBJECT_ID ASC) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+	</select>
+	<resultMap id="extendedGccGOCList" class="com.worldcheck.juno.vo.component.GccGOCVO" extends="gccList">
+		<result property="tableBottomNotes" column="TABLE_BOTTOM_NOTES" />
+		<result property="link" column="LINK" />
+		<result property="source" column="SOURCE" />
+		<result property="headLine" column="HEADLINE" />
+		<result property="articleText" column="ARTICLE_TEXT" />
+	</resultMap>
+	<select id="getById" resultMap="extendedGccGOCList">
+		SELECT rg.GCC_SUMMARY_ID,rg.IS_AUTO_SAVED,rg.RISK_SUMMARY,
+            rg.FORM_TYPE_DATASET,rg.CASE_ID,rg.SUBJECT_ID,
+            cs.REPORT_SUBJECT_NAME,rg.PROCESSCYCLEID,cc.DESCRIPTION,
+            to_date(to_char(rg.UPDATED_ON, 'dd/mm/yyyy HH:MI:SS AM'),'dd/mm/yyyy HH:MI:SS AM') UPDATED_ON,rg.UPDATED_BY,rg.TABLE_BOTTOM_NOTES,
+            rg.DOCUMENT_NO,rg.GCC_ID,rg.SAME_NAME_IND,
+            rg.PRINT_ORDER,rg.LOCK_ARRANGMENT_IND,rg.REPORT_INCLUDE_IND,
+            rg.TEAM_ID,rg.ENTERED_DATE,rg.GCC_COMP_TYPE,
+            rgwcdtl.GCC_WCDOC_ID,rggocdtl.GOC_DOC_ID,rgwcrk.GCC_WCDOC_RISK_MAP_ID,
+            rgwcrk.RISK_CODE,
+			risk1.RISK,rggocdtl.LINK,rggocdtl.SOURCE,rggocdtl.ARTICLE_TEXT,rggocdtl.HEADLINE
+		FROM RG_GCC_SUMMARY rg
+		JOIN CMS_CASECYCLE cc ON cc.CASECYCLE_ID = rg.PROCESSCYCLEID
+		JOIN RG_SUBJECT cs ON cs.SUBJECT_ID = rg.SUBJECT_ID
+		LEFT OUTER JOIN RG_GCC_WCDOC_RISK_MAP rgwcrk ON rgwcrk.GCC_SUMMARY_ID = rg.GCC_SUMMARY_ID
+        LEFT OUTER JOIN RG_GCC_WCDOC_DETAILS rgwcdtl ON rgwcdtl.GCC_SUMMARY_ID = rg.GCC_SUMMARY_ID
+        LEFT OUTER JOIN RG_GCC_GOCDOC_DETAILS rggocdtl ON rggocdtl.GCC_SUMMARY_ID = rg.GCC_SUMMARY_ID
+        LEFT OUTER JOIN CMS_RISK_MASTER risk1 ON risk1.RISK_CODE = rgwcrk.RISK_CODE
+        
+		WHERE
+		rg.GCC_SUMMARY_ID = #id#
+		order by rg.PRINT_ORDER ASC
+	</select>
+	<delete id="removeRisksExceptIds">
+		DELETE FROM RG_GCC_WCDOC_RISK_MAP
+		WHERE GCC_SUMMARY_ID = #gccId# 
+		AND RISK_CODE NOT IN ($idList$)
+	</delete>
+	<delete id="removeRisksForRecord">
+		DELETE FROM RG_GCC_WCDOC_RISK_MAP WHERE
+		GCC_SUMMARY_ID = #gccId#
+	</delete>
+	<!--generic query-->
+	<select id="findById" resultClass="int">
+		select count(rg.GCC_SUMMARY_ID)
+		FROM RG_GCC_SUMMARY rg
+		WHERE
+		rg.GCC_SUMMARY_ID = #id#
+	</select>
+	
+	<!--generic query-->
+	<delete id="delete">
+		delete FROM RG_GCC_SUMMARY WHERE
+		GCC_SUMMARY_ID = #id#
+	</delete>
+	
+
+	<!--generic query-->
+	<delete id="deleteIds">
+		delete FROM RG_GCC_SUMMARY WHERE
+		GCC_SUMMARY_ID IN 
+		<iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[]#
+	    </iterate>
+	</delete>	
+	<!--generic query-->
+	<delete id="deleteNewAutoSave">
+		delete FROM RG_GCC_SUMMARY WHERE
+		CASE_ID=#crn#  AND
+		upper(IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID IS NULL
+	</delete>
+	
+	<!--generic query-->
+	<delete id="deleteAutoSave">
+		delete FROM RG_GCC_SUMMARY WHERE
+		CASE_ID=#crn#  AND
+		upper(IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID = #parentId#
+	</delete>
+	
+	<!--generic query-->
+	<select id="findAutoSave" parameterClass="java.util.HashMap" resultClass="java.lang.Long">
+		SELECT rg.GCC_SUMMARY_ID
+		FROM RG_GCC_SUMMARY rg, RG_GCC_SUMMARY prnt
+		WHERE 
+		upper(rg.IS_AUTO_SAVED)=upper('Y') AND
+		rg.PARENT_RECORD_ID = #parentId#
+		AND prnt.GCC_SUMMARY_ID = rg.PARENT_RECORD_ID
+		and prnt.PROCESSCYCLEID in ($processCycleId$)
+	</select>
+	
+	<!--generic query-->
+	<select id="findNewAutoSave" parameterClass="java.util.HashMap" resultClass="java.lang.Long">
+		SELECT rg.GCC_SUMMARY_ID
+		FROM RG_GCC_SUMMARY rg
+		WHERE CASE_ID=#crn# AND
+		upper(rg.IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID IS NULL
+	</select>
+	
+	<insert id="insertHistory" parameterClass="com.worldcheck.juno.vo.component.GccGOCVO">
+	<selectKey keyProperty="summaryHstId" resultClass="long">
+			SELECT RG_GCC_SUMMARY_HST_SEQ.NEXTVAL from dual
+		</selectKey>
+		insert into RG_GCC_SUMMARY_HST (
+		HISTORY_ID,CASE_ID,SUBJECT_ID,PROCESSCYCLEID,UPDATED_ON,UPDATED_BY,TABLE_BOTTOM_NOTES,SAME_NAME_IND,
+		RISK_SUMMARY,REPORT_INCLUDE_IND,FORM_TYPE_DATASET,TEAM_ID,ENTERED_DATE,DOCUMENT_NO,GCC_SUMMARY_ID,GCC_COMP_TYPE
+		) SELECT #summaryHstId#,CASE_ID,SUBJECT_ID,PROCESSCYCLEID,sysdate,UPDATED_BY,TABLE_BOTTOM_NOTES,SAME_NAME_IND,
+		RISK_SUMMARY,REPORT_INCLUDE_IND,FORM_TYPE_DATASET,TEAM_ID,ENTERED_DATE,DOCUMENT_NO,GCC_SUMMARY_ID,GCC_COMP_TYPE
+		FROM RG_GCC_SUMMARY
+		WHERE GCC_SUMMARY_ID = #id#
+		
+	</insert>
+	
+	<insert id="insertHistoryDetails" parameterClass="java.util.HashMap">
+		insert into RG_GCC_GOCDOC_DETAILS_HST (
+		HISTORY_ID,GOC_DOC_ID,SOURCE,LINK,HEADLINE,ARTICLE_TEXT,GCC_SUMMARY_ID,HISTORY_SUMMARY_ID
+		) SELECT RG_GCC_GOCDOC_DETAILS_HST_SEQ.NEXTVAL,GOC_DOC_ID,SOURCE,LINK,HEADLINE,ARTICLE_TEXT,GCC_SUMMARY_ID,#summaryId#
+		FROM RG_GCC_GOCDOC_DETAILS
+		WHERE GCC_SUMMARY_ID = #id#
+		
+	</insert>
+	
+		<!-- GCC History  -->
+	<select id="getArticleText" resultClass="java.lang.String">
+		select ARTICLE_TEXT from
+		RG_GCC_GOCDOC_DETAILS_HST where history_id=#recordId#
+	</select>
+
+	<select id="getHistoryCount" resultClass="java.lang.Integer">
+		SELECT count(*)
+		FROM
+		RG_GCC_GOCDOC_DETAILS_HST
+		rg where
+		rg.GCC_SUMMARY_ID=#recordId#
+	</select>
+
+	<resultMap id="resultHistory"
+		class="com.worldcheck.juno.vo.component.GccGOCVO">
+		<result property="id" column="HISTORY_ID" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="entered" column="ENTERED_DATE" />
+		<result property="link" column="link" />
+		<result property="source" column="source" />
+		<result property="headLine" column="headline" />
+		<result property="summaryOfRisk" column="RISK_SUMMARY" />
+		<result property="tableBottomNotes" column="TABLE_BOTTOM_NOTES" />
+
+	</resultMap>
+
+	<select id="getHistory" resultMap="resultHistory"
+		parameterClass="java.util.HashMap">
+
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (
+		SELECT
+		wchst.HISTORY_ID,
+		rg.UPDATED_ON, rg.UPDATED_BY, rg.PROCESSCYCLEID,
+		cc.DESCRIPTION,rg.ENTERED_DATE,rg.RISK_SUMMARY, wchst.source,wchst.headline,
+		rg.TABLE_BOTTOM_NOTES, wchst.link
+		FROM RG_GCC_SUMMARY_HST	rg,CMS_CASECYCLE cc,
+		RG_GCC_GOCDOC_DETAILS_HST wchst
+		WHERE rg.PROCESSCYCLEID = cc.CASECYCLE_ID
+		and rg.GCC_SUMMARY_ID=#recordId#	and 
+		rg.history_id=wchst.history_summary_id
+      	order by rg.UPDATED_ON desc
+      	) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+
+	</select>
+	
+	<update id="updateRdNumber" parameterClass="java.util.HashMap">
+		update RG_GCC_SUMMARY set DOCUMENT_NO=
+		case GCC_SUMMARY_ID
+		<iterate property="recList">
+			when #recList[].id# then #recList[].rdNumber#
+		</iterate>
+		END
+		<isEqual prepend="," property="changeUpdateOn"
+				compareValue="true">
+		GRID_UPDATED_ON = sysdate
+		</isEqual>
+		where GCC_SUMMARY_ID IN
+
+		<iterate property="recList" open="(" close=")" conjunction=",">
+			#recList[].id#
+	    </iterate>
+
+	</update>
+	
+	<resultMap id="resultVO"
+		class="com.worldcheck.juno.vo.component.GccGOCVO">
+		<result property="id" column="GCC_SUMMARY_ID" />
+
+	</resultMap>
+	
+	<select id="getOrderedDocs" parameterClass="java.util.HashMap"
+		resultMap="resultVO">
+		SELECT GCC_SUMMARY_ID
+		FROM RG_GCC_SUMMARY rg, RG_SUBJECT cs
+		WHERE
+		rg.CASE_ID = #crn#
+		AND	upper(rg.IS_AUTO_SAVED)=upper('N')
+		AND rg.SUBJECT_ID=cs.subject_id 
+		AND upper(rg.REPORT_INCLUDE_IND)!='N'
+		AND rg.PROCESSCYCLEID=#processCycleId#
+		AND rg.gcc_comp_type = #componentType#
+		order by rg.FORM_TYPE_DATASET desc,cs.report_order,same_name_ind asc, GCC_SUMMARY_ID asc
+	</select>
+	
+	<select id="getAddedOrderedDocs" parameterClass="java.util.HashMap"
+		resultMap="resultVO">
+		SELECT GCC_SUMMARY_ID
+		FROM RG_GCC_SUMMARY rg, RG_SUBJECT cs
+		WHERE
+		rg.CASE_ID = #crn#
+		AND	upper(rg.IS_AUTO_SAVED)=upper('N')
+		AND rg.SUBJECT_ID=cs.subject_id 
+		AND upper(rg.REPORT_INCLUDE_IND)!='N'
+		AND rg.PROCESSCYCLEID=#processCycleId#
+		AND rg.gcc_comp_type = #componentType# 
+		order by rg.FORM_TYPE_DATASET desc,cs.report_order,same_name_ind asc, document_no asc
+	</select>
+	
+	
+	<insert id="makecopyGCC" parameterClass="java.util.HashMap">
+
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_GCC_SUMMARY_SEQ.NEXTVAL from dual
+	  </selectKey>
+		insert into RG_GCC_SUMMARY (
+		GCC_SUMMARY_ID,CASE_ID,SUBJECT_ID,PROCESSCYCLEID,DOCUMENT_NO,
+		UPDATED_ON,UPDATED_BY,TABLE_BOTTOM_NOTES,SAME_NAME_IND,
+		RISK_SUMMARY,REPORT_INCLUDE_IND,
+		IS_AUTO_SAVED,FORM_TYPE_DATASET,TEAM_ID,ENTERED_DATE,GCC_COMP_TYPE
+		)
+		select #id#, CASE_ID,SUBJECT_ID,#processCycleId#,DOCUMENT_NO,
+		sysdate,UPDATED_BY,TABLE_BOTTOM_NOTES,SAME_NAME_IND,
+		RISK_SUMMARY,'Y',
+		IS_AUTO_SAVED,FORM_TYPE_DATASET,TEAM_ID,ENTERED_DATE,GCC_COMP_TYPE
+		from
+		RG_GCC_SUMMARY
+		where GCC_SUMMARY_ID =#recordId#
+
+	</insert>
+
+	<insert id="makecopyGCCGOCDTL" parameterClass="java.util.HashMap">
+
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_GCC_GOCDOC_DETAILS_SEQ.NEXTVAL from dual
+	  </selectKey>
+
+		insert into RG_GCC_GOCDOC_DETAILS (
+		GOC_DOC_ID,SOURCE,LINK,HEADLINE,ARTICLE_TEXT,GCC_SUMMARY_ID
+		)
+		select #id#, SOURCE,LINK,HEADLINE,ARTICLE_TEXT,#ids#
+		from
+		RG_GCC_GOCDOC_DETAILS
+		where GCC_SUMMARY_ID =#recordId#
+
+	</insert>
+	<insert id="makeCopyRisk" parameterClass="java.util.HashMap">
+		INSERT INTO
+		RG_GCC_WCDOC_RISK_MAP
+		(GCC_WCDOC_RISK_MAP_ID, RISK_CODE,
+		GCC_SUMMARY_ID)
+		SELECT RG_GCC_WCDOC_RISK_MAP_SEQ.NEXTVAL,
+		RISK_CODE,#id# from RG_GCC_WCDOC_RISK_MAP
+		Where
+		GCC_SUMMARY_ID=#recordId#
+		
+	</insert>
+	
+	<resultMap id="miniComponentRecord"
+		class="com.worldcheck.juno.vo.component.GccGOCVO" groupBy="id">
+		<result property="id" column="GCC_SUMMARY_ID" />
+		<result property="updateOn" column="UPDATED_ON" />
+	</resultMap>
+
+	<!--generic query-->
+	<select id="getUpdationTimeById" resultMap="miniComponentRecord">
+		SELECT
+		rg.GCC_SUMMARY_ID,
+		rg.UPDATED_ON
+		FROM RG_GCC_SUMMARY rg
+		WHERE
+		rg.GCC_SUMMARY_ID = #id#
+	</select>
+</sqlMap>

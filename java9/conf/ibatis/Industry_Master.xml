@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" 
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Industry_Master">    
+
+    <resultMap id="resultGrid"   class="com.worldcheck.atlas.vo.masters.IndustryMasterVO">
+		<result property="industryCode" column="industryCode"/>
+		<result property="industry" column="INDUSTRY"/>					
+   </resultMap>
+
+
+  <select id="getIndustryGridList" resultMap="resultGrid" parameterClass="com.worldcheck.atlas.vo.masters.IndustryMasterVO"> 
+     SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (SELECT 
+	    CMS_INDUSTRY_MASTER.INDUSTRY_CODE industryCode,
+	    CMS_INDUSTRY_MASTER.INDUSTRY 
+    FROM 
+    	CMS_INDUSTRY_MASTER
+    WHERE 
+        CMS_INDUSTRY_MASTER.STATUS=#status#
+	
+		<isNotNull  property="industry">
+		<isNotEmpty prepend="AND" property="industry">
+			upper(CMS_INDUSTRY_MASTER.INDUSTRY) LIKE  upper(TRIM('%'||#industry#||'%'))
+		</isNotEmpty>
+	     </isNotNull>	           
+	     <isEqual property="sortColumnName" compareValue="industryCode">
+				  ORDER By   to_number(substr(industryCode,6,length(industryCode))) $sortType$	
+		</isEqual>  
+		 <isNotEqual property="sortColumnName" compareValue="industryCode">
+				  ORDER By upper($sortColumnName$) $sortType$
+		</isNotEqual>          
+		 ) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+   </select>
+   
+   <select id="getIndustryGridListCount" resultClass="int" parameterClass="com.worldcheck.atlas.vo.masters.IndustryMasterVO"> 
+     SELECT Count(*) 
+    FROM 
+    	CMS_INDUSTRY_MASTER
+    WHERE 
+        CMS_INDUSTRY_MASTER.STATUS=#status#
+	
+		<isNotNull  property="industry">
+		<isNotEmpty prepend="AND" property="industry">
+			upper(CMS_INDUSTRY_MASTER.INDUSTRY) LIKE  upper(TRIM('%'||#industry#||'%'))
+		</isNotEmpty>
+	     </isNotNull>		
+   </select>
+   
+    <update id="deActivate" parameterClass="java.util.Map">
+		UPDATE
+			  CMS_INDUSTRY_MASTER
+		SET
+			  CMS_INDUSTRY_MASTER.STATUS = 
+				<isEqual property="industryStatus" compareValue="0">
+				  	1
+				 </isEqual>
+				<isEqual property="industryStatus" compareValue="1">
+					0
+				</isEqual>,
+				CMS_INDUSTRY_MASTER.UPDATED_BY=#updatedBy#,
+				CMS_INDUSTRY_MASTER.UPDATED_ON=sysdate
+		WHERE
+			  CMS_INDUSTRY_MASTER.INDUSTRY_CODE IN
+		<iterate property="industryCodeList" open="(" close=")" conjunction=",">
+			#industryCodeList[]#
+		</iterate>
+	</update>	
+	
+	
+	<select id="getIndustryInfo" resultClass="com.worldcheck.atlas.vo.masters.IndustryMasterVO" parameterClass="java.lang.String"> 
+    SELECT 
+	    CMS_INDUSTRY_MASTER.INDUSTRY_CODE industryCode,
+	    CMS_INDUSTRY_MASTER.INDUSTRY industry,
+	    CMS_INDUSTRY_MASTER.STATUS status
+    FROM 
+    	CMS_INDUSTRY_MASTER
+    WHERE 
+       	CMS_INDUSTRY_MASTER.INDUSTRY_CODE=#industryCode#
+    </select>
+
+	<update id="updateIndustry" parameterClass="com.worldcheck.atlas.vo.masters.IndustryMasterVO">     
+		UPDATE
+			  CMS_INDUSTRY_MASTER
+		SET
+			  CMS_INDUSTRY_MASTER.INDUSTRY=#industry#,
+			  CMS_INDUSTRY_MASTER.STATUS=#status#,
+			  CMS_INDUSTRY_MASTER.UPDATED_BY=#updatedBy#,
+			  CMS_INDUSTRY_MASTER.UPDATED_ON=sysdate
+			  
+		WHERE
+			  CMS_INDUSTRY_MASTER.INDUSTRY_CODE=#industryCode#
+	</update>
+	
+	<insert id="addIndustry" parameterClass="com.worldcheck.atlas.vo.masters.IndustryMasterVO"> 	
+		
+		<selectKey resultClass="int" type="pre" keyProperty="industryId">
+   				SELECT CMS_INDUSTRYMASTER_SEQ.nextval AS VALUE FROM DUAL
+  		</selectKey>
+		
+		INSERT INTO 
+				CMS_INDUSTRY_MASTER
+				(
+					CMS_INDUSTRY_MASTER.INDUSTRY_CODE, 
+					CMS_INDUSTRY_MASTER.INDUSTRY,
+					CMS_INDUSTRY_MASTER.STATUS,
+					CMS_INDUSTRY_MASTER.UPDATED_BY,
+					CMS_INDUSTRY_MASTER.UPDATED_ON
+				)
+		VALUES
+				(	
+					#prePendIndustryCode#||#industryId#,
+					#industry#,
+					#status#,
+					#updatedBy#,
+					sysdate				
+				)
+	 </insert>
+	 
+	 
+	 
+	 <select id="searchExistingIndustry"  resultClass="java.lang.Integer" parameterClass = "java.lang.String">
+	   SELECT  
+	   			COUNT(CMS_INDUSTRY_MASTER.INDUSTRY) 
+	   FROM 
+	   			CMS_INDUSTRY_MASTER 
+	   WHERE  
+	   			UPPER(CMS_INDUSTRY_MASTER.INDUSTRY) LIKE  UPPER(TRIM(#industry#))  
+     </select>     
+     
+     <select id="checkAssociatedMaster"  resultClass="com.worldcheck.atlas.vo.masters.IndustryMasterVO" parameterClass = "java.lang.String">
+     SELECT * FROM
+     (SELECT COUNT(CC.CRN) totalCRN FROM CMS_CLIENTCASE CC,CMS_SUBJECT cs WHERE CC.CRN = cs.CRN AND CC.CASE_STATUS_ID IN (1, 2, 3)
+      AND cs.INDUSTRY_CODE = #industryCode# ),
+     (SELECT COUNT(INDUSTRY_CODE)subjectCount FROM CMS_SUBJECT WHERE INDUSTRY_CODE = #industryCode#)      
+     </select> 
+     
+     <delete id="deleteIndustry"  parameterClass = "java.lang.String">
+     	delete from CMS_INDUSTRY_MASTER where INDUSTRY_CODE = #industryCode#
+     </delete>     
+     
+</sqlMap>

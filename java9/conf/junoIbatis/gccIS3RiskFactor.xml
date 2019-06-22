@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="GCCIS3DirectRiskVO">
+
+
+	<resultMap id="riskVO" class="com.worldcheck.juno.vo.component.RiskVO">
+		<result property="code" column="RISK_CODE" />
+		<result property="name" column="RISK" />
+
+	</resultMap>
+
+	<!--- Showing data by ID -->
+	<resultMap id="result"
+		class="com.worldcheck.juno.vo.component.GCCIS3DirectRiskVO">
+		<result property="directRiskVal" column="RISKVAL" />
+		<result property="riskVO" resultMap="GCCIS3DirectRiskVO.riskVO" />
+	</resultMap>
+
+	<resultMap id="saveResult"
+		class="com.worldcheck.juno.vo.component.GCCIS3DirectRiskVO">
+		<result property="directRiskVal" column="RISKVAL" />
+		<result property="displayDate" column="displayDate" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="riskVO" resultMap="DirectRiskFactorVO.riskVO" />
+		
+		<result property="updateBy" column="UPDATED_BY" />
+	</resultMap>
+
+	<select id="getRisk" resultMap="result">
+
+		select
+		RISK_CODE,RISK,CONCAT(RISK_CODE, RISK) RISKVAL from cms_risk_master
+		where status=1
+</select>
+
+	<insert id="insert" parameterClass="com.worldcheck.juno.vo.component.GCCIS3DirectRiskVO">
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_GCC_IS3_DIRECT_RISKS_SEQ.NEXTVAL from dual
+	  </selectKey>
+		INSERT INTO RG_GCC_IS3_DIRECT_RISKS
+		(DIRECT_RISK_ID,RISK_MST_ID,RISK_VALUE,UPDATED_BY,UPDATED_ON,CASE_ID,PROCESSCYCLEID,IS_AUTO_SAVED,SUBJECT_ID)
+		VALUES(#id#,#riskVO.code#,#directRiskVal#,#userName#,sysdate,#crn#,#processCycleId#,#isAutoSave#,#subjectId#)
+	</insert>
+
+	<delete id="delete" parameterClass="java.util.HashMap">
+		delete from RG_GCC_IS3_DIRECT_RISKS
+		where CASE_ID=#crn# and
+		PROCESSCYCLEID=#processCycleId#
+		AND SUBJECT_ID=#subjectId#
+	</delete>
+
+	<select id="getSaveData" parameterClass="java.util.HashMap"
+		resultMap="saveResult">
+		<!--
+			select cmsrisk.risk, cmsrisk.risk_code, rgdir.risk_value RISKVAL from
+			rg_direct_risks rgdir right outer join (select * from cms_risk_master
+			cmsrisk where cmsrisk.status=1) cmsrisk on cmsrisk.risk_code=
+			rgdir.risk_mst_id and upper(rgdir.case_id)=upper(#crn#) and
+			rgdir.processcycleid=#processCycleId#
+		-->
+
+
+		select cmsrisk.risk, cmsrisk.risk_code, rgdir.risk_value
+		RISKVAL,to_char(rgdir.UPDATED_ON, 'DD-MM-YY HH24:MI:SS') displayDate,rgdir.UPDATED_ON,
+		rgdir.UPDATED_BY
+		from RG_GCC_IS3_DIRECT_RISKS rgdir,cms_risk_master cmsrisk
+		where
+		cmsrisk.risk_code= rgdir.risk_mst_id
+		and upper(rgdir.case_id)=upper(#crn#)
+		and
+		rgdir.processcycleid=#processCycleId#
+		AND rgdir.SUBJECT_ID=#subjectId#
+		order by cmsrisk.risk
+	</select>
+
+	<select id="checkSaveData" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from RG_GCC_IS3_DIRECT_RISKS where
+		upper(case_id)=upper(#crn#) and
+		processcycleid=#processCycleId#
+		AND SUBJECT_ID=#subjectId#
+	</select>
+
+</sqlMap>

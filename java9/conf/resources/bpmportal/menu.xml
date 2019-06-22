@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<SBMPortal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+	<Menu name="home" displayname="topMenu1" default="true">
+		<MenuItem name="tasks" displayname="Tasks" />
+		<MenuItem name="myApps" displayname="My Applications" />
+		<MenuItem name="sbmApps" displayname="SBM Applicaitons" />
+		<MenuItem name="links" displayname="Links" />
+		<MenuItem name="profile" displayname="Profile" />
+		<MenuItem name="preferences" displayname="Preferences" />
+	</Menu>
+	<Menu name="management" displayname="topMenu2" default="false">
+		<MenuItem name="overview" displayname="Overview" />
+		<MenuItem name="reports" displayname="Reports" />
+		<MenuItem name="instanceManager" displayname="Instance Manager" />
+		<MenuItem name="balancedScorecard" displayname="Balanced Scorecard" />
+		<MenuItem name="infopads" displayname="Infopads" />
+	</Menu>
+	<Menu name="administration" displayname="topMenu3" default="false">
+		<MenuItem name="admsystem" displayname="System" />
+		<MenuItem name="userManagement" displayname="User Management" />
+		<MenuItem name="applications" displayname="Applications" />
+	</Menu>
+	<Menu name="caseInfo" displayname="topMenu5" default="false">
+		<MenuItem name="tasks" displayname="My Tasks" />
+		<MenuItem name="incomingTasks" displayname="My Incoming Tasks" />
+		<MenuItem name="teamsTasks" displayname="My Teams Tasks" />
+		<MenuItem name="notifications" displayname="Notifications" />
+		<MenuItem name="backup" displayname="Back Up" />
+		<MenuItem name="stats" displayname="Stats" />
+		<MenuItem name="assignment" displayname="Assignments" />		
+	</Menu>
+	<Menu name="masters" displayname="topMenu6" default="false">
+		<MenuItem name="masters" displayname="Master Data" />				
+	</Menu>	
+	<Menu name="reports" displayname="topMenu7" default="false">
+		<MenuItem name="reports" displayname="My Reports" />				
+	</Menu>
+	<Menu name="administration" displayname="topMenu8" default="false">
+		<MenuItem name="tools" displayname="Admin Tools" />				
+	</Menu>
+</SBMPortal>

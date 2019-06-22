@@ -1,0 +1,1434 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UserMaster">
+
+	<resultMap id="resultUserMasterVO" class="com.worldcheck.atlas.vo.masters.UserMasterVO">
+		<result property="userMasterId" column="USER_MASTER_ID" />
+		<result property="userID" column="userID" />
+		<result property="designation" column="DESIGNATION" />
+		<result property="office" column="OFFICE" />
+		<result property="supervisor" column="SUPERVISOR" />
+		<result property="username" column="username" />	
+		<result property="isOfficeHead" column="IS_OFFICE_HEAD" />	
+		<result property="status" column="STATUS" />
+		<result property="backupStatus" column="BACKUP_STATUS" />	
+		<result property="backup1" column="backup1" />
+		<result property="supervisorStatus" column="SUPR_STATUS" />	
+	</resultMap>
+
+	<resultMap id="resultCountryMasterVO" class="com.worldcheck.atlas.vo.masters.CountryMasterVO">
+    <result property="countryCode" column="CODE"/>
+    <result property="country" column="COUNTRY"/>
+    <result property="countryMasterId" column="COUNTRY_MASTER_ID"/>
+    </resultMap>
+
+<resultMap id="exportUserMasterVO" class="com.worldcheck.atlas.vo.masters.UserMasterVO">
+		<result property="userMasterId" column="USER_MASTER_ID" />
+		<result property="userID" column="LOGIN_ID" />
+		<result property="designation" column="DESIGNATION" />
+		<result property="office" column="OFFICE" />
+		<result property="officeHead" column="OFFICE_HEAD" />
+		<result property="supervisor" column="SUPERVISOR" />
+		<result property="username" column="USER_FULL_NAME" />	
+		<result property="backup1" column="BACKUP1" />
+		<result property="backup2" column="BACKUP2" />
+		<result property="status" column="STATUS" />
+		<result property="roles" column="roleNames" />
+		<result property="emailID" column="email" />
+		<result property="localLangCountriesNames" column="country_name" />
+		
+		<!-- Start: Added by 6032662 for BI-702 -->
+		<result property="userCreator" column="USER_CREATOR" />
+		<result property="userCreationDate" column="USER_CREATION_DATE" />
+		<result property="statusModifiedBy" column="STATUS_MODIFIED_BY" />
+		<result property="statusModifiedOn" column="STATUS_MODIFIED_ON" />
+		<result property="previousRoles" column="PREVIOUS_ROLES" />
+		<result property="roleModifiedBy" column="ROLE_MODIFIED_BY" />
+		<result property="roleModifiedOn" column="ROLE_MODIFIED_ON" />	
+		<result property="unlockedBy" column="UNLOCKED_BY" />
+		<result property="unlockedOn" column="UNLOCKED_ON" />
+		<!-- End: Added by 6032662 for BI-702 -->
+		
+		<!-- Start: Added by 6035037 for BI-702 -->
+		<result property="previousEmailId" column="PREVIOUS_EMAILID" />
+		<result property="emailIDModifiedBy" column="EMAILID_MODIFIED_BY" />
+		<result property="emailIDModifiedOn" column="EMAILID_MODIFIED_ON" />
+		<result property="previousOffice" column="PREVIOUS_Office" />
+		<result property="officeModifiedBy" column="OFFICE_MODIFIED_BY" />
+		<result property="officeModifiedOn" column="OFFICE_MODIFIED_ON" />
+		<result property="previousSupervisor" column="PREVIOUS_SUPERVISOR" />	
+		<result property="supervisorModifiedBy" column="SUPERVISOR_MODIFIED_BY" />
+		<result property="supervisorModifiedOn" column="SUPERVISOR_MODIFIED_ON" />
+		<!-- End: Added by 6035037 for BI-702 -->
+		
+
+		<!-- <result property="username" column="USER_FULL_NAME" /> -->
+		
+	</resultMap>
+
+	<!--Start: Added by 6032662 for BI-702-->
+	<resultMap id="exportUserMasterOrganizationChart" class="com.worldcheck.atlas.vo.masters.UserMasterVO">
+		<result property="userMasterId" column="USER_MASTER_ID" />
+		<result property="userID" column="LOGIN_ID" />
+		<result property="designation" column="DESIGNATION" />
+		<result property="office" column="OFFICE" />
+		<result property="officeHead" column="OFFICE_HEAD" />
+		<result property="supervisor" column="SUPERVISOR" />
+		<result property="username" column="USER_FULL_NAME" />	
+		<result property="backup1" column="BACKUP1" />
+		<result property="backup2" column="BACKUP2" />
+		<result property="status" column="STATUS" />
+		<result property="roles" column="roleNames" />
+		<result property="emailID" column="email" />
+		<result property="localLangCountriesNames" column="country_name" />
+		
+	</resultMap>
+	<!--End: Added by 6032662 for BI-702-->
+
+
+	<resultMap id="resultBDMRegionVO" class="com.worldcheck.atlas.vo.BDMRegionVO">
+    <result property="regionID" column="REGION_ID"/>
+    <result property="regionCode" column="REGION_CODE"/>
+    <result property="regionDescription" column="REGION_DESCRIPTION"/>
+    </resultMap>
+
+
+
+
+	<!--
+		<insert id="insertUser_SBM"
+		parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO"> insert
+		into UMUSER(user_id,user_name,organization_name)values ( #userID#,
+		#username#, #office#) </insert>
+	-->
+	<!--
+		<insert id="insertUser_USER"
+		parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO"> insert
+		into CMS_USER_MASTER(
+		USER_MASTER_ID,USER_NAME,IS_OFFICE_HEAD,STATUS,DESIGNATION,OFFICE_ID,
+		REPORTS_TO,
+		BACKUP1,BACKUP2,SUPERVISOR,PROFILE_VALUE,UPDATED_BY,UPDATED_ON )
+		values(
+		#userID#,#username#,#isOfficeHead#,#status#,#designation#,#officeId#,
+		#reportsTo#,#backup1#,#backup2#,#supervisor#,#profileValue#,#updated_by#,#updated_on#)
+		</insert>
+	-->
+
+
+	<!--
+		=================================To Add New User
+		==================================
+	-->
+
+	<!-- Updated by 6035037 for BI-437 -->
+	<insert id="addNewUser" parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+
+		insert into
+		CMS_USER_MASTER
+		(
+		USER_MASTER_ID,LOGIN_ID,IS_OFFICE_HEAD,STATUS,DESIGNATION,OFFICE_ID,
+		REPORTS_TO, BACKUP1,BACKUP2,PROFILE_VALUE,UPDATED_BY,UPDATED_ON,USER_FULL_NAME,Force_Pwd_Change,PASS_EXPIRY_DATE
+		<!-- Start: Added by 6032662 for BI-702 -->
+		,USER_CREATOR,USER_CREATION_DATE)
+		<!-- Start Commented by 6035037 for Bi-702--><!--STATUS_MODIFIED_BY, STATUS_MODIFIED_ON, PREVIOUS_ROLES, ROLE_MODIFIED_BY, ROLE_MODIFIED_ON, UNLOCKED_BY, 
+		UNLOCKED_ON --> <!-- End Commented by 6035037 for BI-702 -->
+		<!-- End: Added by 6032662 for BI-702 -->
+		
+
+		values(
+		#userMasterId#,LOWER(#userID#),#isOfficeHead#,#status#,#designation#,
+		(select OFFICE_MASTER_ID from CMS_OFFICE_MASTER where OFFICE_CODE
+		=#office#),
+		#reportsTo#,#backup1#,#backup2#,#probation#,#updatedBy#,sysdate,#username#,#isNewUser#,sysdate
+		<!-- Start: Added by 6032662 for BI-702 -->
+		,#userCreator#,sysdate)<!-- Start Commented by 6035037 for Bi-702--><!--#statusModifiedBy#, sysdate, null, #roleModifiedBy#, sysdate, null, null -->
+		<!-- End Commented by 6035037 for BI-702 -->
+		<!-- End: Added by 6032662 for BI-702 -->
+		
+	</insert>
+
+	<!--
+		=================================<To Add New User Role>
+		==================================
+	-->
+	<insert id="addNewUserRole" parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+	
+	<selectKey resultClass="int" type="pre" keyProperty="roleId">
+
+			SELECT
+			CMS_USER_ROLE_MAP_SEQ.nextval AS VALUE FROM DUAL
+
+		</selectKey>
+		INSERT INTO
+		CMS_USER_ROLE_MAP
+		(USER_ROLE_MAP_ID,
+			ROLE_ID,
+			USER_ID,
+			UPDATED_BY,
+			UPDATED_ON
+		)
+		VALUES
+		(#roleId#,#roles#,#userMasterId#,#updatedBy#,sysdate)
+	
+	</insert>
+
+	<insert id="addProfileDetail" parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+
+		<selectKey resultClass="int" type="pre" keyProperty="userCntryPId">
+
+			SELECT
+			CMS_USERCOUNTRYPROFILE_SEQ.nextval AS VALUE FROM DUAL
+
+		</selectKey>
+
+		insert into CMS_USER_CNTRY_PROFILE
+		( 
+		USER_CNTRY_PROFILE_ID,
+		USER_ID,
+		COUNTRY_ID,
+		ENG_MEDIA_CHECK,
+		LOC_LANG_CHECK,
+		UPDATED_BY,
+		UPDATED_ON )
+		values
+		(#userCntryPId#,#userIdVal#,#country#,#engMediaCheck#,#locLangCheck#,#updatedBy#,sysdate)
+
+	</insert>
+
+
+
+	<!--
+		=======================================================================================
+	-->
+
+	<select id="selectUser_USER" parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO"
+		resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+
+		Select
+		CUM.USER_MASTER_ID "userID" ,
+		CUM.LOGIN_ID
+		"username",
+		CUM.DESIGNATION "designation",
+		COM.OFFICE "office"
+
+		FROM
+		CMS_USER_MASTER CUM,
+		CMS_OFFICE_MASTER
+		COM
+		WHERE
+		CUM.OFFICE_ID=COM.OFFICE_MASTER_ID
+	    
+	    </select>
+
+	<!--
+		===========================To Select all users for
+		service=============================================================================
+	-->
+
+	<select id="selectAllUser_USER" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+
+		Select distinct
+		CUM.USER_MASTER_ID "userID" ,
+		CUM.LOGIN_ID "username",
+		CUM.DESIGNATION
+		"designation",
+		
+		COM.OFFICE "office"
+		FROM
+		CMS_USER_MASTER CUM,
+		CMS_OFFICE_MASTER COM
+		WHERE
+		CUM.OFFICE_ID=COM.OFFICE_MASTER_ID
+
+	    </select>
+	    
+	    
+	    <!--===========================To Select all Supervisor forUser==========================================================-->
+	    <select id="selectSupervisor" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+	    Select distinct
+	    CUM.LOGIN_ID "supervisor",
+		CUM.USER_FULL_NAME "userFullName"
+	    FROM
+		CMS_USER_MASTER CUM
+		WHERE CUM.LOGIN_ID IN( SELECT DISTINCT REPORTS_TO FROM CMS_USER_MASTER)
+		ORDER BY UPPER(CUM.USER_FULL_NAME)
+	    </select>
+
+	<!--
+		===========================To Select all Role for
+		User=============================================================================
+	-->
+
+	<select id="selectRoleInfo" resultClass="com.worldcheck.atlas.vo.masters.UserRoleMapVO">
+
+		Select 
+		ROLE_ID
+		"roleId",
+		DESCRIPTION "rDescription"
+		FROM
+		CMS_USER_ROLE_MASTER
+		Order by USER_ROLE_MASTER_ID
+			    
+	    </select>
+
+
+	<!--
+		===============Query for
+		Filter===================================================================================================================
+	-->
+
+
+	<select id="searchUser_USER" parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO"
+		resultMap="resultUserMasterVO">
+		
+		SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (
+		Select
+  distinct
+  CUM.USER_MASTER_ID ,
+  CUM.IS_OFFICE_HEAD,
+  CUM.USER_FULL_NAME username,
+  CUM.LOGIN_ID userID,
+  CUM.DESIGNATION ,
+  COM.OFFICE ,
+  CUM.STATUS,
+  CUM.backup1,
+  case  when  CUMA.OFFICE_ID = CUM.OFFICE_ID  
+  then CUMA.status 
+    when cuma.office_id != cum.office_id and 
+  (select count(user_master_id) from cms_user_master cumcont where cumcont.office_id = cum.office_id and cumcont.status = 1) <![CDATA[ <= 1 ]]>
+  then 1
+  else 0 end BACKUP_STATUS,
+  (SELECT USER_FULL_NAME FROM CMS_USER_MASTER WHERE LOGIN_ID = CUM.REPORTS_TO) SUPERVISOR,
+  ( select status from cms_user_master WHERE LOGIN_ID = CUM.REPORTS_TO ) SUPR_STATUS 
+  FROM
+  CMS_USER_MASTER CUM
+ left join CMS_OFFICE_MASTER COM on COM.OFFICE_MASTER_ID=CUM.OFFICE_ID
+ left join (select login_id,OFFICE_ID,status from cms_user_master) cuma on cum.backup1 = cuma.login_id 
+  left join cms_user_cntry_profile  cp on cp.USER_ID= CUM.USER_MASTER_ID
+ left join CMS_COUNTRY_MASTER CCM on CP.COUNTRY_ID = CCM.COUNTRY_MASTER_ID
+ 
+  WHERE  CUM.STATUS = #status#
+			
+
+
+		<isNotNull prepend="AND" property="userID">
+			<isNotEmpty property="userID">
+				upper(CUM.LOGIN_ID) = upper(#userID#)
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="designation">
+			<isNotEmpty property="designation">
+				CUM.DESIGNATION = #designation#
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="office">
+			<isNotEmpty property="office">
+				COM.OFFICE_CODE = #office#
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="supervisor">
+			<isNotEmpty property="supervisor">
+				CUM.REPORTS_TO = #supervisor#
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="username">
+			<isNotEmpty property="username">
+				UPPER(CUM.USER_FULL_NAME) LIKE '%'||UPPER(#username#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+
+<isNotNull prepend="AND" property="localLanguage">
+			<isNotEmpty property="localLanguage">
+			
+				CCM.CODE = #localLanguage#
+				AND CP.LOC_LANG_CHECK = 1
+				
+						</isNotEmpty>
+		</isNotNull>
+
+		
+			ORDER BY upper($sortColumnName$) $sortType$
+
+			) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+
+
+
+
+	</select>
+
+	<select id="searchUser_USER_count" parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO"
+		resultClass="int">
+
+		
+		Select
+		count(distinct
+		CUM.USER_MASTER_ID )
+  FROM
+  CMS_USER_MASTER CUM
+ left join CMS_OFFICE_MASTER COM on COM.OFFICE_MASTER_ID=CUM.OFFICE_ID
+  left join cms_user_cntry_profile  cp on cp.USER_ID= CUM.USER_MASTER_ID
+ left join CMS_COUNTRY_MASTER CCM on CP.COUNTRY_ID = CCM.COUNTRY_MASTER_ID
+ where
+			CUM.STATUS = #status#
+
+
+		<isNotNull prepend="AND" property="userID">
+			<isNotEmpty property="userID">
+				upper(CUM.LOGIN_ID) = upper(#userID#)
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="designation">
+			<isNotEmpty property="designation">
+				CUM.DESIGNATION = #designation#
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="office">
+			<isNotEmpty property="office">
+				COM.OFFICE_CODE = #office#
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="supervisor">
+			<isNotEmpty property="supervisor">
+				CUM.REPORTS_TO = #supervisor#
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="username">
+			<isNotEmpty property="username">
+				UPPER(CUM.USER_FULL_NAME) LIKE '%'||UPPER(#username#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+
+<isNotNull prepend="AND" property="localLanguage">
+			<isNotEmpty property="localLanguage">
+				CCM.CODE = #localLanguage#
+				AND CP.LOC_LANG_CHECK = 1
+				
+			</isNotEmpty>
+		</isNotNull>
+
+			
+
+
+
+	</select>
+
+
+
+<select id="exportToXl_USER" parameterClass="java.util.Map"
+		resultMap="exportUserMasterVO">
+
+	select a.*, b.roleNames from 
+(	
+	Select
+		distinct
+		CUM.USER_MASTER_ID ,
+		CUM.USER_FULL_NAME ,
+		CUM.LOGIN_ID ,
+		CUM.DESIGNATION ,
+		COM.OFFICE ,
+		case when CUM.is_office_head = 1 then 'Yes' else 'No' end "OFFICE_HEAD",
+		cum2.USER_FULL_NAME as SUPERVISOR,
+		CUM.STATUS,
+		cum3.USER_FULL_NAME as 	BACKUP1,
+		cum4.USER_FULL_NAME as 	BACKUP2,
+		UA.ATTR_VALUE email,
+	   (select dbms_lob.substr(REPLACE(wm_concat(con.country ),',',';')) as country
+          from cms_user_cntry_profile cc ,cms_country_master con, CMS_USER_MASTER cum
+          where cc.loc_lang_check=1
+          and con.country_master_id= cc.country_id
+          and cc.user_id = cum.user_master_id
+          and cc.user_id = cp.user_id
+          group by cc.user_id ) country_name
+		  <!-- Start: Added by 6032662 for BI-702 -->
+	      ,cum5.USER_FULL_NAME USER_CREATOR , 
+	      cum.USER_CREATION_DATE ,
+		  cum6.USER_FULL_NAME STATUS_MODIFIED_BY , 
+		  cum.STATUS_MODIFIED_ON ,
+		  cum.PREVIOUS_ROLES , 
+		  cum7.USER_FULL_NAME ROLE_MODIFIED_BY , 
+		  cum.ROLE_MODIFIED_ON , 
+		  cum8.USER_FULL_NAME UNLOCKED_BY ,
+		  cum.UNLOCKED_ON,
+		  
+		  <!-- End: Added by 6032662 for BI-702 -->
+		  <!-- Start: Added by 	 for BI-702 -->
+		  CUM.PREVIOUS_EMAILID PREVIOUS_EMAILID , 
+	      CUM9.USER_FULL_NAME EMAILID_MODIFIED_BY,
+		  CUM.EMAILID_MODIFIED_ON EMAILID_MODIFIED_ON,
+		  CUM.PREVIOUS_Office PREVIOUS_Office,
+		  CUM10.USER_FULL_NAME OFFICE_MODIFIED_BY,
+		  CUM.OFFICE_MODIFIED_ON OFFICE_MODIFIED_ON,
+		  CUM.PREVIOUS_SUPERVISOR PREVIOUS_SUPERVISOR,
+		  CUM11.USER_FULL_NAME SUPERVISOR_MODIFIED_BY,
+		  CUM.SUPERVISOR_MODIFIED_ON SUPERVISOR_MODIFIED_ON
+		   <!-- End: Added by 6035037 for BI-702 -->
+	   FROM
+		CMS_USER_MASTER CUM
+		left join CMS_OFFICE_MASTER COM on COM.OFFICE_MASTER_ID=CUM.OFFICE_ID
+		left join cms_user_cntry_profile  cp on cp.USER_ID= CUM.USER_MASTER_ID
+		left join CMS_COUNTRY_MASTER CCM on CP.COUNTRY_ID = CCM.COUNTRY_MASTER_ID
+		left join UMUSER UM on UM.USER_NAME = CUM.LOGIN_ID 
+		left join USERATTR UA on cum.user_master_Id = ua.user_id
+
+		left join CMS_USER_MASTER cum2 on cum2.LOGIN_ID=CUM.REPORTS_TO 
+		left join CMS_USER_MASTER cum3 on cum3.LOGIN_ID=CUM.BACKUP1 
+		left join CMS_USER_MASTER cum4 on cum4.LOGIN_ID=CUM.BACKUP2 	
+		
+		<!-- Start: Added by 6032662 for BI-702 -->
+		left join CMS_USER_MASTER cum5 on cum5.LOGIN_ID=CUM.USER_CREATOR
+		left join CMS_USER_MASTER cum6 on cum6.LOGIN_ID=CUM.STATUS_MODIFIED_BY 
+		left join CMS_USER_MASTER cum7 on cum7.LOGIN_ID=CUM.ROLE_MODIFIED_BY 
+		left join CMS_USER_MASTER cum8 on cum8.LOGIN_ID=CUM.UNLOCKED_BY
+		<!-- End: Added by 6032662 for BI-702 -->
+		
+		<!-- Start: Added by 6035037 for BI-702 -->
+		left join CMS_USER_MASTER CUM9 on CUM9.LOGIN_ID=CUM.EMAILID_MODIFIED_BY 
+		left join CMS_USER_MASTER CUM10 on CUM10.LOGIN_ID=CUM.OFFICE_MODIFIED_BY 
+		left join CMS_USER_MASTER CUM11 on CUM11.LOGIN_ID=CUM.SUPERVISOR_MODIFIED_BY
+		<!-- End: Added by 6035037 for BI-702 -->
+
+		WHERE
+		
+			UA.ATTR_NAME = 'email'
+			AND 
+			CUM.STATUS = #status#
+			
+
+
+		<isNotNull prepend="AND" property="userID">
+			<isNotEmpty property="userID">
+				upper(CUM.LOGIN_ID) = upper(#userID#)
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="designation">
+			<isNotEmpty property="designation">
+				CUM.DESIGNATION = #designation#
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="office">
+			<isNotEmpty property="office">
+				COM.OFFICE_CODE = #office#
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="supervisor">
+			<isNotEmpty property="supervisor">
+				CUM.REPORTS_TO = #supervisor#
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="username">
+			<isNotEmpty property="username">
+				UPPER(CUM.USER_FULL_NAME) LIKE '%'||UPPER(#username#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+
+<isNotNull prepend="AND" property="localLanguage">
+			<isNotEmpty property="localLanguage">
+				cp.user_id = cum.user_master_id
+				AND
+				CCM.CODE = #localLanguage#
+				AND CP.LOC_LANG_CHECK = 1
+				
+			</isNotEmpty>
+		</isNotNull>
+
+			) a
+			 left join
+				(
+				  select user_id,  substr(max(sys_connect_by_path('R' || role_id,',')),2) roleNames
+  from (select user_id,substr(role_id,2) role_id,row_number() over (partition by user_id order by to_number(substr(role_id,2))) rn
+          from cms_user_role_map)
+  start with rn=1
+connect by prior rn = rn - 1
+    and prior user_id = user_id
+  group by user_id
+				) b 
+			on a.USER_MASTER_ID = b.user_id
+			ORDER BY UPPER (a.LOGIN_ID)
+
+	</select>
+
+
+
+
+	<!--
+		============================================================================================================================
+	-->
+
+<!--Start: Modified by 6032662 for BI-702
+<select id="organizationChart" parameterClass="java.util.Map"
+		resultMap="exportUserMasterVO">-->
+<select id="organizationChart" parameterClass="java.util.Map"
+		resultMap="exportUserMasterOrganizationChart">
+<!--Start: Modified by 6032662 for BI-702-->
+
+	select a.*, b.roleNames from 
+(	
+		Select
+		distinct
+		CUM.USER_MASTER_ID ,
+		CUM.USER_FULL_NAME ,
+		CUM.LOGIN_ID ,
+		CUM.DESIGNATION ,
+		COM.OFFICE ,
+		case when CUM.is_office_head = 1 then 'Yes' else 'No' end "OFFICE_HEAD",
+		cum2.USER_FULL_NAME as SUPERVISOR,
+		CUM.STATUS,
+		cum3.USER_FULL_NAME as 	BACKUP1,
+		cum4.USER_FULL_NAME as 	BACKUP2,
+		UA.ATTR_VALUE email,
+		(select dbms_lob.substr(REPLACE(wm_concat(con.country ),',',';')) as country
+          from cms_user_cntry_profile cc ,cms_country_master con, CMS_USER_MASTER cum
+          where cc.loc_lang_check=1
+          and con.country_master_id= cc.country_id
+          and cc.user_id = cum.user_master_id
+          and cc.user_id = cp.user_id
+          group by cc.user_id ) country_name
+		FROM
+		CMS_USER_MASTER CUM
+		left join CMS_OFFICE_MASTER COM on COM.OFFICE_MASTER_ID=CUM.OFFICE_ID
+		left join cms_user_cntry_profile  cp on cp.USER_ID= CUM.USER_MASTER_ID
+		left join CMS_COUNTRY_MASTER CCM on CP.COUNTRY_ID = CCM.COUNTRY_MASTER_ID
+		left join UMUSER UM on UM.USER_NAME = CUM.LOGIN_ID 
+		left join USERATTR UA on cum.user_master_Id = ua.user_id
+
+		left join CMS_USER_MASTER cum2 on cum2.LOGIN_ID=CUM.REPORTS_TO 
+		left join CMS_USER_MASTER cum3 on cum3.LOGIN_ID=CUM.BACKUP1 
+		left join CMS_USER_MASTER cum4 on cum4.LOGIN_ID=CUM.BACKUP2 	
+		WHERE
+		
+			UA.ATTR_NAME = 'email'
+			AND 
+			CUM.STATUS = #status#
+			
+
+
+		<isNotNull prepend="AND" property="userID">
+			<isNotEmpty property="userID">
+				upper(CUM.LOGIN_ID) = upper(#userID#)
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="designation">
+			<isNotEmpty property="designation">
+				CUM.DESIGNATION = #designation#
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="office">
+			<isNotEmpty property="office">
+				COM.OFFICE_CODE = #office#
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="supervisor">
+			<isNotEmpty property="supervisor">
+				CUM.REPORTS_TO = #supervisor#
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotNull prepend="AND" property="username">
+			<isNotEmpty property="username">
+				UPPER(CUM.USER_FULL_NAME) LIKE '%'||UPPER(#username#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+
+<isNotNull prepend="AND" property="localLanguage">
+			<isNotEmpty property="localLanguage">
+				cp.user_id = cum.user_master_id
+				AND
+				CCM.CODE = #localLanguage#
+				AND CP.LOC_LANG_CHECK = 1
+				
+			</isNotEmpty>
+		</isNotNull>
+
+			) a
+			 left join
+				(
+				  select user_id,  substr(max(sys_connect_by_path('R' || role_id,',')),2) roleNames
+  from (select user_id,substr(role_id,2) role_id,row_number() over (partition by user_id order by to_number(substr(role_id,2))) rn
+          from cms_user_role_map)
+  start with rn=1
+connect by prior rn = rn - 1
+    and prior user_id = user_id
+  group by user_id
+				) b 
+			on a.USER_MASTER_ID = b.user_id
+			ORDER BY UPPER (a.OFFICE), UPPER(a.SUPERVISOR), UPPER(a.USER_FULL_NAME)
+
+	</select>
+
+
+	<!--
+		===================Deactivate
+		Query==========================================================================================
+	-->
+
+	<!-- Start: Modified by 6032662 for BI-702 -->
+	<!-- <update id="deActivate" parameterClass="java.lang.String"> -->
+	<update id="deActivate" parameterClass="java.util.HashMap">
+	<!-- End: Modified by 6032662 for BI-702 -->
+
+		UPDATE
+		CMS_USER_MASTER
+		SET
+		CMS_USER_MASTER.STATUS = 0,
+		CMS_USER_MASTER.IS_OFFICE_HEAD = 0
+		<!-- Start: Added by 6032662 for BI-702 -->
+		,CMS_USER_MASTER.STATUS_MODIFIED_BY = #updated_by#,
+		CMS_USER_MASTER.STATUS_MODIFIED_ON = sysdate
+		<!-- End: Added by 6032662 for BI-702 -->
+		WHERE
+		CMS_USER_MASTER.USER_MASTER_ID
+		IN
+		(#userID#)
+	</update>
+
+	<!-- Start: Modified by 6032662 for BI-702 -->
+	<!-- <update id="activate" parameterClass="java.lang.String"> -->
+	<update id="activate" parameterClass="java.util.HashMap">
+	<!-- End: Modified by 6032662 for BI-702 -->
+
+		UPDATE
+		CMS_USER_MASTER
+		SET
+		CMS_USER_MASTER.STATUS = 1
+		<!-- Start: Added by 6032662 for BI-702 -->
+		,CMS_USER_MASTER.STATUS_MODIFIED_BY = #updated_by#,
+		CMS_USER_MASTER.STATUS_MODIFIED_ON = sysdate
+		<!-- End: Added by 6032662 for BI-702 -->
+		WHERE
+		CMS_USER_MASTER.USER_MASTER_ID
+		IN
+		(#userID#)
+	</update>
+
+	<!--
+		================================================================================================================================
+	-->
+	<select id="getSubOrdinateList" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO"
+		parameterClass="java.lang.String">
+
+		Select distinct
+		LOGIN_ID "username",
+		USER_FULL_NAME "userFullName"
+		FROM
+		CMS_USER_MASTER
+		WHERE
+		UPPER(REPORTS_TO) =UPPER(#username#)
+		AND
+		status=1
+		order by upper(USER_FULL_NAME)
+	    </select>
+
+	<select id="getBackUpList" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO"
+		parameterClass="java.lang.String">
+
+		Select cum.LOGIN_ID "username",cum.USER_FULL_NAME "userFullName",
+		  cum1.USER_FULL_NAME backup1,cum2.USER_FULL_NAME backup2
+		  FROM CMS_USER_MASTER cum,cms_user_master cum1,cms_user_master cum2
+		  WHERE UPPER(cum.LOGIN_ID) = UPPER(#username#)
+		  and cum1.login_id=cum.BACKUP1
+		  and cum2.login_id(+)=cum.BACKUP2
+		  AND cum.status=1
+		<!-- Select distinct
+		LOGIN_ID "username",
+		BACKUP1 "backup1",
+		backup2 "backup2"
+		FROM
+		CMS_USER_MASTER
+		WHERE
+		UPPER(LOGIN_ID)
+		=UPPER(#username#)
+		AND
+		status=1
+		 -->
+		
+      	</select>
+
+		<select id="getActiveUserList" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+      	Select distinct
+		LOGIN_ID "username",
+		USER_FULL_NAME "userFullName"
+      	FROM
+		CMS_USER_MASTER
+		WHERE
+		status=1
+		order by upper(USER_FULL_NAME)
+      	</select>
+	<!--
+		========================================<Add_User
+		DD>================================
+	-->
+	<select id="selectAddUserDetails" parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO"
+		resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+		
+		Select distinct
+		LOGIN_ID "reportsTo",
+		USER_FULL_NAME "userFullName"
+		FROM
+		CMS_USER_MASTER
+		WHERE
+		status=1 
+		<isNotNull prepend="AND" property="userID">
+			<isNotEmpty property="userID">
+				LOGIN_ID != #userID#
+			</isNotEmpty>
+		</isNotNull>
+
+		order by UPPER(USER_FULL_NAME )
+      		</select>
+
+			<!-- <select id="selectAddUserDetails" parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO"
+		resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+		
+
+		select distinct user_master_id "userMasterId",
+		user_full_name "reportsTo"
+		from cms_user_master where user_master_id in(select REPORTS_TO from cms_user_master )
+		order by user_full_name 
+		
+      		</select>
+ -->
+	<!--
+		========================================</Add_User
+		DD>================================
+	-->
+
+	<!--
+		========================================<Add_UserBackup
+		DD>================================
+	-->
+	<select id="selectBackUpDetails" parameterClass="java.util.Map"
+		resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+
+		Select distinct
+		LOGIN_ID "username",
+		USER_FULL_NAME "userFullName"
+		FROM
+		CMS_USER_MASTER
+		WHERE
+		status=1
+		AND
+		OFFICE_ID = (SELECT OFFICE_MASTER_ID FROM
+		cms_office_master WHERE office_code =
+		#officeCode#)
+		<isNotNull prepend="AND" property="userToUpdate">
+			<isNotEmpty property="userToUpdate">
+				LOGIN_ID != #userToUpdate#
+			</isNotEmpty>
+		</isNotNull>
+		ORDER BY UPPER(USER_FULL_NAME)
+					
+      		</select>
+
+	<!--
+		========================================</Add_UserBackup
+		DD>================================
+	-->
+	<select id="selectDetailForClient" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+
+		SELECT DISTINCT
+		REPORTS_TO reportsTo,BACKUP1 backup1,BACKUP2 backup2 FROM
+		cms_user_master
+					
+</select>
+
+<select id="getUsersForRole" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO" parameterClass="java.lang.String">
+
+		SELECT distinct(LOGIN_ID) "userID",USER_MASTER_ID "userMasterId" ,USER_FULL_NAME "userFullName"
+		FROM CMS_USER_MASTER CUM,CMS_USER_ROLE_MAP CURM
+		WHERE CUM.USER_MASTER_ID = CURM.USER_ID
+		AND CURM.ROLE_ID = #roleId#
+		AND CUM.STATUS = 1
+		ORDER BY UPPER(USER_FULL_NAME)			
+</select>
+
+
+	<select id="checkOfficeHead" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+
+		select count(*) from cms_user_master where
+		office_id=(select
+		OFFICE_MASTER_ID from CMS_OFFICE_MASTER where
+		OFFICE_CODE
+		=#office#)
+		AND
+		IS_OFFICE_HEAD=1
+	</select>
+
+
+	<select id="getAllUserId" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+		Select user_master_id
+		"userMasterId", LOGIN_ID "userID"
+		from CMS_USER_MASTER order by
+		UPPER(LOGIN_ID) 
+</select>
+
+	<select id="getUserInfo" parameterClass="java.lang.String"
+		resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+		select
+		CUM.USER_MASTER_ID "userIdVal",
+		CUM.LOGIN_ID "userID",
+		CUM.OFFICE_ID "officeId",
+		CUM.IS_OFFICE_HEAD
+		"isOfficeHead",
+		CUM.STATUS "status",
+		CUM.DESIGNATION "designation",
+		COM.OFFICE_CODE "office",
+		REPORTS_TO "reportsTo",
+		CUM.BACKUP1 "backup1",
+		CUM.BACKUP2 "backup2",
+		CUM.PROFILE_VALUE "probation",
+		nvl(CUM.LOGIN_ATTEMPT,0) "loginAttempt",
+
+		CUM.USER_FULL_NAME "username"
+
+		FROM
+		CMS_USER_MASTER CUM,CMS_OFFICE_MASTER COM where CUM.OFFICE_ID =
+		COM.OFFICE_MASTER_ID
+		AND upper(CUM.login_id)=upper(#userId#)
+
+</select>
+
+
+<!-- ==================================<Role Info>========================================== -->
+<select id="getUserRoleInfo" parameterClass="java.lang.String"
+		resultClass="java.lang.String">
+		SELECT ROLE_ID "userRoleList" FROM 
+		CMS_USER_ROLE_MAP
+		WHERE 
+		USER_ID = (SELECT USER_MASTER_ID FROM CMS_USER_MASTER WHERE
+		UPPER(LOGIN_ID) = UPPER(#userId#))
+		
+		
+</select>
+<!-- ==================================<Role Info>========================================== -->
+	
+<!-- ==================================<Language Info>========================================== -->
+<select id="getLocalLangInfo" parameterClass="java.lang.String"
+		resultClass="com.worldcheck.atlas.vo.masters.UserCountryProfileVO">
+		
+		select 
+		 DISTINCT(CM.CODE) "cntryCode",
+		 UCP.COUNTRY_ID "countryId",
+		UCP.ENG_MEDIA_CHECK "engMediaList",
+		 UCP.LOC_LANG_CHECK "locLangList"
+	FROM
+	CMS_COUNTRY_MASTER CM,
+	CMS_USER_CNTRY_PROFILE UCP
+	WHERE
+ UCP.USER_ID=(SELECT USER_MASTER_ID from cms_user_master CU where cu.login_id =#user# )
+ AND
+ ucp.country_id = cm.country_master_id
+		</select>
+		
+		<!-- ==================================</Language Info>========================================== -->
+
+
+<update id="updateUserInfo" parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+
+		Update CMS_USER_MASTER set
+		IS_OFFICE_HEAD = CASE WHEN #status# = '0' then 0 else #isOfficeHead# end,
+		STATUS =#status#,
+		DESIGNATION =#designation#,
+		OFFICE_ID = (select OFFICE_MASTER_ID from CMS_OFFICE_MASTER where OFFICE_CODE
+		=#office#),
+		REPORTS_TO =#reportsTo#,
+		BACKUP1 =#backup1#,
+		BACKUP2 =#backup2#,
+		USER_FULL_NAME = #username#,
+		PROFILE_VALUE = #probation#,
+		UPDATED_ON = sysdate,
+		UPDATED_BY = #updatedBy#
+		<!--Start: Added by 6032662 for BI-702 -->
+		<isNotNull prepend="," property="previousRoles">
+			<isNotEmpty property="previousRoles">
+				PREVIOUS_ROLES = #previousRoles#,
+				ROLE_MODIFIED_BY = #roleModifiedBy#, 
+				ROLE_MODIFIED_ON = sysdate
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="," property="statusModifiedBy">
+			<isNotEmpty property="statusModifiedBy">
+				STATUS_MODIFIED_BY = #statusModifiedBy#, 
+				STATUS_MODIFIED_ON = sysdate
+			</isNotEmpty>
+		</isNotNull>
+		<!--End: Added by 6032662 for BI-702 -->
+		<!--Start: Added by 6035037 for BI-702 -->
+		<isNotNull prepend="," property="previousEmailId">
+			<isNotEmpty property="previousEmailId">
+				PREVIOUS_EMAILID = #previousEmailId#,
+				EMAILID_MODIFIED_BY = #updatedBy#, 
+				EMAILID_MODIFIED_ON = sysdate
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="," property="previousOffice">
+			<isNotEmpty property="previousOffice">
+				PREVIOUS_OFFICE = #previousOffice#,
+				OFFICE_MODIFIED_BY = #updatedBy#, 
+				OFFICE_MODIFIED_ON = sysdate
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="," property="previousSupervisor">
+			<isNotEmpty property="previousSupervisor">
+				PREVIOUS_SUPERVISOR = #previousSupervisor#,
+				SUPERVISOR_MODIFIED_By = #updatedBy#, 
+				SUPERVISOR_MODIFIED_ON = sysdate
+			</isNotEmpty>
+		</isNotNull>
+		<!--End: Added by 6035037 for BI-702 -->
+		
+		where upper(login_id)=upper(#userID#)
+
+
+</update>
+
+<select id="checkUserId" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+select count(*) from CMS_USER_MASTER where upper(LOGIN_ID)=upper(#userID#)
+
+</select>
+
+<update id="updateDeactiveUser">
+update CMS_USER_MASTER
+set STATUS =#status#
+<!--Start: Added by 6032662 for BI-702-->
+,STATUS_MODIFIED_BY = #updatedBy#,
+ STATUS_MODIFIED_ON = sysdate
+<!--Start: Added by 6032662 for BI-702-->
+where upper(login_id)=upper(#userID#)
+</update>
+
+<select id="checkBackUp" resultClass="java.lang.Integer" parameterClass="java.util.HashMap">
+	select count(*) from CMS_USER_MASTER WHERE 
+	status=1
+	AND
+	OFFICE_ID=(select OFFICE_MASTER_ID from CMS_OFFICE_MASTER where OFFICE_CODE
+		=#officeCode# ) 
+		<isNotNull prepend="AND" property="userToUpdate">
+			<isNotEmpty property="userToUpdate">
+				LOGIN_ID != #userToUpdate#
+			</isNotEmpty>
+		</isNotNull>
+		
+</select>
+
+<select id="selectNoUsrBak" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+
+ Select distinct
+		UM.LOGIN_ID "username",
+		USER_FULL_NAME "userFullName"
+		FROM
+		CMS_USER_MASTER UM,
+		CMS_USER_ROLE_MAP RM
+		WHERE
+		UM.status=1
+		AND
+		UM.USER_MASTER_ID = RM.USER_ID
+    AND
+    RM.ROLE_ID='R1'
+	ORDER BY UPPER(USER_FULL_NAME)
+
+</select>
+
+<insert id="updateNewUserRole" parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+
+<selectKey resultClass="int" type="pre" keyProperty="roleId">
+
+			SELECT
+			CMS_USER_ROLE_MAP_SEQ.nextval AS VALUE FROM DUAL
+
+		</selectKey>
+		INSERT INTO
+		CMS_USER_ROLE_MAP
+		(USER_ROLE_MAP_ID,
+			ROLE_ID,
+			USER_ID,
+			UPDATED_BY,
+			UPDATED_ON
+		)
+		VALUES
+		(#roleId#,#roles#,(select USER_MASTER_ID from CMS_USER_MASTER  where upper(login_id)=upper(#userID#)),#updatedBy#,sysdate)
+		
+</insert>
+
+<delete id="deleteNewUserRole" parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+	
+	delete from CMS_USER_ROLE_MAP  where USER_ID = (select USER_MASTER_ID from CMS_USER_MASTER  where upper(login_id)=upper(#userID#))
+
+</delete>
+
+<delete id="deleteCntryProfile" parameterClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+	
+	delete from CMS_USER_CNTRY_PROFILE  where USER_ID = (select USER_MASTER_ID from CMS_USER_MASTER  where upper(login_id)=upper(#userID#))
+
+</delete>
+
+
+<select id="COUNTRY_MASTER_DETAIL" resultMap="resultCountryMasterVO">
+<!-- SELECT * FROM (SELECT  a.*, ROWNUM rn FROM ( -->
+
+         SELECT CODE,COUNTRY,COUNTRY_MASTER_ID FROM CMS_COUNTRY_MASTER WHERE STATUS = 1 order by UPPER(COUNTRY)
+
+		<!--  ) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start# -->
+
+</select>
+
+<select id="COUNTRY_MASTER_DETAIL_COUNT" resultClass="int">
+         SELECT count(COUNTRY) FROM CMS_COUNTRY_MASTER WHERE STATUS = 1
+</select>
+
+
+<!--<select id="agentsUnder" parameterClass="java.lang.String" resultClass="int">
+
+select count(USER_MASTER_ID) from CMS_USER_MASTER where REPORTS_TO =(userID)
+
+</select>
+ --> 
+ <select id="logInUsrOffice" parameterClass="java.lang.String" resultClass="java.lang.String">
+
+	SELECT OFFICE_CODE FROM CMS_OFFICE_MASTER
+	WHERE OFFICE_MASTER_ID =(SELECT OFFICE_ID FROM
+	CMS_USER_MASTER WHERE LOGIN_ID = #userName#)
+
+
+ </select>
+
+ <select id="chkSupervisorBeforeDeactivateUser" parameterClass="java.lang.String" resultClass="int">
+
+	select count(*) from cms_user_master where reports_to = (select login_id from cms_user_master where USER_MASTER_ID = #userID#)
+
+ </select>
+
+  <select id="chkBackup1BeforeDeactivateUser" parameterClass="java.lang.String" resultClass="int">
+
+	select count(*) from cms_user_master where BACKUP1 = (select login_id from cms_user_master where USER_MASTER_ID = #userID#)
+
+ </select>
+
+ <select id="userFullNameExist" parameterClass="java.lang.String" resultClass="int">
+	 select count(*) from cms_user_master where upper(USER_FULL_NAME) = upper(#userFullName#)
+ </select>
+
+
+
+<!-- <select id="emailIdExist" parameterClass="java.lang.String" resultClass="int">
+	 select count(*) from cms_user_master where upper(USER_FULL_NAME) = upper(#mailId#)
+ </select> -->
+
+ <select id="userWithRoleR3" parameterClass="java.lang.String" resultClass="java.lang.String">
+
+	 <!-- select count(*) from CMS_USER_ROLE_MAP where USER_ID = #userID#
+	 AND ROLE_ID = 'R3' -->
+
+	  select UM.LOGIN_ID from cms_user_master UM, CMS_USER_ROLE_MAP RM 
+  where RM.USER_ID = #userID#
+	 AND RM.ROLE_ID = 'R3'
+  AND RM.User_ID = um.user_master_id
+
+ </select>
+
+<select id="getUsersFullName" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO" parameterClass="java.util.Map">
+ select user_full_name userFullName, login_id loginId from cms_user_master where login_id IN
+		 <iterate property="users" open="(" close=")" conjunction=",">
+			#users[]#
+	    </iterate>
+ </select>
+ 
+ <select id="getUsersFullNameFromUserId" resultClass="String" parameterClass="String">
+ 	select user_full_name userFullName, login_id loginId from cms_user_master where login_id= #userId#
+ </select>
+
+ <select id="chkActiveCaseBeforeDeactivateUser" parameterClass="java.lang.String" resultClass="int">
+
+ select count(distinct cc.crn )
+ from cms_clientcase cc,cms_team_details ctd, cms_sub_team_re_map cstrm, cms_user_master cum
+ where 
+ cum.user_master_id = #userID#
+ and
+ cc.crn=ctd.crn
+ and ctd.team_id=cstrm.team_id
+ and cc.case_status_id in (1,3) 
+ and (
+ case when cc.CASE_MGR_ID = cum.login_id then 1
+when ctd.MANAGER_ID = cum.login_id then 1
+when  ctd.MAIN_ANALYST = cum.login_id then 1
+when ctd.REVIEWER1 = cum.login_id then 1
+when  ctd.REVIEWER2 = cum.login_id then 1
+ when ctd.REVIEWER3 = cum.login_id then 1
+ when ctd.RESEARCH_HEAD = cum.login_id then 1
+ when cstrm.PERFORMER=cum.login_id then 1 else 0 end) =1
+  
+  
+
+ </select>
+
+ <!-- Start: Added by 6032662 for BI-496 -->
+ 
+  <select id="chkActiveCaseListBeforeDeactivateUser" parameterClass="java.lang.String" resultClass="java.lang.String">
+
+ select distinct cc.crn 
+ from cms_clientcase cc,cms_team_details ctd, cms_sub_team_re_map cstrm, cms_user_master cum
+ where 
+ cum.user_master_id = #userID#
+ and
+ cc.crn=ctd.crn
+ and ctd.team_id=cstrm.team_id
+ and cc.case_status_id in (1,3) 
+ and (
+ case when cc.CASE_MGR_ID = cum.login_id then 1
+when ctd.MANAGER_ID = cum.login_id then 1
+when  ctd.MAIN_ANALYST = cum.login_id then 1
+when ctd.REVIEWER1 = cum.login_id then 1
+when  ctd.REVIEWER2 = cum.login_id then 1
+ when ctd.REVIEWER3 = cum.login_id then 1
+ when ctd.RESEARCH_HEAD = cum.login_id then 1
+ when cstrm.PERFORMER=cum.login_id then 1 else 0 end) =1
+  
+  
+
+ </select>
+ 
+ <!--  End: Added by 6032662 for BI-496 -->
+ 
+
+ <select id="chkRecurrenceActiveCaseBeforeDeactivateUser" parameterClass="java.lang.String" resultClass="int">
+
+ select count(*)from  CMS_RECURR_CLIENTCASE CRC, cms_user_master cum
+ where 
+ cum.user_master_id = #userID#
+ AND CRC.recurr_enddate is not null
+ AND
+ upper(CRC.case_mgr_id) = upper(cum.login_id)
+ AND CRC.RECURR_ENDDATE > sysdate
+ 
+
+ </select>
+
+  <select id="chkaAssociatedWithClientBeforeDeactivateUser" parameterClass="java.lang.String" resultClass="int">
+
+ select count(CLIENT_MASTER_ID) from cms_client_master where associated_cm = (Select LOGIN_ID from cms_user_master where user_master_id = #userID#)
+ OR associated_bdm = (Select LOGIN_ID from cms_user_master where user_master_id = #userID#)
+  
+  
+
+ </select>
+
+ <select id="getSubordinateForUser" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO"	parameterClass="java.lang.String">
+	SELECT DISTINCT(CUM.LOGIN_ID) username,cum.USER_FULL_NAME userFullName
+	FROM CMS_USER_MASTER CUM,
+	CMS_USER_ROLE_MAP CURM
+	WHERE CURM.USER_ID = cum.user_master_id
+		AND CUM.STATUS = 1
+		AND LEVEL>1
+	START WITH upper(CUM.LOGIN_ID) = upper(#managerId#)
+	CONNECT BY NOCYCLE PRIOR upper(CUM.LOGIN_ID) = upper(CUM.REPORTS_TO)
+	</select>
+	
+       <select id="getBDMRegionList" resultMap="resultBDMRegionVO">
+        	select REGION_ID, REGION_CODE, REGION_DESCRIPTION from CMS_SALESREP_REGION
+       </select>
+ 
+       <insert id="mapRegionToBDM" parameterClass="java.util.HashMap">
+		insert into CMS_BDM_REGION_MAP	
+		( 
+		MAP_ID,
+		USER_ID,
+		REGION )
+		values
+		(CMS_BDM_REGION_MAP_SEQ.nextval,#username#,#bdmRegion#)
+	</insert>
+	
+	<update id="updateBdmRegion" parameterClass="java.util.HashMap">
+
+		update CMS_BDM_REGION_MAP	
+		set
+		REGION = #bdmRegion# 
+		where upper(USER_ID) = upper(#username#)
+ 
+	</update>
+
+	 <select id="getBdmRegion" resultClass="String" parameterClass="String">
+		select REGION bdmRegion from CMS_BDM_REGION_MAP where USER_ID= #username#
+	 </select>
+	 
+	 <delete id="deleteBdmRegionMapping" parameterClass="String">	
+		delete from CMS_BDM_REGION_MAP where USER_ID= #username#
+         </delete>
+
+
+	 <select id="checkForWIPcasesForBDM" parameterClass="java.lang.String" resultClass="int">
+		 select count(*)from  CMS_CLIENTCASE CC
+		 where 
+		 CC.SALES_REPRESENTATIVE = #userID#
+		 AND CC.CASE_STATUS_ID IN (1,3,6)
+   </select>
+   
+   
+   <!--  Added by 6035037  for BI-437-->
+   <select id="checkLoginAttempt" parameterClass="java.lang.String" resultClass="int">
+		 select nvl(LOGIN_ATTEMPT,0) from CMS_USER_MASTER   where UPPER(LOGIN_ID) =UPPER( #userID#)
+   </select>
+   
+   <!-- Start: Modified by 6032662 for BI-702 -->
+   <!--<update id="updateLoginAttempt" parameterClass="java.lang.String">-->
+   <update id="updateLoginAttempt" parameterClass="java.util.HashMap">
+   Update CMS_USER_MASTER SET LOGIN_ATTEMPT = (nvl(LOGIN_ATTEMPT,0))+1 
+   where UPPER(LOGIN_ID) =UPPER( #userID#)
+   </update>
+
+   
+   <!-- <update id="resetLoginAttempt" parameterClass="java.lang.String">-->
+   <update id="resetLoginAttempt" parameterClass="java.util.HashMap">
+   		<!--Update CMS_USER_MASTER SET LOGIN_ATTEMPT = 0 where UPPER(LOGIN_ID) =UPPER( #userID#)-->
+   		Update CMS_USER_MASTER SET LOGIN_ATTEMPT = 0 
+   		<isNotNull prepend="," property="unlocked_by">
+			<isNotEmpty property="unlocked_by">
+				UNLOCKED_BY = #unlocked_by#,
+				UNLOCKED_ON = sysdate
+			</isNotEmpty>
+		</isNotNull>
+   		 where UPPER(LOGIN_ID) =UPPER( #userID#)
+   </update>
+   <!-- End: Modified by 6032662 for BI-702 -->
+ 
+	<update id="updateUserPasswordExpiryDate" parameterClass="java.lang.String">
+	  UPDATE CMS_USER_MASTER CUM 
+	SET CUM.PASS_EXPIRY_DATE = sysdate +
+	  (SELECT MIN(CRBE.NO_OF_DAY)
+	  FROM CMS_ROLE_BASED_PASSWORD_EXPIRY CRBE
+	  WHERE CRBE.ROLL_ID IN
+		(SELECT CURM.ROLE_ID FROM CMS_USER_ROLE_MAP CURM WHERE CURM.USER_ID=CUM.USER_MASTER_ID
+		)
+	  ) ,CUM.Force_Pwd_Change = 0
+	WHERE CUM.LOGIN_ID=#userID#
+	  
+    </update>
+	
+	<insert id="addTempPassword" parameterClass="java.util.Map">
+	insert into
+		CMS_TEAMP_CREDENTIAL_DETAILS
+		(USER_ID,TOKEN)
+		values(#userId#,#token#)
+	</insert>
+	
+	<update id="updateTempPassword" parameterClass="java.util.Map">
+	Update CMS_TEAMP_CREDENTIAL_DETAILS 
+	set TEMP_PASS = #password# 
+	where USER_ID = #userId# and TOKEN = #token#
+	</update>
+	
+	<delete id="removeTempPassword" parameterClass="java.lang.String">
+		DELETE
+		FROM CMS_TEAMP_CREDENTIAL_DETAILS WHERE USER_ID =#userId#
+	</delete>
+	
+	<select id="checktoken" parameterClass="java.util.Map" resultClass="int">
+		 
+	select count(*) from  CMS_TEAMP_CREDENTIAL_DETAILS where USER_ID =#userId#  and token = #token#
+	
+   </select>
+   
+   <select id="getTempPassword" parameterClass="java.lang.String" resultClass="java.lang.String">
+		 
+	select TEMP_PASS from  CMS_TEAMP_CREDENTIAL_DETAILS where USER_ID =#userId# 
+	
+   </select>
+   
+   <select id="checkUserIdforTemp" parameterClass="java.lang.String" resultClass="int">
+		 
+	select count(*) from  CMS_TEAMP_CREDENTIAL_DETAILS where USER_ID =#userId#  
+	
+   </select>
+   
+   <select id="getToken" parameterClass="java.lang.String" resultClass="java.lang.String">
+		 
+	select token from  CMS_TEAMP_CREDENTIAL_DETAILS where USER_ID =#userId#  
+	
+   </select>
+   
+   
+   <select id="getpasswordExpiry" parameterClass="java.lang.String" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+	
+	SELECT
+	Force_Pwd_Change as isNewUser, CASE 
+	WHEN trunc(pass_expiry_date ) = trunc(sysdate)     THEN 2
+	WHEN trunc(pass_expiry_date - 1) = trunc(sysdate)  THEN 3
+	WHEN trunc(pass_expiry_date - 2) = trunc(sysdate)  THEN 4
+	WHEN trunc(pass_expiry_date) >= trunc(sysdate)     THEN 1
+	ELSE 0
+	END isPasswordExpire
+	FROM CMS_USER_MASTER
+	where LOGIN_ID =#userId# 
+	
+	
+   </select>
+ 
+ 	<update id="forgotPasswordUpdate" parameterClass="java.util.Map">
+	Update CMS_USER_MASTER 
+	set Force_Pwd_Change = #isnewuser# 
+	where LOGIN_ID = #userId# 
+	</update>
+	
+	 <select id="getTempCountPassword" parameterClass="java.lang.String" resultClass="int">
+		select Count(*) from  CMS_TEAMP_CREDENTIAL_DETAILS where USER_ID =#userId#  
+	</select>
+	
+	<update id="updateUserProfileExpiryDate" parameterClass="java.lang.String">
+	 
+	UPDATE CMS_USER_MASTER CUM 
+	SET CUM.PASS_EXPIRY_DATE = (
+  select case 
+  WHEN (trunc(sysdate +
+	  (SELECT MIN(CRBE.NO_OF_DAY)
+	  FROM CMS_ROLE_BASED_PASSWORD_EXPIRY CRBE
+	  WHERE CRBE.ROLL_ID IN
+	(SELECT CURM.ROLE_ID FROM CMS_USER_ROLE_MAP CURM WHERE CURM.USER_ID=CUM.USER_MASTER_ID
+	))) <![CDATA[ < ]]> trunc(CUM.PASS_EXPIRY_DATE)) THEN
+    (sysdate +
+	  (SELECT MIN(CRBE.NO_OF_DAY)
+	  FROM CMS_ROLE_BASED_PASSWORD_EXPIRY CRBE
+	  WHERE CRBE.ROLL_ID IN
+	(SELECT CURM.ROLE_ID FROM CMS_USER_ROLE_MAP CURM WHERE CURM.USER_ID=CUM.USER_MASTER_ID
+	)))
+    ELSE CUM.PASS_EXPIRY_DATE
+  END stss from dual)
+  WHERE CUM.LOGIN_ID = #userId#
+	  
+    </update>
+    
+    
+    <select id="getNoDaysBeforeExpiry" parameterClass="java.lang.String" resultClass="int">
+		select TO_DATE(PASS_EXPIRY_DATE,'DD-MM-YYYY')- to_date(sysdate,'DD-MM-YYYY')noOfDaysBeforeExpire from CMS_USER_MASTER where LOGIN_ID=#userId#
+	</select>
+	
+	<!-- Added by 6035037 for BI-379-->
+	<select id="checkEmailExist" parameterClass="java.util.Map" resultClass="int">
+	   select count(su.ATTR_VALUE) from SAVVIONDB.USERATTR su where su.ATTR_NAME='email'
+	  and su.ATTR_VALUE = #pEmailId# 
+	  <isNotNull prepend="OR" property="emaiId">
+			<isNotEmpty property="emaiId">
+				su.ATTR_VALUE = #emaiId#
+			</isNotEmpty>
+		</isNotNull>
+	
+	</select>
+   <!--  End BI379 -->
+    
+</sqlMap>

@@ -1,0 +1,656 @@
+﻿<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+  
+<sqlMap namespace="ReportTypeMaster">
+	<resultMap id="resultVO"
+		class="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO">
+		<result property="reportTypeId" column="REPORT_TYPE_MASTER_ID" />
+		<result property="reportType" column="REPORT_TYPE" />		
+		<result property="reportTypeCode" column="REPORT_CODE" />
+		<result property="subReportType" column="SUB_REPORT" />		
+		<result property="researchElement" column="NAME" />
+
+	</resultMap>
+
+	<resultMap id="reVO" class="com.worldcheck.atlas.vo.masters.REMasterVO">
+		<result property="name" column="NAME" />
+		<result property="rEMasterId" column="ID" />
+		
+	</resultMap>
+
+	<resultMap id="subReportVO" class="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO" groupBy="subReportTypeId">
+		<result property="subReportTypeId" column="SUBREPORT_TYPE_ID" />
+		<result property="reList" resultMap="ReportTypeMaster.ReportTypeVO"/>
+	</resultMap>
+	
+	<resultMap id="reportVO" class="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO" groupBy="reportTypeId">
+		<result property="reportTypeId" column="REPORT_TYPE_ID" />
+		<result property="reList" resultMap="ReportTypeMaster.ReportTypeVO"/>
+	</resultMap>
+	
+     <resultMap id="ReportTypeVO" class="com.worldcheck.atlas.vo.masters.REMasterVO">
+		<result property="name" column="NAME" />
+		<result property="entityTypeId" column="ENTITY_TYPE_ID" />
+		<result property="rEMasterId" column="RE_MASTER_ID" />
+	</resultMap>
+		
+	<resultMap id="rptVO"
+		class="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO">
+		<result property="reportTypeId" column="REPORT_TYPE_MASTER_ID" />
+		<result property="reportType" column="REPORT_TYPE" />
+		<result property="reportTypeCode" column="REPORT_CODE" />
+		<result property="turnaroundTime" column="TURN_AROUND_TIME" />
+		<result property="reportTypeStatus" column="STATUS" />
+		<result property="initialsUseCRN" column="REPORT_CRN_INITIAL" />
+
+	</resultMap>
+
+	<resultMap id="subRptVO"
+		class="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO">
+		<result property="subReportTypeId" column="SUBREPORT_TYPE_MASTER_ID" />
+		<result property="initialsUseEndCRN" column="SUB_CRN_INITIAL" />
+		<result property="subReportType" column="SUB_REPORT" />
+		<result property="researchElement" column="NAME" />
+		<!-- Start BI-293 Added by 6035037 -->
+		<result property="researchElementID" column="ID" />
+		<result property="subreportStatus" column="SUBREPORT_STATUS" />
+		<result property="subReportTypeCode" column="SUB_REPORT_CODE" />
+		<!-- End BI-293 Added by 6035037 -->
+
+	</resultMap>
+
+
+	<resultMap id="searchSubRptVO"
+		class="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO">
+		<result property="reportTypeId" column="REPORT_TYPE_MASTER_ID" />
+		<result property="reportType" column="REPORT_TYPE" />
+		<result property="reportTypeCode" column="REPORT_CODE" />
+		<result property="researchElement" column="NAME" />
+		<result property="subReportType" column="SUB_REPORT" />
+
+	</resultMap>
+	
+	
+	<resultMap id="subRptMastVO"
+		class="com.worldcheck.atlas.vo.report.SubReportTypeVO">
+		<result property="subReportId" column="CODE" />
+		<result property="subReportName" column="ReportName" />
+		<result property="subCrnInitial" column="SUB_CRN_INITIAL" />
+		<result property="associatedResearchElements" column="REELEMENTNAME" />
+
+	</resultMap>
+	
+	<!-- Start BI-293 added by 6035037 -->
+
+	<select id="getReportypeID" resultClass="java.lang.Long">
+
+		 SELECT CMS_REPORTTYPEMASTER_SEQ.nextval FROM DUAL
+
+	</select>
+	
+	<!-- End BI-293 added by 6035037 -->
+	
+	<!-- Start BI-293 added by 6035037  Seq should come from the object -->
+	<insert id="addReportType" parameterClass="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO">
+		<!--selectKey resultClass="long" type="pre" keyProperty="reportTypeId"-->
+			<!--SELECT
+			CMS_REPORTTYPEMASTER_SEQ.nextval AS VALUE FROM DUAL-->
+	   <!--/selectKey-->
+		insert into CMS_REPORT_TYPE_MASTER (REPORT_TYPE_MASTER_ID,
+		REPORT_TYPE,REPORT_CODE,REPORT_CRN_INITIAL,TURN_AROUND_TIME,STATUS,UPDATED_BY,UPDATED_ON)
+
+		values(#reportTypeId#,#reportType#,#reportTypeCode#,#initialsUseCRN#,#turnaroundTime#,#reportTypeStatus#,
+		#userName#,sysdate)
+	</insert>
+
+	<insert id="addReportTypeReMap" parameterClass="java.util.HashMap">
+
+		insert into
+		CMS_REPORT_TYPE_MAP
+		(RE_REPORT_MAP_ID,REPORT_TYPE_ID,RE_ID,UPDATED_BY,UPDATED_ON)
+
+		values(CMS_REPORTTYPEMAP_SEQ.nextval,#rptId#,#reIds#,
+		#userName#,sysdate)
+	</insert>
+
+	<select id="searchReportType" resultMap="resultVO"
+		parameterClass="java.lang.String">
+		select distinct
+		crtm.REPORT_TYPE_MASTER_ID,crtm.REPORT_TYPE,crtm.REPORT_CODE ,
+		crm.RE_ID,re.NAME
+		From CMS_REPORT_TYPE_MASTER crtm,CMS_REPORT_TYPE_MAP
+		crm,CMS_RE_MASTER re
+		where crtm.REPORT_TYPE_MASTER_ID
+		=crm.REPORT_TYPE_ID
+		AND re.RE_MASTER_ID = crm.RE_ID
+
+		AND
+		crtm.REPORT_TYPE_MASTER_ID in ($rptMasterId$)
+		order by upper(re.NAME) asc
+	</select>
+
+	<select id="getReId" resultClass="java.lang.String"
+		parameterClass="java.lang.String">
+		select RE_MASTER_ID from CMS_RE_MASTER where
+		Name=#reName#
+	</select>
+
+
+	<insert id="addSubReportReMap" parameterClass="java.util.HashMap">
+
+		insert into
+		CMS_RE_SUBREPORT_TYPE_MAP
+		(RE_SUBREPORT_MAP_ID,SUBREPORT_TYPE_ID,RE_ID,UPDATED_BY,UPDATED_ON)
+
+		values(CMS_RESUBREPORTTYPEMAP_SEQ.nextval,#rptId#,#reIds#,
+		#userName#,sysdate)
+	</insert>
+
+	
+	<!-- Start BI-293 added by 6035037 -->
+	
+	
+	<select id="getSubReportypeID" resultClass="java.lang.Long">
+
+		SELECT CMS_SUBRPTTYP_MASTER_SEQ.nextval FROM DUAL
+	</select>
+	
+	<!-- End BI-293 added by 6035037 -->
+	
+	<!-- Start BI-293 logic to insert seq changes -->
+	<insert id="insertSubReport" parameterClass="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO">
+		<!--selectKey resultClass="long" type="pre" keyProperty="subReportTypeId"-->
+			<!--SELECT
+			CMS_SUBRPTTYP_MASTER_SEQ.nextval AS VALUE FROM DUAL-->
+	   <!--/selectKey-->
+	   
+		insert into CMS_SUBREPORT_TYPE_MASTER
+		(SUBREPORT_TYPE_MASTER_ID,SUB_REPORT_CODE,REPORT_TYPE_ID,SUB_REPORT,SUB_CRN_INITIAL,
+		STATUS,UPDATED_BY,UPDATED_ON)
+
+		values(#subReportTypeId#,#subReportTypeCode#,#reportTypeId#,#subReportType#,#initialsUseEndCRN#,#reportTypeStatus#,
+		#userName#,sysdate)
+	</insert>
+	<select id="getReForRpt" resultMap="reVO" parameterClass="java.lang.Long">
+	<!-- Start BI-293 added by 6035037 RE ID has been added -->
+		select
+		distinct re.NAME,RE_MASTER_ID ID
+		From CMS_REPORT_TYPE_MASTER crtm,CMS_REPORT_TYPE_MAP
+		crm,CMS_RE_MASTER
+		re
+		where crtm.REPORT_TYPE_MASTER_ID
+		=crm.REPORT_TYPE_ID
+		AND
+		re.RE_MASTER_ID = crm.RE_ID
+		and
+		crtm.REPORT_TYPE_MASTER_ID=#rptId#
+	<!-- End BI-293 added by 6035037 -->
+	</select>
+
+	<select id="getCmpOrIndReForRpt" resultMap="reportVO">
+		select distinct re.NAME, re.ENTITY_TYPE_ID,re.RE_MASTER_ID,crm.REPORT_TYPE_ID 
+		From CMS_REPORT_TYPE_MASTER crtm,CMS_REPORT_TYPE_MAP
+		crm,CMS_RE_MASTER re
+		where crtm.REPORT_TYPE_MASTER_ID = crm.REPORT_TYPE_ID
+		AND re.RE_MASTER_ID = crm.RE_ID
+		AND re.STATUS = 1
+	</select>
+
+	<select id="getReForSubReport" resultMap="subReportVO">
+		select distinct re.NAME,re.ENTITY_TYPE_ID,re.RE_MASTER_ID,crm.SUBREPORT_TYPE_ID
+		from
+		CMS_SUBREPORT_TYPE_MASTER crtm,CMS_RE_MASTER
+		re,CMS_RE_SUBREPORT_TYPE_MAP crm
+		where crtm.SUBREPORT_TYPE_MASTER_ID = crm.SUBREPORT_TYPE_ID
+		AND re.RE_MASTER_ID = crm.RE_ID
+		and crtm.status=1
+	</select>
+
+	<select id="getRptInfo" resultMap="rptVO" parameterClass="java.lang.Long">
+		select
+		crtm.REPORT_TYPE_MASTER_ID,crtm.REPORT_TYPE,crtm.REPORT_CODE ,
+		crtm.TURN_AROUND_TIME,crtm.REPORT_CRN_INITIAL,crtm.STATUS
+		From
+		CMS_REPORT_TYPE_MASTER crtm
+		where crtm.REPORT_TYPE_MASTER_ID=#rptId#
+	</select>
+
+	<!-- Start BI-293 added by 6035037 RE ID,sub report type code has been added  -->
+	<select id="getSubReport" resultMap="subRptVO" parameterClass="java.lang.Long">
+		select distinct LISTAGG(re.NAME, ',') 
+		WITHIN GROUP (ORDER BY re.NAME)
+		OVER (PARTITION BY crtm.SUBREPORT_TYPE_MASTER_ID)AS NAMe,LISTAGG(re.RE_MASTER_ID, ',') 
+		WITHIN GROUP (ORDER BY re.RE_MASTER_ID)
+		OVER (PARTITION BY crtm.SUBREPORT_TYPE_MASTER_ID)AS ID,crtm.SUBREPORT_TYPE_MASTER_ID,crtm.SUB_REPORT_CODE,crtm.SUB_REPORT,nvl(crtm.SUB_CRN_INITIAL,' ') SUB_CRN_INITIAL,crtm.status SUBREPORT_STATUS
+		from
+		CMS_SUBREPORT_TYPE_MASTER crtm,CMS_RE_MASTER
+		re,CMS_RE_SUBREPORT_TYPE_MAP crm
+		where crtm.SUBREPORT_TYPE_MASTER_ID
+		=crm.SUBREPORT_TYPE_ID
+		AND re.RE_MASTER_ID = crm.RE_ID
+		<!--and -->
+		<!--crtm.status=1-->
+		AND
+		crtm.REPORT_TYPE_ID =#rptId#
+		
+	</select>
+
+	<!-- End  BI-293 added byy 6035037  -->
+	
+	<select id="getReList" resultMap="reVO">
+	<!-- Start BI-293 added by 6035037 RE ID has been added -->
+	
+			select distinct name,RE_MASTER_ID ID from CMS_RE_MASTER WHERE status =1 order by upper(name) asc
+			
+	 <!-- End BI-293 added vy 6035037 RE ID has been added -->
+	</select>
+
+	<select id="getsubRptCount" parameterClass="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO"
+		resultClass="java.lang.Integer">
+		select count(*) from CMS_REPORT_TYPE_MASTER
+		crtm,CMS_SUBREPORT_TYPE_MASTER
+		csbr where
+		crtm.REPORT_TYPE_MASTER_ID=csbr.REPORT_TYPE_ID
+
+		<isNotNull prepend="AND" property="reportTypeStatus">
+			<isNotEmpty property="reportTypeStatus">
+				crtm.STATUS = #reportTypeStatus#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="reportType">
+			<isNotEmpty property="reportType">
+				upper(crtm.REPORT_TYPE) =
+				upper(#reportType#)
+			</isNotEmpty>
+		</isNotNull>
+
+	</select>
+
+
+	<select id="searchSubReportType" parameterClass="java.lang.String"
+		resultMap="searchSubRptVO">
+		select distinct re.NAME,
+		crtm.REPORT_TYPE_MASTER_ID,crtm.REPORT_TYPE,crtm.REPORT_CODE ,
+		crm.RE_ID,csbr.SUB_REPORT,csbr.SUB_CRN_INITIAL
+		From
+		CMS_REPORT_TYPE_MASTER
+		crtm,CMS_RE_SUBREPORT_TYPE_MAP
+		crm,CMS_RE_MASTER
+		re,CMS_SUBREPORT_TYPE_MASTER csbr
+		where
+		csbr.SUBREPORT_TYPE_MASTER_ID=crm.SUBREPORT_TYPE_ID
+		AND
+		csbr.REPORT_TYPE_ID=crtm.REPORT_TYPE_MASTER_ID
+		AND re.RE_MASTER_ID
+		=crm.RE_ID
+		AND crtm.REPORT_TYPE_MASTER_ID in ($rptMasterId$)
+		order by
+		upper(re.NAME) asc
+
+	</select>
+
+	<select id="getSubRptId" parameterClass="java.lang.Long"
+		resultClass="java.lang.Long">
+		select SUBREPORT_TYPE_MASTER_ID from
+		CMS_SUBREPORT_TYPE_MASTER
+		where REPORT_TYPE_ID=#rptIdVal# AND STATUS = 1
+	</select>
+
+	<delete id="deleteSubRe" parameterClass="java.lang.String">
+		delete from
+		CMS_RE_SUBREPORT_TYPE_MAP where SUBREPORT_TYPE_ID in
+		($idString$)
+	</delete>
+
+	<delete id="deleteSubRpt" parameterClass="java.lang.String">
+		delete from
+		CMS_SUBREPORT_TYPE_MASTER where SUBREPORT_TYPE_MASTER_ID
+		in
+		($idString$)
+	</delete>
+
+	<update id="deActiveSubReport" parameterClass="java.lang.String">
+		update CMS_SUBREPORT_TYPE_MASTER set status = 0	WHERE	SUBREPORT_TYPE_MASTER_ID in ($idString$)
+	</update>
+	<!-- Start BI-293 added by 6035037 -->
+
+	<update id="activeSubReport" parameterClass="java.lang.String">
+		update CMS_SUBREPORT_TYPE_MASTER set status = 1	WHERE	SUBREPORT_TYPE_MASTER_ID in ($idString$)
+	</update>
+
+	<!-- End BI-293 added by 6035037 -->
+	<update id="updateReportMaster" parameterClass="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO">
+		update
+		CMS_REPORT_TYPE_MASTER set REPORT_CRN_INITIAL=#initialsUseCRN#,
+		TURN_AROUND_TIME=#turnaroundTime#,
+		STATUS=#reportTypeStatus#
+		where
+		REPORT_TYPE_MASTER_ID=#reportTypeId#
+	</update>
+
+	<delete id="deleteReportRe" parameterClass="java.lang.Long">
+		delete from
+		CMS_REPORT_TYPE_MAP where REPORT_TYPE_ID =#reportTypeId#
+		</delete>
+
+	<update id="changeStatus" parameterClass="java.util.Map">
+		update
+		CMS_REPORT_TYPE_MASTER set STATUS=
+		<isEqual property="status" compareValue="0">
+			  	1
+		</isEqual>
+			<isEqual property="status" compareValue="1">
+				0
+			</isEqual>
+		WHERE
+		
+		REPORT_TYPE_MASTER_ID IN
+				
+		<iterate property="reportTypeIdList" open="(" close=")" conjunction=",">
+		#reportTypeIdList[]#
+		</iterate>
+		
+		</update>		
+
+		<!-- Start BI -293 added by 6035037 STAUS has been added--> 
+		
+	 <select id="checkSubRpt" parameterClass="java.lang.Long"
+		resultClass="java.lang.Integer">
+		select count(*) from CMS_SUBREPORT_TYPE_MASTER where
+		REPORT_TYPE_ID=#rptIdVal# and STATUS ='1'
+	 </select>
+	
+	<!-- End BI -293 added by 6035037 STAUS has been added--> 
+
+	<select id="gerRptMasterId" parameterClass="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO"
+		resultClass="java.lang.Long">
+		select REPORT_TYPE_MASTER_ID from CMS_REPORT_TYPE_MASTER
+
+
+		<dynamic prepend="WHERE">
+			<isNotNull prepend="AND" property="reportTypeStatus">
+				<isNotEmpty property="reportTypeStatus">
+					STATUS = #reportTypeStatus#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="AND" property="reportType">
+				<isNotEmpty property="reportType">
+					upper(REPORT_TYPE) Like UPPER(TRIM('%'||#reportType#||'%'))
+				</isNotEmpty>
+			</isNotNull>
+
+		</dynamic>
+	</select>
+
+	<select id="checkReportIfExist" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+
+		select count(*) from CMS_REPORT_TYPE_MASTER where upper(REPORT_TYPE)
+		=upper(#rptName#)
+	</select>
+	
+	 <select id="getMaxId" resultClass="java.lang.Long">
+	 select nvl(max(REPORT_TYPE_MASTER_ID),0)+1 as maxId from CMS_REPORT_TYPE_MASTER
+	 </select> 
+	 
+	  <select id="reportTypeMasterGrid" resultClass="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO" parameterClass="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO">
+		SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (
+		SELECT REPORT_TYPE_MASTER_ID reportTypeId,REPORT_TYPE reportType,REPORT_CODE reportTypeCode,SUB_REPORT subReportType ,NAME researchElement FROM
+		(
+		 SELECT
+				CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID REPORT_TYPE_MASTER_ID,
+				CMS_REPORT_TYPE_MASTER.REPORT_TYPE REPORT_TYPE,
+				CMS_REPORT_TYPE_MASTER.REPORT_CODE REPORT_CODE,
+				null SUB_REPORT , 
+				<!--tab_to_clob(CAST(COLLECT(DISTINCT CMS_RE_MASTER.NAME ) AS t_varchar2_tab)) NAME Commented by 6035037 for BI-293-->
+				tab_to_clob(CAST(COLLECT( CMS_RE_MASTER.NAME ) AS t_varchar2_tab)) NAME 
+		FROM
+			CMS_REPORT_TYPE_MASTER,
+			CMS_REPORT_TYPE_MAP,	
+			CMS_RE_MASTER
+		WHERE
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID = CMS_REPORT_TYPE_MAP.REPORT_TYPE_ID
+		AND
+			CMS_REPORT_TYPE_MAP.RE_ID = CMS_RE_MASTER.RE_MASTER_ID
+		<isNotNull property="reportType">
+				<isNotEmpty prepend="AND" property="reportType">
+		    		UPPER(CMS_REPORT_TYPE_MASTER.REPORT_TYPE) LIKE UPPER('%'||TRIM(#reportType#)||'%')
+		     </isNotEmpty>
+		 </isNotNull>
+		<isNotNull property="reportTypeStatus">
+				<isNotEmpty prepend="AND" property="reportTypeStatus">
+					CMS_REPORT_TYPE_MASTER.STATUS=#reportTypeStatus#
+				</isNotEmpty>
+		 </isNotNull>
+		GROUP BY
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID,
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE,
+			CMS_REPORT_TYPE_MASTER.REPORT_CODE 
+		        
+		UNION ALL       
+		        
+		SELECT
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID REPORT_TYPE_MASTER_ID,    
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE REPORT_TYPE,    
+			CMS_REPORT_TYPE_MASTER.REPORT_CODE REPORT_CODE,    
+			CMS_SUBREPORT_TYPE_MASTER.SUB_REPORT SUB_REPORT,    
+			<!--tab_to_clob(CAST(COLLECT(DISTINCT CMS_RE_MASTER.NAME ) AS t_varchar2_tab)) NAME Commented by 60325037 for BI-293-->
+			tab_to_clob(CAST(COLLECT(CMS_RE_MASTER.NAME ) AS t_varchar2_tab)) NAME
+		FROM
+			CMS_REPORT_TYPE_MASTER,			
+			CMS_SUBREPORT_TYPE_MASTER,
+			CMS_RE_SUBREPORT_TYPE_MAP,
+			CMS_RE_MASTER
+		WHERE	
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID =CMS_SUBREPORT_TYPE_MASTER.REPORT_TYPE_ID
+		AND
+			CMS_SUBREPORT_TYPE_MASTER.SUBREPORT_TYPE_MASTER_ID=CMS_RE_SUBREPORT_TYPE_MAP.SUBREPORT_TYPE_ID
+		AND
+			CMS_RE_SUBREPORT_TYPE_MAP.RE_ID = CMS_RE_MASTER.RE_MASTER_ID
+		<!--AND
+		    CMS_SUBREPORT_TYPE_MASTER.status= 1-->
+		<isNotNull property="reportType">
+				<isNotEmpty prepend="AND" property="reportType">
+		    		UPPER(CMS_REPORT_TYPE_MASTER.REPORT_TYPE) LIKE UPPER('%'||TRIM(#reportType#)||'%')
+		     </isNotEmpty>
+		 </isNotNull>
+		<isNotNull property="reportTypeStatus">
+				<isNotEmpty prepend="AND" property="reportTypeStatus">
+					CMS_REPORT_TYPE_MASTER.STATUS=#reportTypeStatus#
+				</isNotEmpty>
+		 </isNotNull>
+		GROUP BY 
+		        CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID,
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE,
+			CMS_REPORT_TYPE_MASTER.REPORT_CODE,
+			CMS_SUBREPORT_TYPE_MASTER.SUB_REPORT
+			) ORDER BY upper($sortColumnName$) $sortType$
+			<!--Start: Modified by 6032662 for BI-293-->
+			<!--) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#-->
+			) a)  WHERE rn <![CDATA[ <= ]]> #limit# and rn <![CDATA[ >= ]]> #start#
+			<!--End: Modified by 6032662 for BI-293-->
+	 </select>
+	 
+	 <select id="reportTypeMasterCount" resultClass="int" parameterClass="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO">
+		select count(*) from(
+		SELECT REPORT_TYPE_MASTER_ID,REPORT_TYPE,REPORT_CODE,SUB_REPORT,NAME FROM(
+		 SELECT
+				CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID REPORT_TYPE_MASTER_ID,
+				CMS_REPORT_TYPE_MASTER.REPORT_TYPE REPORT_TYPE,
+				CMS_REPORT_TYPE_MASTER.REPORT_CODE REPORT_CODE,
+				null SUB_REPORT , 
+				tab_to_clob(CAST(COLLECT(DISTINCT CMS_RE_MASTER.NAME ) AS t_varchar2_tab)) NAME
+		FROM
+			CMS_REPORT_TYPE_MASTER,
+			CMS_REPORT_TYPE_MAP,	
+			CMS_RE_MASTER
+		WHERE
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID = CMS_REPORT_TYPE_MAP.REPORT_TYPE_ID
+		AND
+			CMS_REPORT_TYPE_MAP.RE_ID = CMS_RE_MASTER.RE_MASTER_ID
+		<isNotNull property="reportType">
+				<isNotEmpty prepend="AND" property="reportType">
+		    		UPPER(CMS_REPORT_TYPE_MASTER.REPORT_TYPE) LIKE UPPER('%'||TRIM(#reportType#)||'%')
+		     </isNotEmpty>
+		 </isNotNull>
+		<isNotNull property="reportTypeStatus">
+				<isNotEmpty prepend="AND" property="reportTypeStatus">
+					CMS_REPORT_TYPE_MASTER.STATUS=#reportTypeStatus#
+				</isNotEmpty>
+		 </isNotNull>
+		GROUP BY
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID,
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE,
+			CMS_REPORT_TYPE_MASTER.REPORT_CODE
+			
+		        
+		UNION ALL        
+		        
+		SELECT
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID REPORT_TYPE_MASTER_ID,    
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE REPORT_TYPE,    
+			CMS_REPORT_TYPE_MASTER.REPORT_CODE REPORT_CODE,    
+			CMS_SUBREPORT_TYPE_MASTER.SUB_REPORT SUB_REPORT,    
+			tab_to_clob(CAST(COLLECT(DISTINCT CMS_RE_MASTER.NAME ) AS t_varchar2_tab)) NAME
+		FROM
+			CMS_REPORT_TYPE_MASTER,			
+			CMS_SUBREPORT_TYPE_MASTER,
+			CMS_RE_SUBREPORT_TYPE_MAP,
+			CMS_RE_MASTER
+		WHERE	
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID =CMS_SUBREPORT_TYPE_MASTER.REPORT_TYPE_ID
+		AND
+			CMS_SUBREPORT_TYPE_MASTER.SUBREPORT_TYPE_MASTER_ID=CMS_RE_SUBREPORT_TYPE_MAP.SUBREPORT_TYPE_ID
+		AND
+			CMS_RE_SUBREPORT_TYPE_MAP.RE_ID = CMS_RE_MASTER.RE_MASTER_ID
+		<!--AND
+		    CMS_SUBREPORT_TYPE_MASTER.status= 1 Commented by 6035037 for BI-293-->
+		<isNotNull property="reportType">
+				<isNotEmpty prepend="AND" property="reportType">
+		    		UPPER(CMS_REPORT_TYPE_MASTER.REPORT_TYPE) LIKE UPPER('%'||TRIM(#reportType#)||'%')
+		     </isNotEmpty>
+		 </isNotNull>
+		<isNotNull property="reportTypeStatus">
+				<isNotEmpty prepend="AND" property="reportTypeStatus">
+					CMS_REPORT_TYPE_MASTER.STATUS=#reportTypeStatus#
+				</isNotEmpty>
+		 </isNotNull>
+		GROUP BY 
+		        CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID,
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE,
+			CMS_REPORT_TYPE_MASTER.REPORT_CODE,
+			CMS_SUBREPORT_TYPE_MASTER.SUB_REPORT) 
+			ORDER BY UPPER(REPORT_TYPE)
+		)
+	 </select>
+	
+	<!-- Updated by 6035037 to check subreport for specific report -->
+	 <select id="isSubReportTypeExist"  resultClass="java.lang.Integer" parameterClass = "com.worldcheck.atlas.vo.report.SubReportTypeVO">
+	  SELECT  
+	   			COUNT(CSTM.SUB_REPORT) 
+	   FROM 
+	   			CMS_SUBREPORT_TYPE_MASTER CSTM 
+	   WHERE  
+	   			UPPER(CSTM.SUB_REPORT) =  UPPER(TRIM(#subReportName#))  
+				AND
+				CSTM.REPORT_TYPE_ID = #reportTypeId#
+     </select>
+     
+      
+      <select id="isSubReportInitialExist"  resultClass="java.lang.Integer" parameterClass = "java.lang.String">
+	  	  
+	     select count(*) from cms_subreport_type_master where UPPER(sub_crn_initial)= UPPER(TRIM(#subReportTypeInitial#)) and  status=1
+	   
+     </select>
+     
+	<select id="checkAssociatedMaster"  resultClass="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO" parameterClass = "java.lang.String">
+     SELECT * FROM     
+		(SELECT COUNT(REPORT_ID) clientReqMaster FROM CMS_CLIENT_REQ_MASTER WHERE REPORT_ID = #reportTypeId# ),
+		(SELECT COUNT(REPORT_TYPE_ID) rptClientMap FROM CMS_RPT_CLIENT_MAP WHERE REPORT_TYPE_ID = #reportTypeId#) ,
+		(SELECT COUNT(REPORT_TYPE_ID) reMap FROM CMS_CNTRY_RE_MAP WHERE REPORT_TYPE_ID = #reportTypeId#),
+		(SELECT COUNT(REPORT_ID) reportDownloadMaster FROM CMS_REPORT_DOWNLOAD_MASTER WHERE REPORT_ID= #reportTypeId#),
+		(SELECT COUNT(CRN) totalRecurrCRN FROM CMS_RECURR_CLIENTCASE WHERE  REPORT_TYPE_ID = #reportTypeId# ),
+		(SELECT COUNT(CC.CRN) totalCRN FROM CMS_CLIENTCASE CC WHERE  CC.CASE_STATUS_ID IN (1, 2, 3) AND 	cc.REPORT_TYPE_ID = #reportTypeId#)
+	</select>
+	
+	
+	<!-- Added by 6035037 for BI-293 -->
+	
+	<select id="checkAssociatedSubreport"  resultClass="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO" parameterClass = "java.lang.String">
+     SELECT * FROM     
+		(SELECT COUNT(CRN) totalRecurrCRN FROM CMS_RECURR_CLIENTCASE WHERE SUB_REPORT_TYPE_ID = #subReportTypeId#),
+		(SELECT COUNT(CC.CRN) totalCRN FROM CMS_CLIENTCASE CC WHERE  CC.CASE_STATUS_ID IN (1, 2,3,6) AND cc.SUB_REPORT_TYPE_ID = #subReportTypeId#),
+		 (SELECT COUNT(CC.CRN) totalCRNSLSubReport FROM CMS_CLIENTCASE CC,CMS_SUBJECT CS  WHERE  CC.CASE_STATUS_ID IN (1, 2, 3,6) AND CC.CRN = CS.CRN and CS.SUB_REPORT_TYPE_ID =#subReportTypeId#),
+		 (SELECT COUNT(CRC.CRN) totalRecurrCRNSLSubReport FROM CMS_RECURR_CLIENTCASE CRC ,CMS_SUBJECT CS  WHERE CRC.CRN = CS.CRN and CS.SUB_REPORT_TYPE_ID = #subReportTypeId#) 
+		 
+	</select>
+	
+	<!-- End -->
+	
+	
+	<select id="checkInitialCRNExist"  resultClass="java.lang.Integer" parameterClass = "java.lang.String">
+	  SELECT  
+	   			COUNT(CTM.REPORT_CRN_INITIAL) 
+	   FROM 
+	   			CMS_REPORT_TYPE_MASTER CTM 
+	   WHERE  
+	   			UPPER(CTM.REPORT_CRN_INITIAL) =  UPPER(TRIM(#initialCRN#))  
+     </select>
+
+
+
+<select id="getSubReportType"  resultClass="java.lang.String" parameterClass = "java.lang.String">
+
+select sub_report from cms_subreport_type_master where subreport_type_master_id= $subReportId$
+
+ </select>
+
+<update id="deleteActSubReport" parameterClass="java.lang.String">
+  UPDATE CMS_SUBREPORT_TYPE_MASTER SET STATUS=0 where 
+ SUBREPORT_TYPE_MASTER_ID = $subReportId$
+</update>
+
+<select id="isSubReportExist"  resultClass="java.lang.Integer" parameterClass = "java.lang.String">
+
+select count(*)  from cms_subreport_type_master where sub_report=#subReportType#
+ </select>
+
+<select id="getSUBreportId"  resultClass="java.lang.Integer" parameterClass = "java.lang.String">
+
+select subreport_type_master_id  from cms_subreport_type_master where sub_report=#subReportType#
+
+ </select>
+
+<delete id="deleteSubReportRe" parameterClass="java.lang.Long">
+ delete from
+CMS_RE_SUBREPORT_TYPE_MAP where SUBREPORT_TYPE_ID =$subReportTypeId$
+</delete>
+
+<update id="updateSubReportMaster" parameterClass="java.util.Map">
+		 update cms_subreport_type_master set sub_crn_initial = #initialsEndCrn#
+          where UPPER(sub_report)=UPPER(#subReportName#)	
+</update>	
+		
+<!-- Start Bi 293 Added by 6035037 -->		
+ <select id="getSubReportDetails" resultMap="subRptMastVO" parameterClass="java.lang.Long">
+
+		select distinct crtm.SUBREPORT_TYPE_MASTER_ID ,
+		LISTAGG(crm.RE_ID, ',') 
+		WITHIN GROUP (ORDER BY crm.RE_ID)
+		OVER (PARTITION BY crtm.SUBREPORT_TYPE_MASTER_ID)AS REELEMENTNAME,
+		crtm.REPORT_TYPE_ID as CODE ,
+		crtm.SUB_REPORT  ReportName,
+		nvl(crtm.SUB_CRN_INITIAL,' ') SUB_CRN_INITIAL
+		from
+		CMS_SUBREPORT_TYPE_MASTER crtm,CMS_RE_SUBREPORT_TYPE_MAP crm
+		where crtm.SUBREPORT_TYPE_MASTER_ID=crm.SUBREPORT_TYPE_ID
+	   <!-- AND crtm.status=1-->
+	    AND crtm.SUBREPORT_TYPE_MASTER_ID = #subrptIdVal#
+	  group by crtm.SUBREPORT_TYPE_MASTER_ID , crm.RE_ID,crtm.REPORT_TYPE_ID  ,crtm.SUB_REPORT ,crtm.SUB_CRN_INITIAL, SUB_CRN_INITIAL
+ 
+			
+  </select>	
+ 
+ <!-- Start Bi 293 Added by 6035037 -->
+</sqlMap>

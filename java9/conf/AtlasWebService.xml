@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AtlasWebService">
+
+	<select id="getOfficeName" resultClass="java.lang.String" parameterClass="java.lang.Integer">
+		select office from CMS_OFFICE_MASTER where office_master_id=#officeId#
+	</select>
+
+	<select id="getReportName" resultClass="java.lang.String" parameterClass="java.lang.String">
+		select REPORT_TYPE from CMS_REPORT_TYPE_MASTER where REPORT_CRN_INITIAL=#reportCode#
+	</select>
+
+	<select id="getClientName" resultClass="java.lang.String" parameterClass="java.lang.String">
+		select CLIENT_NAME from CMS_CLIENT_MASTER where CLIENT_CODE=#clientCode#
+	</select>
+	
+	<resultMap id="officeDetails"   class="com.worldcheck.atlas.vo.masters.BranchOfficeMasterVO">
+		<result property="branchOfficeId" column="officeId"/>
+		<!-- <result property="branchOffice" column="OFFICE"/> -->
+	</resultMap>
+
+	<select id="getofficeDetailsForRH" resultMap="officeDetails" parameterClass="java.lang.String">
+		select office_id officeId
+		from CMS_USER_MASTER where LOGIN_ID = #loginId# and IS_OFFICE_HEAD = 1 and STATUS = 1 and office_id in 
+		(select OFFICE_MASTER_ID from CMS_OFFICE_MASTER where status = 1)
+	</select>
+	<select id="getofficeDetailsForCM" resultMap="officeDetails" parameterClass="java.lang.String">
+		select office_id officeId
+		from CMS_USER_MASTER where LOGIN_ID = #loginId# and STATUS = 1 and office_id in 
+		(select OFFICE_MASTER_ID from CMS_OFFICE_MASTER where status = 1)
+	</select>
+
+	<select id="getCMValidation" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+		select count(role_id) from cms_user_role_map where user_id=(select user_master_id from cms_user_master 
+		where login_id=#user_Id# and status=1) and role_id =(select role_id from cms_user_role_master 
+		where description='Case Manager')
+	</select>
+	<select id="getRHValidation" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+		select count(role_id) from cms_user_role_map where user_id=(select user_master_id from cms_user_master 
+		where login_id=#user_Id#) and role_id =(select role_id from cms_user_role_master 
+		where description='Research Heads')
+	</select>
+	<select id="crnValidation" resultClass="java.lang.String" parameterClass="java.lang.String">
+		select CRN  from  CMS_CLIENTCASE where order_guid=#guId#
+	</select>
+
+	<insert id="insertToCMSFTPFailFiles" parameterClass="java.util.HashMap">
+			insert into CMS_FTP_FAIL_FILES (
+				CRN,
+				PATH,
+				FILE_NAME,
+				UPDATED_BY,
+				UPDATED_ON
+			)values (
+				#crn#,
+				#path#,
+				#fileName#,
+				#updatedBy#,
+				SYSDATE
+			)
+		
+	</insert>
+	
+	<select id="getDocId" resultClass="java.lang.String" parameterClass="java.util.HashMap">
+		select docid from cms_document where pid=#pid# and docname=#fileName# and version=#version# and MARKED=1
+	</select>
+
+	<select id="getcaseManagerId" resultClass="java.lang.String" parameterClass="java.lang.String">
+		select case_mgr_id from cms_clientcase where crn = #crn#
+	</select>
+
+	<select id="getSubReportType" resultClass="java.lang.String" parameterClass="java.lang.String">
+		select subReport.sub_report from CMS_SUBREPORT_TYPE_MASTER subReport,CMS_REPORT_TYPE_MASTER report where 
+		subReport.report_type_id=report.REPORT_TYPE_MASTER_ID and REPORT_CRN_INITIAL=#reportId# and subReport.status=1 and report.status=1
+	</select>
+
+	<select id="getISISPrimarySubjectId" resultClass="java.lang.String" parameterClass="java.util.HashMap">
+		select ISIS_SUBJECT_ID from cms_subject where is_primary_sub=#primarySubFlag# and crn=#crn#
+	</select>
+
+	<select id="getCRNInQueue" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+		<!-- select count(crn) from cms_queue_records where crn=#crn#  and success_flag <![CDATA[ <> ]]> 1 -->
+		select count(crn) from cms_queue_records where crn=#crn#  and success_flag = 0
+	</select>
+
+	<delete id="deleteCase" parameterClass="java.lang.String">
+		delete from cms_clientcase where crn=#crn#
+	</delete> 
+
+	<delete id="deleteSubject" parameterClass="java.lang.String">
+		delete from cms_subject where crn=#crn#
+	</delete>
+	
+	<delete id="deleteAccounts" parameterClass="java.lang.String">
+		delete from CMS_ACCOUNTS where crn=#crn#
+	</delete>
+
+	<delete id="deleteNotifications" parameterClass="java.lang.String">
+		delete from CMS_NOTIFICATION_CRN_MAP where crn=#crn#
+	</delete>
+
+	<delete id="deleteTeamDetails" parameterClass="java.lang.String">
+		delete from CMS_TEAM_DETAILS where crn=#crn#
+	</delete>
+
+	<delete id="deleteSubTeamREMap" parameterClass="java.lang.String">
+		delete from CMS_SUB_TEAM_RE_MAP where crn=#crn#
+	</delete>
+
+	<select id="getBIRes" resultClass="java.lang.Integer" parameterClass="java.lang.Integer">
+		select re_master_id from cms_re_master where BI_TEAM = 'Yes' and entity_type_id=#entity#
+	</select>
+
+	<select id="getCRNCount" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+		select count(crn) from cms_clientcase where crn=#crn#
+	</select>
+
+	<resultMap id="reBITeamMasterVO" class="com.worldcheck.atlas.vo.masters.ResearchElementMasterVO">
+		<result property="researchElementcode" column="RE_MASTER_ID"/>
+		<result property="biTeam" column="BI_TEAM"/>
+	</resultMap>
+
+	<select id="reBITeamMap" resultMap="reBITeamMasterVO" parameterClass="java.lang.String">
+		SELECT RE_MASTER_ID,BI_TEAM FROM CMS_RE_MASTER
+	</select>
+
+	<resultMap id="teamDetail" class="com.worldcheck.atlas.vo.report.TeamDetailsVO">
+		<result property="teamId" column="TEAM_ID"/>
+		<result property="teamType" column="TEAM_TYPE"/>
+	</resultMap>
+
+	
+	<select id="subjectValidation"  resultMap="teamDetail" parameterClass="java.util.Map">
+		SELECT DISTINCT A.TEAM_ID,B.TEAM_TYPE FROM CMS_SUB_TEAM_RE_MAP A,CMS_TEAM_TYPE B,CMS_TEAM_DETAILS C WHERE A.CRN=#crn# AND A.SUBJECT_ID=#subjectID# AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID <![CDATA[ <> ]]> #subjectID# AND CRN=#crn#) 
+		AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_TEAM_DETAILS WHERE TEAM_TYPE_ID =(SELECT TEAM_TYPE_ID FROM CMS_TEAM_TYPE WHERE upper(TEAM_TYPE)='SUPPORTING - BI'))
+		AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_TEAM_DETAILS WHERE TEAM_TYPE_ID =(SELECT TEAM_TYPE_ID FROM CMS_TEAM_TYPE WHERE upper(TEAM_TYPE)='PRIMARY'))
+		AND A.TEAM_ID=C.TEAM_ID AND B.TEAM_TYPE_ID=C.TEAM_TYPE_ID
+	</select> 
+
+	<select id="subjectValidationForBI"  resultMap="teamDetail" parameterClass="java.util.Map">
+		SELECT DISTINCT A.TEAM_ID,B.TEAM_TYPE FROM CMS_SUB_TEAM_RE_MAP A,CMS_TEAM_TYPE B,CMS_TEAM_DETAILS C WHERE A.CRN=#crn# AND A.SUBJECT_ID=#subjectID# AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID <![CDATA[ <> ]]> #subjectID# AND CRN=#crn#) 
+		AND A.TEAM_ID IN (SELECT TEAM_ID FROM CMS_TEAM_DETAILS WHERE TEAM_TYPE_ID =(SELECT TEAM_TYPE_ID FROM CMS_TEAM_TYPE WHERE upper(TEAM_TYPE)='SUPPORTING - BI'))
+		AND A.TEAM_ID=C.TEAM_ID AND B.TEAM_TYPE_ID=C.TEAM_TYPE_ID
+	</select> 
+
+	<select id="updateSubjectREValidation"  resultMap="teamDetail" parameterClass="java.util.Map">
+		SELECT DISTINCT A.TEAM_ID,B.TEAM_TYPE FROM CMS_SUB_TEAM_RE_MAP A,CMS_TEAM_TYPE B,CMS_TEAM_DETAILS C WHERE A.CRN=#crn# AND A.SUBJECT_ID=#subjectID#  AND A.RE_ID IN ($re_Ids$)
+		AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID <![CDATA[ <> ]]> #subjectID# AND CRN=#crn#)  
+		AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID = #subjectID# AND CRN=#crn# AND RE_ID  NOT IN ($re_Ids$)) 
+		AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_TEAM_DETAILS WHERE TEAM_TYPE_ID =(SELECT TEAM_TYPE_ID FROM CMS_TEAM_TYPE WHERE upper(TEAM_TYPE)='SUPPORTING - BI') )
+		AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_TEAM_DETAILS WHERE TEAM_TYPE_ID =(SELECT TEAM_TYPE_ID FROM CMS_TEAM_TYPE WHERE upper(TEAM_TYPE)='PRIMARY') )
+		AND A.TEAM_ID=C.TEAM_ID AND B.TEAM_TYPE_ID=C.TEAM_TYPE_ID
+	</select> 
+
+	<select id="updateSubjectBIREValidation"  resultMap="teamDetail" parameterClass="java.util.Map">
+		SELECT DISTINCT A.TEAM_ID,B.TEAM_TYPE FROM CMS_SUB_TEAM_RE_MAP A,CMS_TEAM_TYPE B,CMS_TEAM_DETAILS C WHERE A.CRN=#crn# AND A.SUBJECT_ID=#subjectID#  AND A.RE_ID IN ($re_Ids$)
+		AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID <![CDATA[ <> ]]> #subjectID# AND CRN=#crn#)  
+		AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID = #subjectID# AND CRN=#crn# AND RE_ID  NOT IN ($re_Ids$)) 
+		AND A.TEAM_ID IN (SELECT TEAM_ID FROM CMS_TEAM_DETAILS WHERE TEAM_TYPE_ID =(SELECT TEAM_TYPE_ID FROM CMS_TEAM_TYPE WHERE upper(TEAM_TYPE)='SUPPORTING - BI') )
+		AND A.TEAM_ID=C.TEAM_ID AND B.TEAM_TYPE_ID=C.TEAM_TYPE_ID
+	</select> 
+
+	<select id="getResForISISSubject" resultClass="java.lang.String"  parameterClass="java.lang.Integer">
+			SELECT RE_IDS FROM CMS_SUBJECT  WHERE SUBJECT_ID=#subjectId#
+	</select>
+
+	<select id="checkForISISSubjectId" resultClass="java.lang.Integer"  parameterClass="java.util.HashMap">
+			SELECT COUNT(ISIS_SUBJECT_ID) FROM CMS_SUBJECT WHERE CRN=#crn# and ISIS_SUBJECT_ID=#isisSubjectId#
+	</select>
+
+	<select id="getAtlasSubIdFromIsisSubId" resultClass="java.lang.Integer"  parameterClass="java.util.HashMap">
+			SELECT SUBJECT_ID FROM CMS_SUBJECT WHERE CRN=#crn# and ISIS_SUBJECT_ID=#isisSubjectId#
+	</select>
+	
+	<select id="deleteSubjectPrimaryTeamCheck"  resultMap="teamDetail" parameterClass="java.util.Map">
+		SELECT DISTINCT A.TEAM_ID,B.TEAM_TYPE FROM CMS_SUB_TEAM_RE_MAP A,CMS_TEAM_TYPE B,CMS_TEAM_DETAILS C WHERE A.CRN=#crn# AND A.SUBJECT_ID=#subjectID# AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID <![CDATA[ <> ]]> #subjectID# AND CRN=#crn#) 
+		AND A.TEAM_ID IN (SELECT TEAM_ID FROM CMS_TEAM_DETAILS WHERE TEAM_TYPE_ID =(SELECT TEAM_TYPE_ID FROM CMS_TEAM_TYPE WHERE upper(TEAM_TYPE)='PRIMARY'))
+		AND A.TEAM_ID=C.TEAM_ID AND B.TEAM_TYPE_ID=C.TEAM_TYPE_ID
+	</select>
+
+	<select id="updateSubjectPrimaryTeamCheck"  resultMap="teamDetail" parameterClass="java.util.Map">
+		SELECT DISTINCT A.TEAM_ID,B.TEAM_TYPE ,B.team_type_id FROM CMS_SUB_TEAM_RE_MAP A,CMS_TEAM_TYPE B,CMS_TEAM_DETAILS C WHERE A.CRN=#crn# AND A.SUBJECT_ID=#subjectID#  AND A.RE_ID IN ($re_Ids$)
+		AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID <![CDATA[ <> ]]> #subjectID# AND CRN=#crn#)  
+		AND A.TEAM_ID NOT IN (SELECT TEAM_ID FROM CMS_SUB_TEAM_RE_MAP WHERE SUBJECT_ID = #subjectID# AND CRN=#crn# AND RE_ID  NOT IN ($re_Ids$)) 
+		AND A.TEAM_ID IN (SELECT TEAM_ID FROM CMS_TEAM_DETAILS WHERE TEAM_TYPE_ID =(SELECT TEAM_TYPE_ID FROM CMS_TEAM_TYPE WHERE upper(TEAM_TYPE)='PRIMARY'))
+		AND A.TEAM_ID=C.TEAM_ID AND B.TEAM_TYPE_ID=C.TEAM_TYPE_ID
+	</select>
+	
+
+	<insert id="insertAccountDetails" parameterClass="com.worldcheck.atlas.vo.task.invoice.AccountsVO">
+		<selectKey keyProperty="invoiceID" resultClass="int"	type="pre">
+			SELECT CMS_ACCOUNTS_SEQ.nextval AS VALUE FROM DUAL
+		</selectKey>
+		INSERT INTO CMS_ACCOUNTS(CRN,account_ID,CLIENT_CODE,OTHER_INSTRUCTION,CURRENCY_CODE,ISIS_USER,ISIS_USER_EMAIL_ID,CASE_FEE,DISBURSEMENT,TO_CAPETOWN,HANDLED_BY,BILLING_METHOD,REGISTER_NO,
+		REGISTER_DATE,SPCL_BILLING_INSTRUCTION,UPDATED_BY,BUDGET,ISBUDGETDUEDATECONFIRMED,TAXCODE,UPDATED_ON,WITH_CHARGES)  
+		VALUES 
+		(#crn#,#invoiceID#,#clientCode#,#otherInst#,#currencyCode#,#isisUser#,#isisUserEmailId#,#caseFee#,#disbursment#,#toCapetown#,#handledBY# ,#billingMethod#
+		,#regNo#,TO_DATE(#regDate#,'MM/DD/YYYY'),#spclBillingInst#,#updateBy#,#budget#,#isBudgetDueDateConfirmed#,#taxCode#,sysdate,#cancelledCharges#)  
+	</insert> 
+
+	<update id="updateAccountDetails" parameterClass="com.worldcheck.atlas.vo.task.invoice.AccountsVO">
+	
+	update CMS_Accounts set CASE_FEE = 0 where CRN = #crn#
+		
+   </update>
+
+	<select id="getCaseManager" resultClass="java.lang.String"  parameterClass="java.lang.String">
+		SELECT DISTINCT(CCC.CASE_MGR_ID) username  FROM CMS_CLIENTCASE CCC  WHERE CRN=#crn#
+	</select>
+
+
+	<select id="getManagerForUploadDocNotification" resultClass="java.lang.String"  parameterClass="java.util.HashMap">
+		SELECT DISTINCT(ctd.MANAGER_ID) FROM cms_team_details ctd
+		,cms_team_type ctt
+		WHERE ctd.CRN=#crn# 
+		and team_type in ('Supporting - Vendor','Primary','Supporting - Internal','Supporting - BI')
+		and ctd.team_type_id = ctt.team_type_id
+		and ctd.MANAGER_ID is not null
+	</select>
+
+	<select id="getAnalystForUploadDocNotification" resultClass="java.lang.String"  parameterClass="java.util.HashMap">
+		SELECT DISTINCT(cstrm.PERFORMER) FROM CMS_SUB_TEAM_RE_MAP cstrm,cms_team_details ctd
+		,cms_team_type ctt
+		WHERE cstrm.CRN=#crn# 
+		and team_type in ('Primary','Supporting - Internal','Supporting - BI')
+		and ctd.team_id = cstrm.team_id
+		and ctd.team_type_id = ctt.team_type_id
+		and cstrm.performer is not null
+	</select>
+	
+	<select id="getReviewersForUploadDocNotification" resultClass="java.lang.String"  parameterClass="java.lang.String">
+	select cum.login_id username from cms_user_master cum, (SELECT team_id,
+	  CASE pivot 	  
+	  WHEN 1
+	  THEN reviewer1
+	  WHEN 2
+	  THEN reviewer2
+	  WHEN 3
+	  THEN reviewer3
+	  ELSE NULL
+	  END subject
+	  FROM cms_team_details ctd,(SELECT rownum pivot from dual
+	  CONNECT BY LEVEL  &lt;= 3)
+	  where ctd.crn =#crn#
+	  order by team_id)
+	  where cum.login_id(+) = subject
+	  AND subject is not null
+	</select>
+
+	<select id="getRHOfficeValidationForOA" resultClass="java.lang.Integer" parameterClass="java.lang.String">     
+		select count(cum.office_id)
+		from CMS_USER_MASTER cum,CMS_OFFICE_MASTER com  
+		where LOGIN_ID = #researchHead# and cum.STATUS = 1 
+		and cum.office_id = com.OFFICE_MASTER_ID and com.status = 1
+	</select>
+
+	<select id="getCaseInfo" resultClass="java.lang.String" parameterClass="java.lang.String">
+			select case_info from cms_clientcase where crn=#crn#
+	</select>
+
+	<select id="validateLegacyDocRequest" resultClass="java.lang.Integer"  parameterClass="java.util.HashMap">
+			SELECT COUNT(CRN) FROM ATTACHMENT@LEGACY WHERE CRN=#crn# AND FILENAME=#fileName# AND VERSION=#version# AND FOLDERNAME=#folderName# AND  FINALREPORTFLAG=1
+	</select>
+	<select id="getPIIDForCRN" resultClass="java.lang.Long" parameterClass="java.lang.String">
+			SELECT PID FROM CMS_CLIENTCASE WHERE CRN=#crn#
+	</select>
+
+   <update id="updateSEQDetails" parameterClass="java.lang.Integer">
+	
+	update CMS_CRN_SEQ_CREATION set SEQNUM = #year# where SELECTED_YEAR=2014
+		
+   </update>
+   
+	
+	 <!-- This Query is added by Himanshu to delete the enteries in case of rollback-->
+	 <select id="getCaseHistory" parameterClass="java.lang.String" resultClass="java.lang.Long">
+		select CASE_HISTORY_ID from CMS_CASE_HISTORY where crn=#crn#
+	</select>
+	
+	 <select id="getSubjectIdList" parameterClass="java.lang.String" resultClass="java.lang.Long">
+		select SUBJECT_ID from CMS_SUBJECT where crn=#crn#
+	</select>
+	
+	<delete id="deleteCaseHistoryDetails" parameterClass="java.util.List">
+		delete from CMS_CASE_HISTORY_DETAILS where CASE_HISTORY_ID in  
+		<iterate open="(" close=")" conjunction=",">
+			#caseHistoryIDList[]#
+		</iterate> 	
+	</delete>
+	
+	<delete id="deleteCaseHistory" parameterClass="java.lang.String">
+		delete from CMS_CASE_HISTORY where crn=#crn#
+	</delete>
+	
+	<delete id="deleteRiskProfileCntryBreakDown" parameterClass="java.util.List">
+		delete from CMS_RISK_PROFILE_HAS_CNTRY_BD where SUBJECT_ID in 
+		<iterate open="(" close=")" conjunction=",">
+			#subjectIDList[]#
+		</iterate> 
+	</delete>
+	
+	<delete id="deleteRiskEachSubjectAggr" parameterClass="java.lang.String">
+		delete from CMS_RISK_EACH_SUBJECT_AGGRN where crn=#crn#
+	</delete>
+	
+	<delete id="deleteRiskAggregation" parameterClass="java.lang.String">
+		delete from CMS_RISK_AGGREGATION where crn=#crn#
+	</delete>
+	
+	<delete id="deleteRiskTotalAggregation" parameterClass="java.lang.String">
+		delete from CMS_RISK_TOTAL_AGGREGATION where crn=#crn#
+	</delete>
+	
+	<delete id="deleteRiskProfile" parameterClass="java.lang.String">
+		delete from CMS_RISK_PROFILE where crn=#crn#
+	</delete>
+	<!--Added by Himanshu for transaction management in create case via AEDDO-->
+	<select id="checkDatabaseConnectivity" resultClass="java.lang.Long">
+			SELECT 1 FROM DUAL
+	</select>
+	<select id="checkExistenceforOrder" resultClass="java.lang.String" parameterClass="java.lang.String">
+			select crn from cms_clientcase where order_guid=#orderGUID#
+	</select>
+	<select id="getSubjectListforAEDDOCase" resultClass="com.worldcheck.atlas.isis.vo.ResultSubjectVO" parameterClass="java.lang.String">
+			select CRN, 
+			ISIS_SUBJECT_ID isisSubjectId,
+			SUBJECT_ID atlasSubjectId
+			from CMS_SUBJECT where crn=#crn#
+	</select>
+	
+	 <select id="getPIDListfromSavvionforCRN" parameterClass="java.lang.String" resultClass="java.lang.Long">
+		select process_instance_id from SAVVIONDB.casecreation where crn=#crn#
+	</select>
+	
+	<!--End by Himanshu for transaction management in create case via AEDDO-->
+</sqlMap>

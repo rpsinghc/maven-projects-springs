@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="JunoSearch">
+	<select id="isCaseOffline" resultClass="java.lang.Boolean">
+		select CASE WHEN SEARCH_FLAG = 'N' THEN 'TRUE'
+		ELSE 'FALSE' END OFFLINE_CASE
+		from RG_GENERATED_REPORTS where case_id = #crn#
+	</select>
+	
+	<update id="updateCaseStatus" parameterClass="java.util.HashMap">
+		update RG_GENERATED_REPORTS set search_flag = #flag# where case_id = #crn#
+	</update>
+</sqlMap>

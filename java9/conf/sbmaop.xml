@@ -1,0 +1,61 @@
+<aspectj>
+    <aspects>
+        <!-- Uncomment the following line to exclude all the bizlogic aspects
+             To include/exclude aspect individually, you must comment following
+             line first. -->
+        <!-- <exclude within="com.savvion.sbm.bizlogic.aspects.*"/> -->
+        
+        <!-- Uncomment one or more of the following lines to exclude 
+             corresponding bizlogic parameters aspect(s) -->                     
+        <!--
+        <exclude within="com.savvion.sbm.bizlogic.aspects.BLQueryServiceParamAspect"/>                
+        <exclude within="com.savvion.sbm.bizlogic.aspects.BSQueryServiceParamAspect"/>        
+        <exclude within="com.savvion.sbm.bizlogic.aspects.BizStoreParamAspect"/>        
+        <exclude within="com.savvion.sbm.bizlogic.aspects.DaoParamAspect"/>        
+        <exclude within="com.savvion.sbm.bizlogic.aspects.EmailParamAspect"/>        
+        <exclude within="com.savvion.sbm.bizlogic.aspects.MessagingParamAspect"/>                        
+        <exclude within="com.savvion.sbm.bizlogic.aspects.SVOParamAspect"/>        
+        <exclude within="com.savvion.sbm.bizlogic.aspects.ServerApiParamAspect"/>        
+        <exclude within="com.savvion.sbm.bizlogic.aspects.WorkFlowParamAspect"/>                
+         -->
+        <exclude within="com.savvion.sbm.bizlogic.aspects.BLUtilParamAspect"/>         
+        <exclude within="com.savvion.sbm.util.aspects.SbmUtilParamAspect"/>                      
+        
+        <!-- Uncomment one or more of the following lines to exclude 
+             corresponding bizlogic performance aspect(s) -->
+        <!--
+        <exclude within="com.savvion.sbm.bizlogic.aspects.BLQueryServicePerfAspect"/>         
+        <exclude within="com.savvion.sbm.bizlogic.aspects.BSQueryServicePerfAspect"/>                
+        <exclude within="com.savvion.sbm.bizlogic.aspects.BizStorePerfAspect"/>
+        <exclude within="com.savvion.sbm.bizlogic.aspects.DaoPerfAspect"/>        
+        <exclude within="com.savvion.sbm.bizlogic.aspects.EmailPerfAspect"/>
+        <exclude within="com.savvion.sbm.bizlogic.aspects.MessagingPerfAspect"/>
+        <exclude within="com.savvion.sbm.bizlogic.aspects.SVOPerfAspect"/>
+        <exclude within="com.savvion.sbm.bizlogic.aspects.ServerApiPerfAspect"/>        
+        <exclude within="com.savvion.sbm.bizlogic.aspects.WorkFlowPerfAspect"/>        
+         -->
+        <exclude within="com.savvion.sbm.bizlogic.aspects.BLUtilPerfAspect"/>          
+        <exclude within="com.savvion.sbm.util.aspects.SbmUtilPerfAspect"/>        
+    </aspects>  
+    <weaver>
+        <!-- Uncomment following line to exclude classes in package
+             com.savvion.sbm.bizlogic.server from weaving. -->
+        <!-- <exclude within="com.savvion.sbm.bizlogic.server.*"/> -->
+
+        <!-- Uncomment following line to weave classes which are in package 
+             com.savvion.sbm.bizlogic.server & its sub packages only. -->
+        <!-- <include within="com.savvion.sbm.bizlogic.server..*"/> -->
+        
+        <!-- Uncomment following line to weave class 
+             com.savvion.sbm.bizlogic.server.svo.SVOFactory only. -->
+        <!-- <include within="com.savvion.sbm.bizlogic.server.svo.SVOFactory"/> -->
+        
+        <!-- Uncomment the following line to weave classes in package com.savvion.sbm.bizlogic.messaging and
+             its subpackages except publisher package but weave MessagePublisher class in publisher subpackage. -->
+        <!-- <include within="com.savvion.sbm.bizlogic.messaging..* AND !com.savvion.sbm.bizlogic.messaging.publisher.*"/>
+             <include within="com.savvion.sbm.bizlogic.messaging.publisher.MessagePublisher"> -->
+        
+    </weaver>
+    
+</aspectj>
+

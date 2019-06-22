@@ -1,0 +1,2589 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:tx="http://www.springframework.org/schema/tx"
+ xmlns:aop="http://www.springframework.org/schema/aop"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd 
+ http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+       
+    <bean id="propertyConfigurer" class="com.worldcheck.atlas.utils.ExposePropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+            <value>classpath:atlas.properties</value>
+	    <value>classpath:juno.properties</value>
+	   </list>
+        </property>
+    </bean>
+    <bean id="savDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName"><value>jdbc/SBMPortalsDB</value></property>
+    </bean>   
+    <bean id="savSqlMapClient"  class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>classpath:sqlmap-config.xml</value>
+        </property>
+        <property name="dataSource" ref="savDataSource" />
+    </bean> 
+    <bean id="dashboardService" class="com.savvion.sbm.bpmportal.service.DashboardService">
+        <property name="widgetManagerDao" ref="widgetManagerDao" />
+        <property name="dashboardManagerDao" ref="dashboardManagerDao" />
+    </bean>
+    <bean id="widgetManagerDao" class="com.savvion.sbm.bpmportal.dao.WidgetManagerDaoImpl">
+        <property name="dataSource" ref="savDataSource" />
+        <property name="sqlMap" ref="savSqlMapClient" />
+    </bean>
+    <bean id="dashboardManagerDao" class="com.savvion.sbm.bpmportal.dao.DashboardManagerDaoImpl">
+        <property name="dataSource" ref="savDataSource" />
+        <property name="sqlMap" ref="savSqlMapClient" />
+    </bean>
+    
+     <bean id="atlasDS" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="${atlas.app.jndiname}" />
+    </bean> 
+    
+    <bean id="sqlMapCMSClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>classpath:SqlMapConfig.xml</value>
+        </property>
+        <property name = "dataSource" ref= "atlasDS" />
+    </bean> 
+    
+
+    <bean id="reportDS" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="${atlas.app.mis.jndiname}" />
+    </bean> 
+    
+    <bean id="sqlMapReportClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>classpath:SqlMapConfig.xml</value>
+        </property>
+        <property name = "dataSource" ref= "reportDS" />
+    </bean> 
+
+     <bean id="atlasSearchDS" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="${atlas.appsearch.jndiname}" />
+    </bean> 
+    
+    <bean id="sqlMapSearchClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>classpath:SqlMapConfig.xml</value>
+        </property>
+        <property name = "dataSource" ref= "atlasSearchDS" />
+    </bean> 
+
+    <bean id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource">
+            <ref local="atlasDS" />
+        </property>
+    </bean> 
+
+    <bean id="propertyReader"
+        class="com.worldcheck.atlas.utils.PropertyReaderUtil">
+        <property name="paymentCycle" value="${atlas.noncrn.paymentcyle}" />
+        <property name="officeUtilizationReportTypes" value="${atlas.report.offuti.reporttypes}" />
+        <property name="officeCapacityReportTypes" value="${atlas.report.offcap.reporttypes}" />
+        <property name="timeTrackerReportTypes" value="${atlas.report.tt.reporttypes}" />
+		<property name="financeOverviewReportTypes" value="${atlas.report.finoverview.reporttypes}" />
+        <property name="yearList" value="${atlas.years}" />
+        <property name="massVendorUploadExcelHeader" value="${atlas.massvendor.excel.header}"/>
+        <property name="massVendorExcelTemplatePath" value="${atlas.massvendor.excel.templatepath}"/>
+		<property name="vendorExpenditureReportTypes" value="${atlas.report.vendexp.reporttypes}" />
+		<property name="tempExcelFilePath" value="${tempExcelFilePath}" />
+		<property name="systemNotificationUser" value="${atlas.system.user}" />
+		<property name="vendorUploadsPath" value="${atlas.vendor.uploadpath}" />
+		<property name="vendorTempUploadsPath" value="${atlas.vendor.tempuploadpath}" />
+		<property name="massVendorExcelTemplateDownloadPath" value="${atlas.massvendor.excel.dnld.templatepath}"></property>
+		<property name="recordsPerPage" value="${atlas.records.pagesize}"></property>
+		<property name="quarterList" value="${atlas.report.offuti.quarters}" />
+		<property name="maxAllowedTotalFileSize" value="${UploadFileSize}" />
+		<property name="maxAllowedTotalFileCount" value="${NoOfUploadFiles}" />
+		<property name="maxAllowedIndividualFileSize" value="${IndividualUploadFileSize}" />
+		<property name="jlpThreshHold" value="${atlas.auto.oa.jlpthreshhold}" />
+		<property name="wipCaseCount" value="${atlas.auto.oa.wipcasecount}" />
+	<property name="isisUserId" value="${atlas.isis.userid}" />
+		<property name = "ctDataExcelHeader" value ="${atlas.ctData.excel.header}"/>
+		<property name = "ctDataExcelTempPath" value = "${atlas.ctData.excel.templatepath}"/>
+                 <property name="dashboardMetrics" value="${atlas.Dashboard.Metrics}" />
+		<property name="legacyDocAttachmentUrl" value="${atlas.legacyDocument.url}" />
+		<property name="connectionPath" value="${atlas.lbr.connection.path}" />
+		<property name="tempFilePath" value="${tempFilePath}" />
+		<property name="massVendorTemplateFileSummaryCategory" value="${atlas.massvendorupload.templatefile.summary.category}" />
+		<property name="generateExcelOrCsv" value="${atlas.report.generateExcelOrCsv}" />
+		<!-- Added by Vinay. For CR-93(Release 1.3) -->
+                <property name="attachmentsRootDirPath" value="${attachmentsRootDirPath}" />
+		<property name="attachmentDownloadCopyPath" value="${attachmentDownloadCopyPath}" />
+		<property name="tempZipFilePath" value="${tempZipFilePath}" />
+		<!-- End by Vinay -->
+		
+		<!-- Added by Himanshu CR-12 R 1.3.1 -->
+		<property name="emailFinanceTR" value="${emailFinanceTR}" />
+		<property name="emailInternalPSI" value="${emailInternalPSI}" />
+		<property name="emailFrom" value="${emailFrom}" />
+		<property name="hostEmailPrepayment" value="${hostEmailPrepayment}" />
+		<!-- End by Himanshu-->
+		
+		<!-- Added by Vishal For CR-7(Release 1.3.1) -->
+                <property name="tempFBattachment" value="${tempFBattachment}" />
+		<!-- End by Vishal -->
+		
+		<!-- Added by Anurag R1.4.0 Add Excel Templates-->
+			<property name="revenueSummaryTemplatePath" value="${revenueSummaryTemplatePath}" />
+		<!-- End by Anurag -->
+		<!-- Added by Ashish BI-40 -->
+		<property name="feedback_temp_attachment_path" value="${feedback_temp_attachment_path}" />
+		<property name="feedback_attachment_size_limit" value="${feedback_attachment_size_limit}" />
+		<!-- End by Ashish-->
+    </bean> 
+	<bean id="webServicePropertyReader" class="com.worldcheck.atlas.isis.util.WebServicePropertyReaderUtil">
+        <property name="atlasWebServiceURL" value="${atlas.webservice.url}" />
+		<property name="isisWebServiceURL" value="${isis.webservice.url}" />
+		<property name="ftpServerAddress" value="${ftp.server.address}" />
+		<property name="ftpServerPortNo" value="${ftp.server.portno}" />
+			<!--Start: Added by 6032662 for BI-677-->
+		<property name="ftpMonitoring" value="${ftp.monitoring}" />
+		<!--End: Added by 6032662 for BI-677-->
+		<property name="ftpServerUserId" value="${ftp.server.userid}" />
+		<property name="ftpServerPassword" value="${ftp.server.password}" />
+		<property name="atlasTempFilesFolder" value="${atlas.temp.files.folder}" />
+		<property name="retryCount" value="${atlas.messages.retry.count}" />
+		<property name="retryGapTime" value="${atlas.messages.retry.gap.time.second}" />
+		<property name="transcationQWaitTime" value="${atlas.messages.transcation.queue.wait.time.second}" />
+		<property name="atlasAuthUser" value="${atlas.webservice.auth.user}" />
+		<property name="atlasAuthPassword" value="${atlas.webservice.auth.pwd}" />
+		<property name="mailRequired" value="${atlas.webservice.mail.isrequired}" />
+		<property name="smtpHost" value="${atlas.webservice.mail.smtp.host}" />
+		<property name="smtpPort" value="${atlas.webservice.mail.smtp.port}" />
+		<property name="smtpAuthRequied" value="${atlas.webservice.mail.smtp.auth}" />
+		<property name="smtpMailAuthUser" value="${atlas.webservice.mail.auth.user}" />
+		<property name="smtpMailAuthPwd" value="${atlas.webservice.mail.auth.pwd}" />
+		<property name="mailFrom" value="${atlas.webservice.mail.from}" />
+		<property name="mailTo" value="${atlas.webservice.mail.to.list}" />
+		<property name="mailCC" value="${atlas.webservice.mail.cc.list}" />
+		<property name="ftpFailedFilesRetryCount" value="${atlas.webservice.ftp.failed.files.retry.count}" />
+		<property name="ftpFailedFilesRetryGapTime" value="${atlas.webservice.ftp.failed.files.retry.gap.time}" />
+		<property name="isisAuthUser" value="${isis.webservice.auth.user}" />
+		<property name="isisAuthPassword" value="${isis.webservice.auth.pwd}" />
+		<property name="webServiceBIManagerId" value="${atlas.webservice.bi.manager.id}" />
+		<property name="threadPoolSize" value="${atlas.webService.thread.pool.size}" />
+		<property name="webServiceCaseCreatorId" value="${atlas.webservice.case.creator.id}" />
+		<property name="webServiceMailSmtpStarttlsEnable" value="${atlas.webservice.mail.smtp.starttls.enable}" />
+		
+       
+    </bean>
+
+
+
+    <bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="order" value="0" />
+		<property name="viewClass"	value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix">
+			<value>/bpmportal/atlas/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>
+	
+	<bean id="localeChangeInterceptor"
+		class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+		<property name="paramName" value="hl" />
+	</bean>
+	
+	 <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+	     <property name="interceptors">	
+		      <list>
+		           <ref local="localeChangeInterceptor" />
+			 </list>
+		</property>
+       
+		<property name="mappings">		
+            <props>
+
+
+				<!-- Task Management Mapping starts -->
+				 <prop key="/bpmportal/atlas/saveT*">taskManagementController</prop>    
+				 <prop key="/bpmportal/atlas/saveCaseT*">taskManagementController</prop>
+				 <prop key="/bpmportal/atlas/completeT*">taskManagementController</prop> 
+				 <prop key="/bpmportal/atlas/completeCaseT*">taskManagementController</prop> 
+				 <prop key="/bpmportal/atlas/saveAndCreate*">taskManagementController</prop>
+				<prop key="/bpmportal/atlas/saveAndAttach*">taskManagementController</prop>
+				<prop key="/bpmportal/atlas/saveAndAccount*">taskManagementController</prop>
+				<prop key="/bpmportal/atlas/otherInfo*">taskManagementController</prop>
+				<prop key="/bpmportal/atlas/goToMyTask.do">taskManagementController</prop>
+				<prop key="/bpmportal/atlas/goToIncomingTask.do">taskManagementController</prop>
+				<prop key="/bpmportal/atlas/goToCaseStatus.do">taskManagementController</prop>
+				<prop key="/bpmportal/atlas/goToOnHoldCases.do">taskManagementController</prop>
+				<prop key="/bpmportal/atlas/goToUnCompletedCase.do">taskManagementController</prop>
+				<prop key="/bpmportal/atlas/goToMyTeamTask.do">taskManagementController</prop>
+				<!-- Task Management Mapping ends -->
+				
+				<prop key="/bpmportal/atlas/saveRejectedRE.do">rejectionMultiActionController</prop>
+
+				<prop key="/bpmportal/atlas/goToUnconfirmBudget.do">unconfirmBudgetController</prop>
+				<prop key="/bpmportal/atlas/saveUnconfirmBudgetDetails.do">unconfirmBudgetController</prop>
+				<prop key="/bpmportal/atlas/isisConfirmation.do">unconfirmBudgetController</prop>
+				<prop key="/bpmportal/atlas/saveISISBudgetDetails.do">unconfirmBudgetController</prop>
+				<!-- Start BI-293 Added by 6035037 -->
+				<prop key="/bpmportal/atlas/isisConfirmationsubmit.do">unconfirmBudgetController</prop>
+				<!-- E BI-293 Added by 6035037 -->
+				
+				<!-- Document Management Mapping starts -->
+				<prop key="/bpmportal/atlas/uploadDocument*">documentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/showDocument*">documentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/attachment*">documentMultiActionController</prop>
+				<!-- Document Management Mapping ends -->
+
+				<!-- Invoice maping -->
+				 <prop key="/bpmportal/atlas/saveOrCompleteInvoice*">invoiceManagementController</prop>    
+				 <prop key="/bpmportal/atlas/accountSection.do">invoiceManagementController</prop>    
+
+				  <!-- Added By Vishal for CR-7 R-1.3.1  -->    
+
+				 <prop key="/bpmportal/atlas/goToClientFeedBack.do">clientFeedBackController</prop>
+				 <prop key="/bpmportal/atlas/addClientFeedBack.do">clientFeedBackController</prop>
+				 <prop key="/bpmportal/atlas/saveClientFeedBack.do">clientFeedBackController</prop>
+				 <prop key="/bpmportal/atlas/getFeedBackInfo.do">clientFeedBackController</prop>
+				 <prop key="/bpmportal/atlas/updateClientFeedBack.do">clientFeedBackController</prop>
+				 <prop key="/bpmportal/atlas/uploadFeedBackAttachment.do">clientFeedBackController</prop>
+				 <prop key="/bpmportal/atlas/uploadTempFeedBackAttachment.do">clientFeedBackController</prop>
+				 <prop key="/bpmportal/atlas/showFbAttachment*">clientFeedBackController</prop>
+				 <prop key="/bpmportal/atlas/exportToExcelClientFeedback*">clientFeedBackController</prop>
+				 <prop key="/bpmportal/atlas/feedbackSearchHistory.do">clientFeedBackController</prop>
+				  <!-- End By Vishal for CR-7 R-1.3.1 -->
+
+				  <!-- Added By Vishal for Support Link R-1.3.1  --> 
+
+				  <prop key="/bpmportal/atlas/supportPage.do">supportAppController</prop>
+				  <prop key="/bpmportal/atlas/exportToExcelSupport.do">supportAppController</prop>
+				
+				  <!-- End By for R-1.3.1 -->
+
+				<!-- url mappings  for masters -->
+
+				<prop key="/bpmportal/atlas/user*">userMultiActionController</prop>                
+				<prop key="/bpmportal/atlas/addUserAndNew*">userMultiActionController</prop>
+				<prop key="/bpmportal/atlas/addUserAndBack*">userMultiActionController</prop>				
+				<prop key="/bpmportal/atlas/deActivateUser*">userMultiActionController</prop>
+				<prop key="/bpmportal/atlas/user/exportToExcel*">userMultiActionController</prop>
+				<prop key="/bpmportal/atlas/user/organizationChart*">userMultiActionController</prop>
+				<prop key="/bpmportal/atlas/user/search*">userMultiActionController</prop>
+				<prop key="/bpmportal/atlas/user/revert*">userMultiActionController</prop>
+				<prop key="/bpmportal/atlas/user/addUserRevert*">userMultiActionController</prop>
+				<prop key="/bpmportal/atlas/user/deleteUser*">userMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getUserInfo*">userMultiActionController</prop>
+				<prop key="/bpmportal/atlas/updateUser*">userMultiActionController</prop>
+				<prop key="/bpmportal/atlas/add_user*">userMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reset_user*">userMultiActionController</prop>
+
+				<prop key="/bpmportal/atlas/myPerformance.do">myPerformanceMultiactionController</prop>
+				<prop key="/bpmportal/atlas/overDueCases.do">overDueCasesController</prop>
+				<prop key="/bpmportal/atlas/caseDue.do">caseDueController</prop>
+				<prop key="/bpmportal/atlas/OnHoldCases.do">onHoldCasesController</prop>
+
+			<prop key="/bpmportal/atlas/client*">clientMultiActionController</prop>  
+				<prop key="/bpmportal/atlas/addClientAndNew*">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/addClientAndBack*">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/deActivateClient*">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/delete*">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/exportToExcel*">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/search*">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/revert*">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getClientInfo*">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/updateClient*">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientSearch.do">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/setupAddClient.do">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/exportToExcelClientMaster.do">clientMultiActionController</prop>
+
+				<prop key="/bpmportal/atlas/addUpdateVendor.do">vendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/saveVendor.do">vendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/vendorSearch.do">vendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/vendorExportToExcel.do">vendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/uploadVendorFile.do">vendorMultiActionController</prop>
+				
+				<prop key="/bpmportal/atlas/researchElement.do">reSearchElementMultiActionController</prop>  
+				<prop key="/bpmportal/atlas/addResearchElementAndNew.do">reSearchElementMultiActionController</prop>
+				<prop key="/bpmportal/atlas/addResearchElement.do">reSearchElementMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getREInfo.do">reSearchElementMultiActionController</prop>	
+				<prop key="/bpmportal/atlas/updateRE.do">reSearchElementMultiActionController</prop>	
+                 <!-- Added by Juheen.For CR-2 Release 1.3 -->
+				<prop key="/bpmportal/atlas/researchElementReportExport.do">reSearchElementMultiActionController</prop>				
+				
+				<prop key="/bpmportal/atlas/branchOffice*">branchOfficeMultiActionController</prop>
+				<prop key="/bpmportal/atlas/newBranchOffice*">branchOfficeMultiActionController</prop>				
+				<prop key="/bpmportal/atlas/addBranchOffice*">branchOfficeMultiActionController</prop>
+				<!--  <prop key="/bpmportal/atlas/searchBranchOffice*">jsonBranchOfficeMultiActionController</prop>-->
+				<prop key="/bpmportal/atlas/revert*">branchOfficeMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getBOInfo*">branchOfficeMultiActionController</prop>
+				<prop key="/bpmportal/atlas/updateBranchOffice*">branchOfficeMultiActionController</prop>
+				<!-- Added by Juheen.Call to export to excel.For CR-2(Release 1.3)  -->
+				<prop key="/bpmportal/atlas/branchOfficeReportExport*">branchOfficeMultiActionController</prop>
+
+				<prop key="/bpmportal/atlas/reportTemplate*">reportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/openNewReportTemplate*">reportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/addReportTemplate*">reportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTemplate/upLoadReportTemplate*">reportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTemplate/deleteReportTemplate*">reportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTemplate/historyReportTemplate*">reportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTemplate/removeHistoryReportTemplate*">reportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTemplate/searchReportTemplate*">reportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTemplate/revertReportTemplate*">reportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/openUpdateReportTemplate*">reportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/newAndUpdateReportTemplate*">reportTemplateMultiActionController</prop>
+
+				
+				<prop key="/bpmportal/atlas/countryDatabase.do">countryDatabaseMultiActionController</prop>
+				<prop key="/bpmportal/atlas/addCountryDatabaseAndBack.do">countryDatabaseMultiActionController</prop>
+				<prop key="/bpmportal/atlas/addCountryDatabase.do">countryDatabaseMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getCountryDatabase.do">countryDatabaseMultiActionController</prop>
+				<prop key="/bpmportal/atlas/updateCountryDatabase.do">countryDatabaseMultiActionController</prop>
+				<prop key="/bpmportal/atlas/sourceAvailabilityCountryDatabase.do">countryDatabaseMultiActionController</prop>
+				<prop key="/bpmportal/atlas/exportToExcelCountryDatabase.do">countryDatabaseMultiActionController</prop>				
+				<prop key="/bpmportal/atlas/searchCDBCountryDatabase.do">countryDatabaseMultiActionController</prop>
+				<prop key="/bpmportal/atlas/searchLBRCountryDatabase.do">countryDatabaseMultiActionController</prop>
+				<prop key="/bpmportal/atlas/deleteCountryDatabase.do">countryDatabaseMultiActionController</prop>				
+				
+				<prop key="/bpmportal/atlas/clientRequirment*">clientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientRequirment/addClientRequirmentAndNew*">clientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientRequirment/upLoadClientRequirment*">clientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientRequirment/historyClientRequirment*">clientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/openNewClientRequirement*">clientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/addClientRequirement*">clientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/openUpdateClientRequirement*">clientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientRequirment/removeHistoryClientRequirment*">clientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientRequirment/searchClientRequirment*">clientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientRequirment/revertClientRequirment*">clientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/newAndUpdateClientRequirement.do">clientRequirmentMultiActionController</prop>
+				
+
+				<prop key="/bpmportal/atlas/currency*">currencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/newCurrency*">currencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/addCurrency*">currencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/saveCurrency*">currencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/updateCurrency*">currencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/deactivateCurrency*">currencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/currencyConversion*">currencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/searchCurrencyByName*">currencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/searchCurrencyDates*">currencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/revertCurrency*">currencyMultiActionController</prop>
+				
+				<prop key="/bpmportal/atlas/currency/currencyMasterReportExport*">currencyMultiActionController</prop>
+				
+				
+				<!-- Country Master URL Mapping Entries Start -->
+				<prop key="/bpmportal/atlas/addUpdateJspRedirect.do">countryController</prop>
+				<prop key="/bpmportal/atlas/countrySearchJspRedirect.do">countryController</prop>
+				<prop key="/bpmportal/atlas/selectUpdateCountry.do">countryController</prop>
+				<prop key="/bpmportal/atlas/updateCountry.do">countryController</prop>
+				<prop key="/bpmportal/atlas/deActiveCountry.do">countryController</prop>
+				<prop key="/bpmportal/atlas/addCountry.do">countryController</prop>
+				<!-- Added by Juheen.For CR-2(Release 1.3) -->
+				<prop key="/bpmportal/atlas/countryReportExport.do">countryController</prop>
+				<!-- Country Master URL Mapping Entries End -->
+
+				<!-- Industry Master URL Mapping Entries Start -->
+				<prop key="/bpmportal/atlas/industryAddUpdateJspRedirect.do">industryMultiActionController</prop>
+				<prop key="/bpmportal/atlas/industrySearchJspRedirect.do">industryMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getIndustryInfo.do">industryMultiActionController</prop>
+				<prop key="/bpmportal/atlas/addIndustry.do">industryMultiActionController</prop>
+				<prop key="/bpmportal/atlas/deActiveIndustry.do">industryMultiActionController</prop>
+				<!-- Industry Master URL Mapping Entries End -->
+				
+				<!-- Risk Master URL Mapping Entries Start-->
+				<prop key="/bpmportal/atlas/riskaddUpdateJspRedirect.do">risksMultiActionController</prop>
+				<prop key="/bpmportal/atlas/riskSearchJspRedirect.do">risksMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getRiskInfo.do">risksMultiActionController</prop>
+				<prop key="/bpmportal/atlas/deActiveRisk.do">risksMultiActionController</prop>
+				<prop key="/bpmportal/atlas/addRisks.do">risksMultiActionController</prop>
+				<!-- Risk Master URL Mapping Entries End-->
+
+				<!-- Public Holiday Master URL Mapping Entries Start-->
+				<prop key="/bpmportal/atlas/publicHolidayAddUpdateJspRedirect.do">publicHolidayMultiActionController</prop>
+				<prop key="/bpmportal/atlas/publicHolidaySearchJspRedirect.do">publicHolidayMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getPublicHoliydayInfo.do">publicHolidayMultiActionController</prop>
+				<prop key="/bpmportal/atlas/addPublicHoliyday.do">publicHolidayMultiActionController</prop>
+				<!-- Added by Juheen.For CR-2(Release 1.3)-->
+				<prop key="/bpmportal/atlas/publicHolidayReportExport.do">publicHolidayMultiActionController</prop>
+				<!-- Public Holiday Master URL Mapping Entries End-->
+				
+				<!-- ScoreSheet Master URL Mapping Entries Start-->
+				<prop key="/bpmportal/atlas/scoreSheetAddUpdateJspRedirect.do">scoreSheetMultiActionController</prop>
+				<prop key="/bpmportal/atlas/scoreSheetSearchJspRedirect.do">scoreSheetMultiActionController</prop>
+				<prop key="/bpmportal/atlas/addScoreSheet.do">scoreSheetMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getScoreSheetInfo.do">scoreSheetMultiActionController</prop>
+				<prop key="/bpmportal/atlas/updateScoreSheet.do">scoreSheetMultiActionController</prop>
+				<!-- ScoreSheet Master URL Mapping Entries End-->
+
+				<!-- Report type Master URL Mapping Entries Start-->				
+				<prop key="/bpmportal/atlas/searchReportType.do">reportTypeController</prop>
+				<prop key="/bpmportal/atlas/addReportTypeAndNew.do">reportTypeController</prop>
+				<prop key="/bpmportal/atlas/getReportTypeInfo.do">reportTypeController</prop>
+				<prop key="/bpmportal/atlas/updateReportType.do">reportTypeController</prop>
+				<prop key="/bpmportal/atlas/reportMasteraddJSP.do">reportTypeController</prop>						
+				<!-- Report type Master URL Mapping Entries End-->
+
+				<!-- mapping for CaseRawData starts -->
+				<prop key="/bpmportal/atlas/caseRawDataSearchJspRedirect.do">caseRawDataController</prop>
+				<prop key="/bpmportal/atlas/caseRawDataExportToExcel.do">crdUbrMultiActionController</prop>
+				<prop key="/bpmportal/atlas/writeCRDToCSV.do">crdUbrMultiActionController</prop>
+				<!-- mapping for CaseRawData End -->
+				
+				<!-- Scoresheet MIS Report URL Mapping Entries Start-->
+				<prop key="/bpmportal/atlas/redirectScoreSheetMISReport.do">scoreSheetMISReportController</prop>
+				<prop key="/bpmportal/atlas/downloadScoreSheetMISReport.do">scoresheetVrdMultiActionController</prop>
+				<prop key="/bpmportal/atlas/generateExcelZipForSSMIS.do">scoresheetVrdMultiActionController</prop>
+				<!-- Scoresheet MIS Report URL Mapping Entries End-->
+
+				<prop key="/bpmportal/atlas/currencyConversion*">currencyConversionMultiActionController</prop>
+				<prop key="/bpmportal/atlas/updateRate*">currencyConversionMultiActionController</prop>
+				
+				<!-- url mappings  for masters -->
+
+
+				
+				<!-- Subject -->
+				<prop key="/bpmportal/getSubjectListForCase.do">subjectController</prop>
+				<prop key="/bpmportal/atlas/editSubjectForCase.do">subjectController</prop>
+				<prop key="/bpmportal/atlas/getSubjectIndustry.do">subjectController</prop>
+				<prop key="/bpmportal/atlas/saveSubjectForCase.do">subjectController</prop>
+				<prop key="/bpmportal/atlas/getSubjectRiskAndIndustry.do">subjectController</prop>
+				<prop key="/bpmportal/atlas/saveSubjectIndustry.do">subjectController</prop>
+				<prop key="/bpmportal/atlas/saveSubjectRisk.do">subjectController</prop>
+				<prop key="/bpmportal/atlas/getCaseSubjectList.do">subjectController</prop>
+				<prop key="/bpmportal/atlas/getCaseSubjectListCC.do">subjectController</prop>
+				<prop key="/bpmportal/atlas/addSubjectForCase.do">subjectController</prop>
+				<prop key="/bpmportal/atlas/saveNewSubjectForCase.do">subjectController</prop>
+				<prop key="/bpmportal/atlas/getLegacyCaseSubjectList.do">subjectController</prop>
+				
+				<prop key="/bpmportal/atlas/displayAllLegacyDocuments.do">legacyDocAttachmentController</prop>
+				<prop key="/bpmportal/atlas/showLegacyDocument*">legacyDocAttachmentController</prop>
+				
+				<!-- End Subject -->
+				
+
+				<!-- mapping for Reports starts -->
+
+				<prop key="/bpmportal/atlas/viewJLP.do">viewJLPReportController</prop>
+				<prop key="/bpmportal/atlas/viewPPRS.do">productivityAndRevenueSummaryController</prop>
+				<prop key="/bpmportal/atlas/viewTTDS.do">timeTrackerDataSummaryController</prop>
+				<prop key="/bpmportal/atlas/viewTTRDReport.do">timeTrackerRawDataController</prop>
+
+				<prop key="/bpmportal/atlas/generateExcelForTTRD.do">frdTtrdMultiActionController</prop>
+				<prop key="/bpmportal/atlas/generateExcelZipForTTRD.do">frdTtrdMultiActionController</prop>
+				<prop key="/bpmportal/atlas/viewCAL.do">currentAnalystLoadingController</prop>
+				<prop key="/bpmportal/atlas/fetchData.do">currentAnalystLoadingController</prop>
+				<prop key="/bpmportal/atlas/viewUBPPC.do">productivityPointsAndCasesController</prop>
+				<prop key="/bpmportal/atlas/generateExcelForUBPPC.do">ctExcelUbppcMultiActionController</prop>
+				<prop key="/bpmportal/atlas/generateExcelZipForUBPPC.do">ctExcelUbppcMultiActionController</prop>
+				<prop key="/bpmportal/atlas/viewNCRS.do">casesReceivedSummaryController</prop>
+				<prop key="/bpmportal/atlas/viewUBR.do">utilizationByRevenueController</prop>
+				<prop key="/bpmportal/atlas/generateUBRExcel.do">crdUbrMultiActionController</prop>
+				<prop key="/bpmportal/atlas/generateExcelZipForUBR.do">crdUbrMultiActionController</prop>
+				<prop key="/bpmportal/atlas/viewVEODS.do">vendorDataSummaryController</prop>
+				<prop key="/bpmportal/atlas/viewVEORD.do">vendorRawDataController</prop>
+				<prop key="/bpmportal/atlas/generateVEORDExcel.do">scoresheetVrdMultiActionController</prop>
+				<prop key="/bpmportal/atlas/writeToMultipleVRDExcels.do">scoresheetVrdMultiActionController</prop>
+
+				<prop key="/bpmportal/atlas/viewFinanceRawData.do">financeRawDataController</prop>
+				
+				<!-- Added by satish for CR95 R 1.3  -->
+				<prop key="/bpmportal/atlas/reviewerReportRawData.do">reviewerRawDataController</prop>
+				<prop key="/bpmportal/atlas/exportToExcelReviewerRawData.do">reviewerMultiActionController</prop>				
+				<prop key="/bpmportal/atlas/writeToMultipleExcels.do">reviewerMultiActionController</prop>				
+				
+				<!-- End Added by satish for CR95 R 1.3  -->
+				
+				<prop key="/bpmportal/atlas/exportToExcelFinanceRawData.do">frdTtrdMultiActionController</prop>				
+				<prop key="/bpmportal/atlas/writeToMultipleExcels.do">frdTtrdMultiActionController</prop>				
+
+				<prop key="/bpmportal/atlas/viewCTExcelReport.do">ctExcelController</prop>
+				<prop key="/bpmportal/atlas/currentAnalystLoading_exportToExcel.do">currentAnalystLoadingController</prop>
+                              
+				<prop key="/bpmportal/atlas/generateExcelOfIncoiceData.do">ctExcelUbppcMultiActionController</prop>
+				<prop key="/bpmportal/atlas/writeToMultipleCTExcels.do">ctExcelUbppcMultiActionController</prop>
+                                <prop key="/bpmportal/atlas/revenueSummary.do">revenueSummaryMultiActionController</prop>
+								<prop key="/bpmportal/atlas/exportToExcelRevenueChartData.do">revenueSummaryMultiActionController</prop>
+                                <prop key="/bpmportal/atlas/viewOfficeSummary.do">officeSummaryController</prop>				
+                               <prop key="/bpmportal/atlas/saveTemplate.do">teamPerformanceController</prop>				
+                               <prop key="/bpmportal/atlas/setupAddTemplate.do">teamPerformanceController</prop>				
+                               <prop key="/bpmportal/atlas/setupViewTeamPerformance.do">teamPerformanceController</prop>				
+                               <prop key="/bpmportal/atlas/exportToExcel.do">teamPerformanceController</prop>				
+                
+				<!-- mapping for Reports ends-->
+				
+				<!-- Start: Added for JPMC Adhoc reports BI-244-->
+					<prop key="/bpmportal/atlas/jpmcReportPage.do">jpmcReportController</prop>
+					<prop key="/bpmportal/atlas/exportToExcelJPMCReport.do">jpmcReportController</prop>
+				<!-- End: Added for JPMC Adhoc reports BI-244-->
+				
+<!-- mapping for Admin Console starts -->
+                                <prop key="/bpmportal/atlas/deleteLeave.do">leaveMultiActionController</prop>    
+                <prop key="/bpmportal/atlas/leaveSearch.do">leaveMultiActionController</prop>    
+				<prop key="/bpmportal/atlas/saveLeave.do">leaveMultiActionController</prop> 
+				<prop key="/bpmportal/atlas/updateLeave.do">leaveMultiActionController</prop>
+				<prop key="/bpmportal/atlas/ajaxutil.do">ajaxUtilController</prop>   
+				<prop key="/bpmportal/atlas/updatePassword.do">updatePasswordController</prop>   
+				<prop key="/bpmportal/atlas/setupNonCRNExpenditure.do">nonCrnExpenditureController</prop> 
+				<prop key="/bpmportal/atlas/saveCRNData.do">nonCrnExpenditureController</prop>   
+				<prop key="bpmportal/atlas/uploadExcel.do">massVendorUploadController</prop>
+				<prop key="bpmportal/atlas/downloadExcel.do">massVendorUploadController</prop>
+				<prop key="bpmportal/atlas/saveData.do">massVendorUploadController</prop>
+				<prop key="bpmportal/atlas/setupMassVendorUpload.do">massVendorUploadController</prop>
+				
+<!-- mapping for Admin Console ends -->
+
+<!-- mapping for Notification starts -->
+<prop key="/bpmportal/atlas/sendUserNotification.do">userNotificationController</prop>
+<prop key="/bpmportal/atlas/sendUserNotificationWithComments.do">userNotificationController</prop>
+						<prop key="/bpmportal/atlas/notification.do">userNotificationController</prop>
+						<prop key="/bpmportal/atlas/caseNotification.do">userNotificationController</prop>
+				<prop key="/bpmportal/atlas/acknowledgeMessage.do">userNotificationController</prop>
+				<prop key="/bpmportal/atlas/replyMessage.do">userNotificationController</prop>
+				<prop key="/bpmportal/atlas/forwardMessage.do">userNotificationController</prop>
+				<prop key="/bpmportal/atlas/recAcknowledgeMessage.do">userNotificationController</prop>
+				<prop key="/bpmportal/atlas/createRecCase.do">userNotificationController</prop>
+<!-- mapping for Notification ends -->
+
+	<!-- mapping for Dashboard starts -->
+				<prop key="/bpmportal/atlas/viewStats.do">dashBoardControllerImpl</prop>
+				<prop key="/bpmportal/atlas/setupCreateDashboard.do">createDashboardController</prop>
+				<prop key="/bpmportal/atlas/createDashboard.do">createDashboardController</prop>
+	<!-- mapping for Dashboard ends -->
+	
+	<!--mapping for reprots I3-->
+				<prop key="/bpmportal/atlas/teamJLPSummary.do">teamJLPSummaryController</prop>
+				<prop key="/bpmportal/atlas/reportTypeAndOfficeSummary.do">reportTypeAndOfficeSummaryController</prop>
+				<prop key="/bpmportal/atlas/invoiceTATReport.do">invoiceTATReportController</prop>
+				<prop key="/bpmportal/atlas/officePerformance.do">officePerformanceController</prop>
+<!--end mapping for reprots I3-->
+
+				<!-- mapping for Office Assignment starts -->
+				
+				<prop key="/bpmportal/atlas/saveOfficeAssignment.do">officeAssignmentController</prop>
+				<prop key="/bpmportal/atlas/completeOfficeAssignment.do">officeAssignmentController</prop>
+				<prop key="/bpmportal/atlas/officeAssignment.do">officeAssignmentController</prop>
+				<prop key="/bpmportal/atlas/completeOfficeAssignmentTab.do">officeAssignmentController</prop>
+				<prop key="/bpmportal/atlas/officeAssignmentSection.do">officeAssignmentController</prop>
+				<prop key="/bpmportal/atlas/officeAssignmentLegacy.do">officeAssignmentController</prop>
+				
+				<!-- mapping for Office Assignment ends -->
+				
+<!-- mapping for Team Assignment starts -->
+				<prop key="/bpmportal/atlas/saveTeamAssignment.do">teamAssignmentController</prop>
+				<prop key="/bpmportal/atlas/teamAssignmentLegacy.do">teamAssignmentController</prop>
+				<prop key="/bpmportal/atlas/saveTeamAssignmentTab.do">teamAssignmentController</prop>
+				<prop key="/bpmportal/atlas/reassignTeamAssignment.do">teamAssignmentController</prop>
+				<prop key="/bpmportal/atlas/teamAssignment.do">teamAssignmentController</prop>
+				<prop key="/bpmportal/atlas/updateTeamAssignment.do">teamAssignmentController</prop>
+				<prop key="/bpmportal/atlas/legacyTeamDetails.do">teamAssignmentController</prop>
+				<prop key="/bpmportal/atlas/teamAssignmentTab.do">teamAssignmentController</prop>
+	<!-- mapping for Team Assignment ends -->
+	
+	<!-- mapping for Comments starts -->
+				<prop key="/bpmportal/atlas/insertComments.do">commentsController</prop>
+				<prop key="/bpmportal/atlas/viewCommentsPage.do">commentsController</prop>
+				
+	<!-- mapping for Comments ends -->
+	
+	<!-- Mapping for VendorDetail -->
+	<prop key="/bpmportal/atlas/vendorDetailSearch.do">vendorDetailMultiActionController</prop>
+	<!-- End of VendorDetail -->
+				
+				<!-- Start Mapping for userBackUp -->
+				<prop key="/bpmportal/atlas/switchUserSession.do">userBackUpMultiActionController</prop>
+				<prop key="/bpmportal/atlas/userBackUp.do">userBackUpMultiActionController</prop>
+				<prop key="/bpmportal/atlas/logOutUserSession.do">userBackUpMultiActionController</prop>
+				<!-- end Mapping for userBackUp -->
+				
+				<!-- Mapping for Case Info -->
+				<prop key="/bpmportal/atlas/caseDetails.do">caseDetailsController</prop>
+				<!-- Added by Chetan. For CR-96(Release 1.3) -->
+                                <prop key="/bpmportal/atlas/accountSectionRedirction.do">caseDetailsController</prop>
+				<prop key="/bpmportal/atlas/saveCaseInformation.do">caseDetailsController</prop>
+				<prop key="/bpmportal/atlas/updateClientFeedback.do">caseDetailsController</prop>
+				<prop key="/bpmportal/atlas/updateCaseStatus.do">caseDetailsController</prop>
+				<prop key="/bpmportal/atlas/backToSearch.do">caseDetailsController</prop>
+				<!-- End of Case Info -->
+				
+				<!--  MAPPINGS FOR SEARCH -->
+				<!-- Mapping for Case Search -->
+				<prop key="/bpmportal/atlas/caseSearch.do">caseSearchController</prop>
+				<prop key="/bpmportal/atlas/executeLastSearch.do">caseSearchController</prop>
+				<prop key="/bpmportal/atlas/setupAdvanceCaseSearch.do">caseSearchController</prop>
+				<prop key="/bpmportal/atlas/exportToExcelCaseSearch.do">caseSearchController</prop>
+				<prop key="/bpmportal/atlas/exportToExcelRecCaseSearch.do">caseSearchController</prop>
+				<prop key="/bpmportal/atlas/writeToZipCaseSearch.do">caseSearchController</prop>
+				<prop key="/bpmportal/atlas/writeToZipCaseSearchRec.do">caseSearchController</prop>
+				<prop key="/bpmportal/atlas/caseSearchHistory.do">caseSearchController</prop>
+				<!-- End of Case Search -->
+				
+				<!-- Mapping for Team Search -->
+				<prop key="/bpmportal/atlas/teamSearch.do">teamSearchController</prop>
+				<prop key="/bpmportal/atlas/setupAdvanceTeamSearch.do">teamSearchController</prop>
+				<prop key="/bpmportal/atlas/exportToExcelTeamSearch.do">teamSearchController</prop>
+				<prop key="/bpmportal/atlas/teamSearchHistory.do">teamSearchController</prop>
+				<prop key="/bpmportal/atlas/writeToZipTeamSearch.do">subjectSearchController</prop>
+				<!-- End of Team Search -->
+				
+				<!-- Mapping for Subject Search -->
+				<prop key="/bpmportal/atlas/subjectSearch.do">subjectSearchController</prop>
+				<prop key="/bpmportal/atlas/setupAdvanceSubjectSearch.do">subjectSearchController</prop>
+				<prop key="/bpmportal/atlas/exportToExcelSubjectSearch.do">subjectSearchController</prop>
+				<prop key="/bpmportal/atlas/subjectSearchHistory.do">subjectSearchController</prop>
+				<prop key="/bpmportal/atlas/writeToZipSubjectSearch.do">subjectSearchController</prop>
+				<!-- End of Subject Search -->
+				
+				<!-- Mapping for Message Search-->
+				<prop key="/bpmportal/atlas/messageSearch.do">messageSearchController</prop>
+				<prop key="/bpmportal/atlas/setupAdvanceMessageSearch.do">messageSearchController</prop>
+				<prop key="/bpmportal/atlas/exportToExcelMessageSearch.do">messageSearchController</prop>
+				<prop key="/bpmportal/atlas/exportToExcelRecMessageSearch.do">messageSearchController</prop>
+				<prop key="/bpmportal/atlas/createSearchRecCase.do">messageSearchController</prop>
+				<prop key="/bpmportal/atlas/writeToZipMessageSearch.do">caseSearchController</prop>
+				<prop key="/bpmportal/atlas/writeToZipMessageSearchRec.do">caseSearchController</prop>
+				<prop key="/bpmportal/atlas/mesgSearchHistory.do">messageSearchController</prop>
+				<!-- End of Message Search-->
+				
+				<!-- END MAPPINGS FOR SEARCH -->
+				
+	<!-- update ct data  -->
+				<prop key="/bpmportal/atlas/updateCTData.do">updateCTDataController</prop>
+				<prop key="/bpmportal/atlas/updateCTDataExcel.do">updateCTDataController</prop>
+				<!-- End of update ct data -->
+				
+				<!-- Added by Chetan. Mappings for CR for Readonly pages in Atlas -->
+				<prop key="/bpmportal/atlas/officeAssignmentSectionR.do">officeAssignmentController</prop>
+				<prop key="/bpmportal/atlas/teamAssignmentR.do">teamAssignmentController</prop>
+				<prop key="/bpmportal/atlas/readOnlyTeamAssignment.do">teamAssignmentController</prop>
+				<!-- End by Chetan-->
+				
+				<!-- Start BI-293 Added by 6035037 -->
+				<prop key="/bpmportal/atlas/exportToExcelInvoiceMIS.do">invoiceMISController</prop>
+				<!-- End BI-293 Added by 6035037 -->
+				
+            </props>
+        </property>
+    </bean>	
+	
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+    
+
+	<!-- Report implementation starts -->
+
+		<!-- Report Controllers begin -->
+			
+			<bean id="viewJLPReportController" class="com.worldcheck.atlas.frontend.report.ViewJLPReportController">
+				<property name="viewJLPReport" ref="viewJLPReport" />
+				<property name="propertyReader" ref="propertyReader" />
+			</bean>
+			
+			<bean id="viewJLPReport" class="com.worldcheck.atlas.bl.report.ViewJLPReport">
+				<property name="dashboardService" ref="dashboardService" />
+			</bean>
+			
+			<bean id="productivityAndRevenueSummaryController" class="com.worldcheck.atlas.frontend.report.ProductivityAndRevenueSummaryController">
+				<property name="propertyReader" ref="propertyReader" />
+			</bean>
+			
+			<bean id="casesReceivedSummaryController" class="com.worldcheck.atlas.frontend.report.CasesReceivedSummaryController">
+				<property name="propertyReader" ref="propertyReader" />
+			</bean>
+
+			<bean id="currentAnalystLoadingController" class="com.worldcheck.atlas.frontend.report.CurrentAnalystLoadingController">
+				<property name="propertyReader" ref="propertyReader" />
+				<property name="atlasReportService" ref="atlasReportService" />
+	 		</bean>
+			
+			<bean id="productivityPointsAndCasesController" class="com.worldcheck.atlas.frontend.report.ProductivityPointsAndCasesController">
+				<property name="propertyReader" ref="propertyReader" />
+				<property name="atlasReportService" ref="atlasReportService" />
+			</bean>
+			
+			<bean id="utilizationByRevenueController" class="com.worldcheck.atlas.frontend.report.UtilizationByRevenueController">
+				<property name="propertyReader" ref="propertyReader" />
+				<property name="atlasReportService" ref="atlasReportService" />
+			</bean>
+			
+			<bean id="vendorDataSummaryController" class="com.worldcheck.atlas.frontend.report.VendorDataSummaryController">
+				<property name="propertyReader" ref="propertyReader" />
+			</bean>
+			
+			<bean id="vendorRawDataController" class="com.worldcheck.atlas.frontend.report.VendorRawDataController">
+				<property name="propertyReader" ref="propertyReader" />
+				<property name="atlasReportService" ref="atlasReportService" />
+			</bean>
+
+			<bean id="timeTrackerDataSummaryController" class="com.worldcheck.atlas.frontend.report.TimeTrackerDataSummaryController">
+				<property name="propertyReader" ref="propertyReader" />
+			</bean>
+	 
+	 		<bean id="timeTrackerRawDataController" class="com.worldcheck.atlas.frontend.report.TimeTrackerRawDataController">
+				<property name="propertyReader" ref="propertyReader" />
+				<property name="atlasReportService" ref="atlasReportService" />
+	 		</bean>
+			
+			
+			<bean id="ctExcelController" class="com.worldcheck.atlas.frontend.report.CTExcelController">
+				<property name="atlasReportService" ref="atlasReportService" />					
+			</bean>
+
+			<bean id="financeRawDataController" class="com.worldcheck.atlas.frontend.report.FinanceRawDataController">
+				 <property name="atlasReportService" ref="atlasReportService" />
+				 <property name="propertyReader" ref="propertyReader" />
+			</bean>
+			
+			<bean id="reviewerRawDataController" class="com.worldcheck.atlas.frontend.report.ReviewerRawDataController">
+			<property name="atlasReportService" ref="atlasReportService" />
+			<property name="propertyReader" ref="propertyReader" />
+			</bean>
+			
+             <bean id="revenueSummaryMultiActionController" class="com.worldcheck.atlas.frontend.report.RevenueSummaryMultiActionController">
+				<property name="propertyReader" ref="propertyReader" />
+				 <property name="atlasReportService" ref="atlasReportService" />
+				 <property name="tabularReportDAO" ref="tabularReportDAO" />
+				 <property name="revenueSummaryManager" ref="revenueSummaryManager" />
+			</bean>
+                        <bean id="officeSummaryController" class="com.worldcheck.atlas.frontend.report.OfficeSummaryController">		
+				<property name="propertyReader" ref="propertyReader" />
+			</bean>
+                         <!--  Pooling Mechanism for export to excel --> 
+                         <bean id="crdUbrMultiActionController" class="com.worldcheck.atlas.frontend.commoncontroller.CRDUBRMultiActionController">
+							
+				<property name="caseRawDataController" ref="caseRawDataController"/>
+				<property name="utilizationByRevenueController" ref="utilizationByRevenueController"/>
+			</bean>
+                         <bean id="frdTtrdMultiActionController" class="com.worldcheck.atlas.frontend.commoncontroller.FrdTtrdMultiActionController">
+				<property name="financeRawDataController" ref="financeRawDataController"/>				
+				<property name="timeTrackerRawDataController" ref="timeTrackerRawDataController"/>
+			</bean>
+			
+			<!-- Added by satish for CR95 R1.3 -->
+	         <bean id="reviewerMultiActionController" class="com.worldcheck.atlas.frontend.commoncontroller.ReviewerMultiActionController">
+				<property name="reviewerRawDataController" ref="reviewerRawDataController"/>				
+			</bean>
+			<!-- Added by satish for CR95 R1.3 -->
+			
+			
+			<bean id="scoresheetVrdMultiActionController" class="com.worldcheck.atlas.frontend.commoncontroller.ScoresheetVrdMultiActionController">
+				<property name="scoreSheetMISReportController" ref="scoreSheetMISReportController"/>				
+				<property name="vendorRawDataController" ref="vendorRawDataController"/>
+			</bean>
+			
+				<bean id="ctExcelUbppcMultiActionController" class="com.worldcheck.atlas.frontend.commoncontroller.CTExcelUbppcMultiActionController">
+				<property name="ctExcelController" ref="ctExcelController"/>				
+				<property name="productivityPointsAndCasesController" ref="productivityPointsAndCasesController"/>
+			</bean>
+			
+				<!--Pooling : End -->	
+			
+		<!-- Report Controllers end -->
+	
+		<!-- Report BL Classes begin -->
+
+			<bean id="productivityAndRevenueSummaryReport" class="com.worldcheck.atlas.bl.report.ProductivityAndRevenueSummaryReport">
+				<property name="tabularReportDAO" ref="tabularReportDAO" />
+			</bean>	
+			
+			<bean id="casesReceivedSummaryReport" class="com.worldcheck.atlas.bl.report.CasesReceivedSummaryReport">		
+				<property name="tabularReportDAO"><ref bean="tabularReportDAO"/></property>
+			</bean>
+		
+			<bean id="currentAnalystLoadingReport" class="com.worldcheck.atlas.bl.report.CurrentAnalystLoadingReport">
+				<property name="tabularReportDAO" ref="tabularReportDAO" />
+			</bean>
+			
+			<bean id="utilizationByProductivityReport" class="com.worldcheck.atlas.bl.report.UtilizationByProductivityReport">
+				<property name="tabularReportDAO" ref="tabularReportDAO" />
+			</bean>
+			
+			<bean id="utilizationByRevenueReport" class="com.worldcheck.atlas.bl.report.UtilizationByRevenueReport">		
+				<property name="tabularReportDAO"><ref bean="tabularReportDAO"/></property>
+			</bean>
+
+			<bean id="vendorDataSummaryReport" class="com.worldcheck.atlas.bl.report.VendorDataSummaryReport">		
+				<property name="tabularReportDAO"><ref bean="tabularReportDAO"/></property>
+			</bean>
+
+		    <bean id="timeTrackerReport" class="com.worldcheck.atlas.bl.report.TimeTrackerReport">
+		    	<property name="tabularReportDAO" ref="tabularReportDAO" />
+		    </bean>
+	
+			<bean id="invoiceCTExcelReport" class="com.worldcheck.atlas.bl.report.InvoiceCTExcelReport">
+				 <property name="tabularReportDAO"><ref local="tabularReportDAO"/></property>
+			</bean>
+
+			<bean id="financeRawDataReport" class="com.worldcheck.atlas.bl.report.FinanceRawDataReport">
+				 <property name="tabularReportDAO"><ref local="tabularReportDAO"/></property>
+			</bean>
+			
+			<bean id="reviewerRawDataReport" class="com.worldcheck.atlas.bl.report.ReviewerRawDataReport">
+				 <property name="tabularReportDAO"><ref local="tabularReportDAO"/></property>
+			</bean>
+			
+			<bean id="officeSummaryReport" class="com.worldcheck.atlas.bl.report.OfficeSummaryReport">
+				<property name="tabularReportDAO"><ref local="tabularReportDAO"/></property>
+			</bean>
+			
+			<bean id="vendorRawDataReport" class="com.worldcheck.atlas.bl.report.VendorRawDataReport">
+				<property name="tabularReportDAO"><ref local="tabularReportDAO"/></property>
+			</bean>
+
+		<!-- Report BL Classes begin -->
+	
+	<!-- publicHolidayDAO already Available-->
+    
+	<bean id="tabularReportDAO" class="com.worldcheck.atlas.dao.report.TabularReportDAO">
+		<property name = "dataSource" ref= "reportDS" />
+		<property name="sqlMapClient" ref="sqlMapReportClient" />
+	 </bean>
+    
+	<bean id="teamPerformanceDAO" class="com.worldcheck.atlas.dao.report.TeamPerformanceDAO">
+		<property name = "dataSource" ref= "atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapReportClient" />
+	 </bean>
+
+	 <bean id="atlasReportFactory" class="com.worldcheck.atlas.bl.report.AtlasReportFactory">
+		<property name="productivityAndRevenueSummaryReport" ref="productivityAndRevenueSummaryReport" />
+		<property name="casesReceivedSummaryReport" ref="casesReceivedSummaryReport" />
+		<property name="currentAnalystLoadingReport" ref="currentAnalystLoadingReport" />
+		<property name="utilizationByProductivityReport" ref="utilizationByProductivityReport" />		
+		<property name="utilizationByRevenueReport" ref="utilizationByRevenueReport" />
+		<property name="vendorDataSummaryReport" ref="vendorDataSummaryReport" />
+		<property name="timeTrackerReport" ref="timeTrackerReport" />
+		<property name="financeRawDataReport" ref="financeRawDataReport" />
+		<property name="reviewerRawDataReport" ref="reviewerRawDataReport" />
+		<property name="invoiceCTExcelReport" ref="invoiceCTExcelReport" />
+		<property name="officeSummaryReport" ref="officeSummaryReport" />
+		<property name="vendorRawDataReport" ref="vendorRawDataReport" />
+		<property name="revenueByOfficePerformanceReport" ref="revenueByOfficePerformanceReport" />
+		<property name="revenueAndAnalystByOfficePerformanceReport" ref="revenueAndAnalystByOfficePerformanceReport" />
+		<property name="reportTypeAndOfficeSummaryManager" ref="reportTypeAndOfficeSummaryManager" />
+		<property name="invoiceTATReportManager" ref="invoiceTATReportManager" />
+		<property name="productivityPointByOfficePerReport" ref="productivityPointByOfficePerReport" />
+		<property name="productivityPointAnalystByOfficeReport" ref="productivityPointAnalystByOfficeReport" />
+		<property name="completedCaseByOfficeReport" ref="completedCaseByOfficeReport" />
+		<property name="completedCaseAnalystByOfficeReport" ref="completedCaseAnalystByOfficeReport" />	
+		<property name="scoreSheetMISReportManager" ref="scoreSheetMISReportManager" />	
+		<property name="teamPerformanceReport" ref="teamPerformanceReport" />
+			<!-- Overdue,due,AllonHold==Reports -->
+		<property name="overdueReportMultiactionManager" ref="overdueReportMultiactionManager" />
+		<property name="caseDueTodayMultiactionManager" ref="caseDueTodayMultiactionManager" />
+		<property name="allOnHoldMultiactionManager" ref="allOnHoldMultiactionManager" />
+		<property name="myPerformanceMultiactionManager" ref="myPerformanceMultiactionManager" />
+		<property name="revenueSummaryManager" ref="revenueSummaryManager" />
+		<property name="teamJLPSummaryManager" ref="teamJLPSummaryManager" />
+		
+		
+		
+		<!-- END Overdue,due,AllonHold==Reports -->
+		
+		
+	 </bean>
+    
+	 <bean id="atlasReportService" class="com.worldcheck.atlas.services.report.AtlasReportService">
+    		<property name="atlasReportFactory" ref="atlasReportFactory" />
+	 </bean>
+
+		<bean id="excelDownloader" class="com.worldcheck.atlas.bl.downloadexcel.ExcelDownloader">
+			<property name="propertyReader" ref="propertyReader" />
+		</bean>
+		<bean id="chartExcelDownloader" class="com.worldcheck.atlas.bl.downloadexcel.ChartExcelDownloader">
+			<property name="propertyReader" ref="propertyReader" />
+		</bean>
+		<bean id="currentAnalystLoadingExcelDownloader" class="com.worldcheck.atlas.bl.downloadexcel.CurrentAnalystLoadingExcelDownloader">
+			<property name="propertyReader" ref="propertyReader" />
+		</bean>
+		<bean id="csvDownloader" class="com.worldcheck.atlas.bl.downloadexcel.CSVDownloader">
+			<property name="propertyReader" ref="propertyReader" />
+		</bean>
+	<!-- Report implementation ends -->
+
+<bean id="taskSBMUtil" class="com.worldcheck.atlas.sbm.queryService.TaskSBMUtil"></bean>
+
+	<!-- SBM wrapper implementation starts -->
+	<bean id="sbmService" class="com.worldcheck.atlas.services.sbm.SBMService">	 	
+	<property name="sbmTaskCreationManager"><ref bean="sbmTaskCreationManager"/></property>
+	<property name="sbmTaskManager"><ref bean="sbmTaskManager"/></property> 
+	<property name="taskSBMUtil"><ref bean="taskSBMUtil"/></property>
+	<property name="sessionManager"><ref bean="sessionManager"/></property>
+	<property name="userManager"><ref bean="userManager"/></property>
+	<property name="sbmNotificationManager"><ref bean="sbmNotificationManager"/></property>
+	</bean>
+	<bean id="sbmTaskCreationManager" class="com.worldcheck.atlas.sbm.SBMTaskCreationManager">		
+	</bean>
+	<bean id="sbmNotificationManager" class="com.worldcheck.atlas.sbm.SBMNotificationManager">		
+	</bean>
+	<bean id="sbmTaskManager" class="com.worldcheck.atlas.sbm.SBMTaskManager">		
+		<property name="atlasWebServiceDAO" ref="atlasWebServiceDAO" />
+	</bean>
+	<bean id="userManager" class="com.worldcheck.atlas.sbm.SBMUserManager">	
+	<property name="dataSource">
+			<ref local="savDataSource" />
+		</property>
+		<property name="sqlMapClient">
+			<ref local="sqlMapCMSClient" />
+		</property>
+	</bean>
+	<bean id="sessionManager" class="com.worldcheck.atlas.sbm.SBMSessionManager">		
+	</bean>
+
+		<!-- SBM wrapper implementation ends -->
+		<!-- TaskManagement implementation starts -->
+	<bean id="taskManagementController" class="com.worldcheck.atlas.frontend.sbm.TaskManagementController">
+		<property name="successView" value="redirect:/bpmportal/myhome/confirmcompletetask.jsp?bizsite_saveTask=Save" />
+		<property name="successCompleteView" value="redirect:/bpmportal/atlas/goToMyTask.do" />
+		<property name="successCompleteTaskView" value="redirect:/bpmportal/myhome/confirmcompletetask.jsp" /> 
+	</bean>
+
+	<bean id="taskService" class="com.worldcheck.atlas.services.task.TaskManagementService">	 	
+	<property name="taskDAO"><ref bean="taskDAO"/></property>
+	<property name="riskProfileDAO" ref="riskProfileDAO" />
+	<property name="riskHistoryDAO" ref="riskHistoryDAO" />
+	</bean>
+	<bean id="taskDAO" class="com.worldcheck.atlas.dao.task.TaskManagementDAO">		
+	<property name="dataSource"><ref local="atlasDS"/></property>
+     <property name="sqlMapClient"><ref local="sqlMapCMSClient"/></property>	
+	</bean>
+	
+
+	<!-- TaskManagement implementation ends -->
+	
+	<!-- Unconfirm Budget implementation ends -->
+	
+	<bean id="unconfirmBudgetController" class="com.worldcheck.atlas.frontend.unconfirmbudget.UnconfirmBudgetController">
+		<property name="unconfirmBudgetManager" ref="unconfirmBudgetManager"/>
+	</bean>
+
+	<bean id="unconfirmBudgetManager" class="com.worldcheck.atlas.bl.unconfirmbudget.UnconfirmBudgetManager">	 	
+		<property name="unconfirmBudgetDAO"><ref bean="unconfirmBudgetDAO"/></property>
+	</bean>
+	
+	<bean id="unconfirmBudgetDAO" class="com.worldcheck.atlas.dao.unconfirmbudget.UnconfirmBudgetDAO">		
+		<property name="dataSource"><ref local="atlasDS"/></property>
+	    <property name="sqlMapClient"><ref local="sqlMapCMSClient"/></property>	
+	</bean>
+	
+	<!-- Unconfirm Budget implementation ends -->
+	
+<!-- InvoiceManagement implementation starts -->
+<bean id="invoiceManagementController" class="com.worldcheck.atlas.frontend.invoice.InvoiceManagementController">
+		<property name="successView" value="redirect:/bpmportal/myhome/confirmcompletetask.jsp?bizsite_saveTask=Save" />
+		<property name="successCompleteView" value="redirect:/bpmportal/myhome/confirmcompletetask.jsp" />
+	</bean>
+
+	<bean id="invoiceManagementDAO" class="com.worldcheck.atlas.dao.task.invoice.InvoiceManagementDAO">		
+	<property name="dataSource"><ref local="atlasDS"/></property>
+     <property name="sqlMapClient"><ref local="sqlMapCMSClient"/></property>	
+	</bean>
+	<bean id="invoiceService" class="com.worldcheck.atlas.services.task.invoice.InvoiceManagementService">	 	
+	<property name="invoiceManagementDAO"><ref bean="invoiceManagementDAO"/></property>
+	</bean>
+	
+	
+	<!-- InvoiceManagement implementation ends -->
+
+		<!-- Masters implementaion -->
+
+		<bean id="countryDBDAO" class="com.worldcheck.atlas.dao.masters.CountryDBDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />     		
+	</bean>
+	
+	<bean id="currencyDAO" class="com.worldcheck.atlas.dao.masters.CurrencyDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	</bean>
+	<bean id="currencyConversionDAO" class="com.worldcheck.atlas.dao.masters.CurrencyConversionDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	</bean>
+	
+	 <!-- Client Group Service implementation  -->
+	<bean id="clientGroupDAO" class="com.worldcheck.atlas.dao.masters.ClientGroupDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	</bean>
+	 <!-- Client Group Service implementation  -->
+	
+	<bean id="clientRequirementDAO" class="com.worldcheck.atlas.dao.masters.ClientRequirementDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	</bean>
+
+	<bean id="reportTemplateDAO" class="com.worldcheck.atlas.dao.masters.ReportTemplateDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	</bean>
+
+	<bean id="reportTemplateManager" class="com.worldcheck.atlas.bl.masters.ReportTemplateManager">
+		<property name="reportTemplateDAO" ref="reportTemplateDAO" />
+	</bean>
+
+	<bean id="clientRequirementManager"
+		class="com.worldcheck.atlas.bl.masters.ClientRequirementManager">
+		<property name="clientRequirementDAO" ref="clientRequirementDAO" />
+	</bean>
+	
+	<bean id="countryDBManager" class="com.worldcheck.atlas.bl.masters.CountryDBManager">
+		<property name="countryDBDAO" ref="countryDBDAO" />		
+	</bean>
+	
+	<bean id="currencyManager" class="com.worldcheck.atlas.bl.masters.CurrencyManager">
+	<property name="currencyDAO" ref="currencyDAO"/>	
+	</bean>
+
+	<bean id="currencyConversionService"
+		class="com.worldcheck.atlas.bl.masters.CurrencyConverisonManager">
+		<property name="currencyConversionDAO" ref="currencyConversionDAO" />
+	</bean>
+        
+       <!-- Client Group Service implementation  -->
+    <bean id="clientGroupService"
+		class="com.worldcheck.atlas.bl.masters.ClientGroupManager">
+		<property name="clientGroupDAO" ref="clientGroupDAO" />
+	</bean>
+    <!-- Client Group Service implementation  -->
+    
+	<bean id="countryMultiActionController" class="com.worldcheck.atlas.frontend.masters.CountryMultiActionController">
+		
+	</bean>
+
+	<!-- Vendor Master Implementation begins -->
+	<bean id="jsonVendorMultiActionController" class="com.worldcheck.atlas.frontend.masters.JSONVendorMultiActionController">
+		<property name="vendorMultiActionManager" ref="vendorMultiActionManager"/>
+		<property name="propertyReader" ref="propertyReader" />
+	</bean>
+		
+	<bean id="vendorMultiActionController" class="com.worldcheck.atlas.frontend.masters.VendorMultiActionController">
+		<property name="vendorMultiActionManager" ref="vendorMultiActionManager"/>
+		<property name="propertyReader" ref="propertyReader"/>
+	</bean>
+	
+	<bean id="vendorMultiActionManager" class="com.worldcheck.atlas.bl.masters.VendorMultiActionManager">
+		<property name="vendorMultiActionDAO" ref="vendorMultiActionDAO"/>
+		<property name="propertyReader" ref="propertyReader" />
+	</bean>
+	
+	<bean id="vendorMultiActionDAO" class="com.worldcheck.atlas.dao.masters.VendorMultiActionDAO">
+		<property name = "dataSource" ref= "atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	</bean>
+	<!-- Vendor Master Implementation ends -->
+	
+	<!-- ====================Bean for UserMultiAction==================== -->
+	
+	<bean id="userMultiActionDAO" class="com.worldcheck.atlas.dao.masters.UserMultiActionDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />     		
+	</bean>
+	
+	<bean id="userMultiActionManager" class="com.worldcheck.atlas.bl.masters.UserMultiActionManager">
+		<property name="userMultiActionDAO" ref="userMultiActionDAO" />		
+		<!--Start: Added by 6032662 for BI-702-->
+		<property name="atlasHistoryUtil" ref="atlasHistoryUtil" />	
+		<!--Start: Added by 6032662 for BI-702-->
+	</bean>
+	
+	<bean id="userMultiActionController" class="com.worldcheck.atlas.frontend.masters.UserMultiActionController">
+		<property name="userMultiActionManager" ref="userMultiActionManager"></property>	
+		<property name="propertyConfigurer" ref="propertyConfigurer"></property>	
+	</bean>
+	<bean id="jsonUserMultiActionController" class="com.worldcheck.atlas.frontend.masters.JSONUserMultiActionController">
+		<property name="userMultiActionManager" ref="userMultiActionManager"></property>		
+	</bean>
+	<!-- ====================/Bean for UserMultiAction==================== -->
+
+	<!-- ====================Bean for ClientMultiAction==================== -->
+	
+	<bean id="clientMultiActionDAO" class="com.worldcheck.atlas.dao.masters.ClientMultiActionDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />     		
+	</bean>
+	
+	<bean id="clientMultiActionManager" class="com.worldcheck.atlas.bl.masters.ClientMultiActionManager">
+		<property name="clientMultiActionDAO" ref="clientMultiActionDAO" />		
+	</bean>
+	
+	<bean id="clientMultiActionController" class="com.worldcheck.atlas.frontend.masters.ClientMultiActionController">
+		<property name="clientMultiActionManager" ref="clientMultiActionManager"></property>		
+	</bean>
+	<!-- ====================/Bean for ClientMultiAction==================== -->
+
+
+	<!-- ====================Bean for REMultiAction==================== -->
+	
+<bean id="reMultiActionDAO" class="com.worldcheck.atlas.dao.masters.REMultiActionDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />     		
+	</bean>
+	
+	<bean id="reMultiActionManager" class="com.worldcheck.atlas.bl.masters.REMultiActionManager">
+		<property name="reMultiActionDAO" ref="reMultiActionDAO" />		
+	</bean>
+	
+	<bean id="reSearchElementMultiActionController" class="com.worldcheck.atlas.frontend.masters.ReSearchElementMultiActionController">
+		<property name="reMultiActionManager" ref="reMultiActionManager"></property>		
+	</bean>
+	<!-- ====================/Bean for REMultiAction==================== -->
+
+
+	<!-- ====================Bean for BranchOfficeMultiActionController==================== -->
+	
+	<bean id="branchOfficeMultiActionDAO" class="com.worldcheck.atlas.dao.masters.BranchOfficeMultiActionDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />     		
+	</bean>
+	
+	<bean id="branchOfficeMultiActionManager" class="com.worldcheck.atlas.bl.masters.BranchOfficeMultiActionManager">
+		<property name="branchOfficeMultiActionDAO" ref="branchOfficeMultiActionDAO" />		
+	</bean>
+	
+	<bean id="branchOfficeMultiActionController" class="com.worldcheck.atlas.frontend.masters.BranchOfficeMultiActionController">
+		<property name="branchOfficeMultiActionManager" ref="branchOfficeMultiActionManager"></property>		
+	</bean>
+	
+	<bean id="jsonBranchOfficeMultiActionController" class="com.worldcheck.atlas.frontend.masters.JSONBranchOfficeMultiactionController">
+		<property name="branchOfficeMultiActionManager" ref="branchOfficeMultiActionManager"></property>		
+	</bean>
+	
+	<!-- ====================/Bean for BranchOfficeMultiActionController==================== -->
+
+<bean id="legacyDocAttachmentDAO" class="com.worldcheck.atlas.dao.document.LegacyDocAttachmentDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />     		
+	</bean>
+	
+	<bean id="legacyDocAttachmentService" class="com.worldcheck.atlas.services.document.LegacyDocAttachmentService">
+		<property name="legacyDocAttachmentDAO" ref="legacyDocAttachmentDAO" />		
+		<property name="propertyReader" ref="propertyReader" />		
+	</bean>
+	
+	<bean id="legacyDocAttachmentController" class="com.worldcheck.atlas.frontend.document.LegacyDocAttachmentController">
+		<property name="legacyDocAttachmentService" ref="legacyDocAttachmentService"></property>		
+	</bean>
+	
+	<bean id="jsonLegacyDocAttachmentController" class="com.worldcheck.atlas.frontend.document.JSONLegacyDocAttachmentController">
+		<property name="legacyDocAttachmentService" ref="legacyDocAttachmentService"></property>	
+		<property name="propertyReader" ref="propertyReader" />	
+	</bean>
+
+
+	<!-- ====================Bean for Overdue Report==================== -->
+	
+	<!-- <bean id="overdueReportMultiactionDAO" class="com.worldcheck.atlas.dao.masters.OverdueReportMultiactionDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />     		
+	</bean> -->
+	
+	<bean id="overdueReportMultiactionManager" class="com.worldcheck.atlas.bl.report.OverdueReportMultiactionManager">
+		<!-- <property name="overdueReportMultiactionDAO" ref="overdueReportMultiactionDAO" /> -->	
+		<property name="tabularReportDAO" ref="tabularReportDAO" />
+	</bean>
+	
+	
+	<bean id="jsonOverdueReportMultiactionController" class="com.worldcheck.atlas.frontend.report.JSONOverdueReportMultiactionController">
+		<property name="atlasReportService" ref="atlasReportService" />		
+	</bean>
+
+	<bean id="overDueCasesController" class="com.worldcheck.atlas.frontend.report.OverDueCasesController">
+		<property name="propertyReader" ref="propertyReader" />		
+	</bean>
+	<!-- ====================/Bean for Overdue Report==================== -->
+
+	<!-- ====================Bean for CaseDue Today Report==================== -->
+	
+	
+	<bean id="caseDueTodayMultiactionManager" class="com.worldcheck.atlas.bl.report.CaseDueTodayMultiactionManager">
+		<!-- <property name="overdueReportMultiactionDAO" ref="overdueReportMultiactionDAO" /> -->	
+		<property name="tabularReportDAO" ref="tabularReportDAO" />
+	</bean>
+	
+	
+	<bean id="jsonDueTodayMultiactionController" class="com.worldcheck.atlas.frontend.report.JSONDueTodayMultiactionController">
+		<property name="atlasReportService" ref="atlasReportService" />		
+	</bean>
+	<bean id="caseDueController" class="com.worldcheck.atlas.frontend.report.CaseDueController">
+		<property name="propertyReader" ref="propertyReader" />		
+	</bean>
+	
+	<!-- ====================/Bean for CaseDue Today Report==================== -->
+
+	<!-- ====================Bean for allOnHold Cases  Report==================== -->
+	
+	
+	<bean id="allOnHoldMultiactionManager" class="com.worldcheck.atlas.bl.report.AllOnHoldMultiactionManager">
+		<!-- <property name="overdueReportMultiactionDAO" ref="overdueReportMultiactionDAO" /> -->	
+		<property name="tabularReportDAO" ref="tabularReportDAO" />
+	</bean>
+	
+	
+	<bean id="jsonAllOnHoldCasesMultiactionController" class="com.worldcheck.atlas.frontend.report.JSONAllOnHoldCasesMultiactionController">
+		<property name="atlasReportService" ref="atlasReportService" />		
+	</bean>
+
+	<bean id="onHoldCasesController" class="com.worldcheck.atlas.frontend.report.OnHoldCasesController">
+		<property name="propertyReader" ref="propertyReader" />		
+	</bean>
+
+	
+	<!-- ====================/Bean for allOnHold Cases Report==================== -->
+
+	<!-- ====================Bean for MyPerformance  Report==================== -->
+	
+	
+	<bean id="myPerformanceMultiactionManager" class="com.worldcheck.atlas.bl.report.MyPerformanceMultiactionManager">
+		<!-- <property name="overdueReportMultiactionDAO" ref="overdueReportMultiactionDAO" /> -->	
+		<property name="tabularReportDAO" ref="tabularReportDAO" />
+	</bean>
+	
+	
+	<bean id="jsonMyPerformanceMultiactionController" class="com.worldcheck.atlas.frontend.report.JSONMyPerformanceMultiactionController">
+		<property name="atlasReportService" ref="atlasReportService" />
+			<property name="chartReportDAO" ref="chartReportDAO" />		
+		
+	</bean>
+
+	<bean id="myPerformanceMultiactionController" class="com.worldcheck.atlas.frontend.report.MyPerformanceMultiactionController">
+		<property name="propertyReader" ref="propertyReader" />
+				
+		
+	</bean>
+	<!-- ====================/Bean for MyPerformance Report==================== -->
+	
+	<!-- <bean id="reSearchElementMultiActionController" class="com.worldcheck.atlas.frontend.masters.ReSearchElementMultiActionController">
+	</bean> -->
+<!-- 	<bean id="branchOfficeMultiActionController" class="com.worldcheck.atlas.frontend.masters.BranchOfficeMultiActionController">
+	</bean> -->
+	
+	<bean id="countryDatabaseMultiActionController" class="com.worldcheck.atlas.frontend.masters.CountryDatabaseMultiActionController">
+			<property name="countryDBManager" ref="countryDBManager" />	
+	</bean>
+	
+	<bean name="jsonCountryDBMultiActionController" class="com.worldcheck.atlas.frontend.masters.JSONCountryDBMultiActionController">	
+		<property name="countryDBManager" ref="countryDBManager" />	
+	</bean>
+	
+	<bean id="sourceAvailabilityExcelDownloader" class="com.worldcheck.atlas.bl.downloadexcel.SourceAvailabilityExcelDownloader">
+			<property name="propertyReader" ref="propertyReader" />
+	</bean>
+	
+	<bean id="clientRequirmentMultiActionController"
+		class="com.worldcheck.atlas.frontend.masters.ClientRequirmentMultiActionController">
+		<property name="clientRequirementService" ref="clientRequirementManager" />
+	</bean>
+	<bean id="jsonclientRequirmentMultiActionController"
+		class="com.worldcheck.atlas.frontend.masters.JSONClientRequirmentMultiActionController">
+		<property name="clientRequirementService" ref="clientRequirementManager" />
+	</bean>
+
+	<bean id="reportTemplateMultiActionController"
+		class="com.worldcheck.atlas.frontend.masters.ReportTemplateMultiActionController">
+		<property name="reportTemplateService" ref="reportTemplateManager" />
+	</bean>
+	<bean id="jsonreportTemplateMultiActionController"
+		class="com.worldcheck.atlas.frontend.masters.JSONReportTemplateMultiActionController">
+		<property name="reportTemplateService" ref="reportTemplateManager" />
+	</bean>
+
+	<bean id="currencyMultiActionController"
+		class="com.worldcheck.atlas.frontend.masters.CurrencyMultiActionController">
+		<property name="currencyService" ref="currencyManager" />
+	</bean>
+	<bean id="jsoncurrencyMultiActionController"
+		class="com.worldcheck.atlas.frontend.masters.JSONCurrencyMultiActionController">
+		<property name="currencyService" ref="currencyManager" />
+	</bean>
+	<bean id="currencyConversionMultiActionController"
+		class="com.worldcheck.atlas.frontend.masters.CurrencyConversionMultiActionController">
+		<property name="currencyConversionService" ref="currencyConversionService" />
+	</bean>
+	<bean id="jsonCurrencyConversionMultiActionController"
+		class="com.worldcheck.atlas.frontend.masters.JSONCurrencyConversionMultiActionController">
+		<property name="currencyConversionService" ref="currencyConversionService" />
+	</bean>
+
+     <!-- Client Group implementation  -->
+	<bean id="jsonClientGroupMultiActionController"
+		class="com.worldcheck.atlas.frontend.masters.JSONClientGroupMultiActionController">
+		<property name="clientGroupService" ref="clientGroupService" />
+	</bean>	
+	<!-- Client Group implementation  -->
+	
+		<!-- Country Master implementation ends -->
+	<bean id="countryDAO" class="com.worldcheck.atlas.dao.masters.CountryDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>   		
+	</bean>
+	
+	<bean id="countryManager" class="com.worldcheck.atlas.bl.masters.CountryManager">
+		<property name="countryDAO" ref="countryDAO" />		
+	</bean>
+
+	<bean id="countryController" class="com.worldcheck.atlas.frontend.masters.CountryController">
+		<property name="countryManager" ref="countryManager" />	
+	</bean>
+
+	
+	<bean name="jsonCountryMaster" class="com.worldcheck.atlas.frontend.masters.JSONCountryMaster" autowire="byName">
+		<property name="countryManager" ref="countryManager" />		
+	</bean>
+<!-- Country Master implementation ends -->
+
+<!-- Industry Master implementation ends -->
+	<bean id="industryDAO" class="com.worldcheck.atlas.dao.masters.IndustryDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>   		
+	</bean>
+	
+	<bean id="industryManager" class="com.worldcheck.atlas.bl.masters.IndustryManager">
+		<property name="industryDAO" ref="industryDAO" />		
+	</bean>
+
+<!-- <bean id="userMultiActionDAO" class="com.worldcheck.atlas.dao.masters.UserMultiActionDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>   		
+	</bean>
+	
+	<bean id="userMultiActionManager" class="com.worldcheck.atlas.bl.masters.UserMultiActionManager">
+		<property name="userMultiActionDAO" ref="userMultiActionDAO" />		
+	</bean> -->
+	
+
+	<bean id="industryMultiActionController" class="com.worldcheck.atlas.frontend.masters.IndustryMultiActionController">
+		<property name="industryManager" ref="industryManager" />	
+	</bean>
+	
+	<bean name="jsonIndustryMaster" class="com.worldcheck.atlas.frontend.masters.JSONIndustryMaster" autowire="byName">
+		<property name="industryManager" ref="industryManager" />		
+	</bean>
+<!-- Industry Master implementation ends -->
+
+<!-- Risk Master implementation ends -->
+	<bean id="riskDAO" class="com.worldcheck.atlas.dao.masters.RiskDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>   		
+	</bean>
+	<bean id="riskProfileDAO" class="com.worldcheck.atlas.dao.masters.RiskProfileDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>   		
+	</bean>
+	
+	
+	<bean id="riskManager" class="com.worldcheck.atlas.bl.masters.RiskManager">
+		<property name="riskDAO" ref="riskDAO" />		
+	</bean>
+	<bean id="risksMultiActionController" class="com.worldcheck.atlas.frontend.masters.RisksMultiActionController">
+		<property name="riskManager" ref="riskManager" />	
+	</bean>
+	
+	<bean name="jsonRiskMaster" class="com.worldcheck.atlas.frontend.masters.JSONRiskMaster" autowire="byName">
+		<property name="riskManager" ref="riskManager" />		
+	</bean>
+<!-- Risk Master implementation ends -->
+
+<!-- Public Holiday  Master implementation ends -->
+	<bean id="publicHolidayDAO" class="com.worldcheck.atlas.dao.masters.PublicHolidayDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>   		
+	</bean>
+	
+	<bean id="publicHolidayManager" class="com.worldcheck.atlas.bl.masters.PublicHolidayManager">
+		<property name="publicHolidayDAO" ref="publicHolidayDAO" />		
+	</bean>
+	<bean id="publicHolidayMultiActionController" class="com.worldcheck.atlas.frontend.masters.PublicHolidayMultiActionController">
+		<property name="publicHolidayManager" ref="publicHolidayManager" />	
+	</bean>
+	
+	<bean name="jsonPublicHolidayMaster" class="com.worldcheck.atlas.frontend.masters.JSONPublicHolidayMaster" autowire="byName">
+		<property name="publicHolidayManager" ref="publicHolidayManager" />
+		<property name="years" value="${atlas.years}" />
+	</bean>
+<!-- Risk Master implementation ends -->  
+
+<!-- Score Sheet  Master implementation ends -->
+	<bean id="scoreSheetDAO" class="com.worldcheck.atlas.dao.masters.ScoreSheetDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>   		
+	</bean>
+	
+	<bean id="scoreSheetManager" class="com.worldcheck.atlas.bl.masters.ScoreSheetManager">
+		<property name="scoreSheetDAO" ref="scoreSheetDAO" />		
+	</bean>
+	<bean id="scoreSheetMultiActionController" class="com.worldcheck.atlas.frontend.masters.ScoreSheetMultiActionController">
+		<property name="scoreSheetManager" ref="scoreSheetManager" />	
+	</bean>
+	
+	<bean name="jsonScoreSheetMaster" class="com.worldcheck.atlas.frontend.masters.JSONScoreSheetMaster" autowire="byName">
+		<property name="scoreSheetManager" ref="scoreSheetManager" />		
+	</bean>
+<!-- ScoreSheet Master implementation ends --> 
+<!-- Report Type Master implementation starts -->
+<bean id="reportTypeManager" class="com.worldcheck.atlas.bl.masters.ReportTypeManager">
+		<property name="reportTypeDAO" ref="reportTypeDAO" />
+		<property name="atlasHistoryUtil" ref="atlasHistoryUtil" />			
+			
+</bean>
+<bean id="reportTypeDAO" class="com.worldcheck.atlas.dao.masters.ReportTypeDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>   		
+</bean>
+
+<bean id="reportTypeController" class="com.worldcheck.atlas.frontend.masters.ReportTypeMultiActionController">
+		<property name="reportTypeManager" ref="reportTypeManager" />	
+	</bean>
+
+	<bean id="jsonReportTypeController" class="com.worldcheck.atlas.frontend.masters.JSONReportTypeMaster">
+	<property name="reportTypeManager" ref="reportTypeManager" />		
+	</bean>
+	<!-- Report Type Master implementation ends -->
+	<!-- masters implementation-->
+
+<!-- ACL  Starts-->
+
+	<bean id="aclPermissionDAO" class="com.worldcheck.atlas.dao.sbm.acl.ACLPermissionDAO">
+	<property name="dataSource"><ref local="atlasDS"/></property>
+     <property name="sqlMapClient"><ref local="sqlMapCMSClient"/></property>				
+	</bean>
+	
+	<bean id="managerAcl" class="com.worldcheck.atlas.sbm.acl.ManagerAcl">		
+	<property name="aclPermissionDAO"><ref bean="aclPermissionDAO"/></property>
+	</bean>
+	<bean id="aclService" class="com.worldcheck.atlas.services.sbm.acl.ACLService">	
+	<property name="managerAcl"><ref bean="managerAcl"/></property>	
+	</bean>
+	
+	<!-- ACl Ends -->
+<!-- DMS implementation starts -->
+
+	<bean id="documentMultiActionController" class="com.worldcheck.atlas.frontend.document.DocumentMultiActionController">
+		<property name="propertyReader" ref="propertyReader"/>
+	</bean>
+
+	<bean id="docMapDAO" class="com.worldcheck.atlas.dao.document.DocMapDAO">
+	<property name="dataSource"><ref local="savDataSource"/></property>
+     <property name="sqlMapClient"><ref local="sqlMapCMSClient"/></property>		
+	</bean>
+	
+	<bean id="docService" class="com.worldcheck.atlas.services.document.DocService">	 	
+	<property name="docCreator"><ref bean="docCreator"/></property>
+	<property name="docSender"><ref bean="docSender"/></property>
+	<property name="docDisplay"><ref bean="docDisplay"/></property>
+	<property name="docMapDAO"><ref bean="docMapDAO"/></property>
+	</bean>
+
+	<bean id="docCreator" class="com.worldcheck.atlas.document.DocCreator">
+	<property name="docReceiver"><ref bean="docReceiver"/></property>
+	
+	</bean>
+	<bean id="docReceiver" class="com.worldcheck.atlas.document.DocReceiver">
+	</bean>
+	<bean id="docDisplay" class="com.worldcheck.atlas.document.ManageDocument">
+	</bean>
+	<bean id="docSender" class="com.worldcheck.atlas.document.DocSender">
+	<property name="docMapDAO"><ref bean="docMapDAO"/></property>
+	
+	</bean>
+	
+   
+<!-- DMS implementation ends -->
+
+
+
+<!--  Admin Console module starts -->
+    <bean id="leaveDAO" class="com.worldcheck.atlas.dao.leave.LeaveDAO">
+		<property name="dataSource"><ref bean="atlasDS"/></property>
+     	<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>		
+	</bean>
+	
+	<bean id="leaveService" class="com.worldcheck.atlas.bl.masters.LeaveManager">
+		<property name="leaveDAO"><ref bean="leaveDAO"/></property>
+	</bean>
+    
+	<bean id="leaveMultiActionController" class="com.worldcheck.atlas.frontend.LeaveMultiActionController">
+		<property name="leaveService"><ref bean="leaveService"/></property>
+	</bean>
+	
+	 <bean id="ajaxUtilController" class="com.savvion.sbm.bpmportal.web.AjaxUtilController">
+    </bean>
+    
+    <bean id="updatePasswordController" class="com.worldcheck.atlas.frontend.UpdatePasswordController">
+    </bean>
+
+	<bean id="updatePasswordService" class="com.worldcheck.atlas.services.updatepassword.UpdatePasswordService">
+    	<property name="masterDataValidator" ref="masterDataValidator" />
+    </bean>
+    
+    <bean id="nonCrnExpenditureController" class="com.worldcheck.atlas.frontend.NonCrnExpenditureController">
+    	<property name="nonCrnExpenditureService"><ref bean="nonCrnExpenditureService"/></property>
+    </bean>
+    
+    <bean name="massVendorUploadController" class="com.worldcheck.atlas.frontend.MassVendorUploadController"
+		autowire="byName">
+		<property name="masterDataValidator" ref="masterDataValidator" />	
+		<property name="massVendorUploadManager" ref="massVendorUploadManager" />	
+		<property name="propertyReaderUtil" ref="propertyReader" />
+	</bean>
+    
+    <bean id="masterDataValidator" class="com.worldcheck.atlas.validation.bl.MasterDataValidator">
+		<property name="validationDAO"><ref bean="validationDAO"/></property>
+		<property name="propertyReader" ref="propertyReader" />
+		<property name="propertyConfigurer" ref="propertyConfigurer"></property>
+	</bean>
+	
+	<bean id="massVendorUploadManager" class="com.worldcheck.atlas.bl.massvendordataentry.MassVendorUploadManager">
+		<property name="massVendorUploadDAO"><ref bean="massVendorUploadDAO"/></property>
+		<property name="masterDataValidator" ref="masterDataValidator" />
+		<property name="propertyReader" ref="propertyReader" />
+	</bean>
+	
+    <bean id="nonCrnExpenditureService" class="com.worldcheck.atlas.bl.noncrnexpenditure.NonCrnExpenditureService">
+		<property name="nonCrnExpenditureDAO"><ref bean="nonCrnExpenditureDAO"/></property>
+	</bean>
+	
+	<bean id="nonCrnExpenditureDAO" class="com.worldcheck.atlas.dao.noncrnexpenditure.NonCrnExpenditureDAO">
+		<property name="dataSource"><ref bean="atlasDS"/></property>
+     	<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>		
+	</bean>
+	
+	<bean id="validationDAO" class="com.worldcheck.atlas.validation.dao.ValidationDAO">
+		<property name="dataSource"><ref bean="atlasDS"/></property>
+     	<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>		
+	</bean>
+
+	
+<bean id="massVendorUploadDAO" class="com.worldcheck.atlas.dao.massvendordataentry.MassVendorUploadDAO">
+		<property name="dataSource"><ref bean="atlasDS"/></property>
+     	<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>		
+	</bean>
+	<bean name="jsonLeaveController" class="com.worldcheck.atlas.frontend.JSONLeaveController"
+		autowire="byName">
+		<property name="leaveService" ref="leaveService" />
+	</bean>
+
+	<bean name="jSONUpdatePasswordController"
+		class="com.worldcheck.atlas.frontend.JSONUpdatePasswordController"
+		autowire="byName">
+		<property name="masterDataValidator" ref="masterDataValidator" />
+	</bean>
+
+	<bean name="JSONNonCrnExpenditureController"
+		class="com.worldcheck.atlas.frontend.JSONNonCrnExpenditureController"
+		autowire="byName">
+		<property name="propertyReader" ref="propertyReader" />
+		<property name="nonCrnExpenditureService" ref="nonCrnExpenditureService" />
+	</bean>
+	
+	
+	<!--  Admin Console module ends -->
+
+	<!--  Notification module starts -->
+	<bean id="userNotificationController" class="com.worldcheck.atlas.frontend.notification.UserNotificationController">
+		<property name="notificationManager"><ref bean="notificationManager"/></property>
+	</bean>
+	<bean id="notificationManager" class="com.worldcheck.atlas.bl.notification.NotificationManager">
+		<property name="notificationDeliveryManager"><ref bean="notificationDeliveryManager"/></property>
+		<property name="notificationDAO"><ref bean="notificationDAO"/></property>
+		<property name="propertyReader" ref="propertyReader" />
+	</bean>
+	
+	<bean id="notificationDeliveryManager" class="com.worldcheck.atlas.bl.notification.ImplNotificationDeliveryManager">
+		 <constructor-arg type="java.lang.String"><value>AtlasNotificationProcess</value></constructor-arg>
+		 <constructor-arg type="java.lang.String" value="${atlas.app.alert.jndiname}"/>
+	</bean>
+	
+	<bean id="notificationDAO" class="com.worldcheck.atlas.dao.notification.NotificationDAO">
+		<property name="dataSource"><ref local="atlasDS"/></property>
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	</bean>
+	
+	<bean id="notificationService" class="com.worldcheck.atlas.services.notification.NotificationService">	 	
+		<property name="notificationManager"><ref bean="notificationManager"/></property>
+	</bean>
+    
+	<bean name="JSONUserNotificationController" class="com.worldcheck.atlas.frontend.notification.JSONUserNotificationController"
+		autowire="byName">
+		<property name="notificationManager" ref="notificationManager" />		
+	</bean>
+
+	<!--  Notification module starts -->
+	
+	<!-- AtlasWebService Start -->
+	<bean id="atlasWebServiceDAO" class="com.worldcheck.atlas.isis.dao.AtlasWebServiceDAO">
+		<property name="dataSource"><ref local="atlasDS"/></property>
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+		<property name="webServicePropertyReader" ref="webServicePropertyReader" />
+	</bean>
+
+	<bean id="dataValidator" class="com.worldcheck.atlas.isis.util.DataValidator">
+		<property name="atlasWebServiceDAO" ref="atlasWebServiceDAO" />
+		<property name="dbUtils" ref="dbUtils" />	<!-- Added by U6027780 for  CR BI-293 -->		
+	
+	</bean>
+
+	<bean id="downLoadBatchFiles" class="com.worldcheck.atlas.isis.util.DownLoadBatchFiles">		
+		<property name="webServicePropertyReader" ref="webServicePropertyReader" />
+		<property name="atlasWebServiceDAO" ref="atlasWebServiceDAO" />
+	</bean>
+
+	<bean id="atlasWebServiceManager" class="com.worldcheck.atlas.isis.bl.AtlasWebServiceManager">		
+		<property name="atlasWebServiceDAO" ref="atlasWebServiceDAO" />
+		<property name="dataValidator" ref="dataValidator" />
+		<property name="downLoadBatchFiles" ref="downLoadBatchFiles" />
+		<property name="webServicePropertyReader" ref="webServicePropertyReader" />
+		<property name="legacyDocAttachmentService" ref="legacyDocAttachmentService" />
+	</bean>
+
+	
+	<bean id="webServiceMailSender" class="com.worldcheck.atlas.isis.util.WebServiceMailSender">		
+		<property name="webServicePropertyReader" ref="webServicePropertyReader" />
+	</bean>
+
+	<bean id="atlasWebService" class="com.worldcheck.atlas.isis.services.AtlasWebService">		
+		<property name="atlasWebServiceManager" ref="atlasWebServiceManager" />
+		<property name="webServiceMailSender" ref="webServiceMailSender" />
+	</bean>
+	<!-- AtlasWebService End -->
+
+	<!-- AtlasWebService Client Start -->
+	<bean id="atlasWebServiceClientDAO" class="com.worldcheck.atlas.isis.dao.AtlasWebServiceClientDAO">
+		<property name="dataSource"><ref local="atlasDS"/></property>
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	</bean>
+
+	<bean id="atlasWebServiceClientManager" class="com.worldcheck.atlas.isis.bl.AtlasWebServiceClientManager">		
+		<property name="atlasWebServiceClientDAO" ref="atlasWebServiceClientDAO" />
+		<property name="webServicePropertyReader" ref="webServicePropertyReader" />
+	</bean>
+
+	
+	<bean id="atlasWebServiceClient" class="com.worldcheck.atlas.isis.services.AtlasWebServiceClient">		
+		<property name="atlasWebServiceClientManager" ref="atlasWebServiceClientManager" />
+	</bean>
+	
+	
+	<!-- AtlasWebService Client End -->
+
+	<!-- Subject Start -->
+	<bean id="subjectDAO" class="com.worldcheck.atlas.dao.subject.SubjectDAO">
+		<property name="dataSource"><ref local="atlasDS"/></property>
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+		<property name="webServicePropertyReader" ref="webServicePropertyReader" />
+	</bean>
+
+	<bean id="subjectManager" class="com.worldcheck.atlas.bl.subject.SubjectManager">		
+		<property name="subjectDAO" ref="subjectDAO" />
+		<property name="idbUtilis" ref="dBUtilisManager" /> 	<!-- Added by U6027780 for  CR BI-293 -->
+		<property name="invoiceMgmtDao" ref="invoiceManagementDAO" /> <!-- Added by U6027481 for  CR BI-293 -->
+		<property name="webServicePropertyReader" ref="webServicePropertyReader" />
+	</bean>
+	
+	<bean id="subjectService" class="com.worldcheck.atlas.services.subject.SubjectService">		
+		<property name="subjectManager" ref="subjectManager" />
+	</bean>
+
+	<bean id="subjectController" class="com.worldcheck.atlas.frontend.subject.SubjectController" autowire="byName">
+		<property name="subjectManager" ref="subjectManager" />
+		<!-- <property name="successView" value="redirect:/bpmportal/atlas/subject_Risks.jsp" /> -->
+	</bean>
+
+	<bean id="jsonSubjectController" class="com.worldcheck.atlas.frontend.subject.JSONSubjectController" autowire="byName">
+		<!-- <property name="subjectManager" ref="subjectManager" /> -->
+	</bean>
+
+	<!-- Subject End -->
+
+	
+	<!-- Office Assignment Start -->
+	<bean id="officeAssignmentDAO" class="com.worldcheck.atlas.dao.officeassignment.OfficeAssignmentDAO">		
+		<property name="dataSource"><ref local="atlasDS"/></property>
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	</bean>
+	
+	<bean id="officeAssignmentManager" class="com.worldcheck.atlas.bl.officeassignment.OfficeAssignmentManager">		
+		<property name="officeAssignmentDAO" ref="officeAssignmentDAO" />
+		<property name="propertyReader" ref="propertyReader" />
+	</bean>
+	
+	<bean id="jsonOfficeAssignmentController" class="com.worldcheck.atlas.frontend.officeassignment.JSONOfficeAssignmentController">		
+		<property name="officeAssignmentManager" ref="officeAssignmentManager" />
+	</bean>
+	
+	<bean id="officeAssignmentController" class="com.worldcheck.atlas.frontend.officeassignment.OfficeAssignmentController">		
+		<property name="officeAssignmentManager" ref="officeAssignmentManager" />
+	</bean>
+	
+	<bean id="officeAssignmentService" class="com.worldcheck.atlas.services.officeassignment.OfficeAssignmentService">		
+		<property name="officeAssignmentManager" ref="officeAssignmentManager" />
+	</bean>
+	
+	<!-- Office Assignment End -->
+
+	<!-- Create Case Beans Entries Start-->
+	<bean id="createCaseDAO" class="com.worldcheck.atlas.dao.createcase.CreateCaseDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>   		
+	</bean>
+	
+	<bean id="createCaseManager" class="com.worldcheck.atlas.bl.createcase.CreateCaseManager">
+		<property name="createCaseDAO" ref="createCaseDAO" />		
+	</bean>
+		<!-- Create Case Beans Entries END-->
+		
+	<!-- Dashboard Beans Entries starts -->	
+		
+		<bean id="dashboardManager" class="com.worldcheck.atlas.bl.dashboard.DashboardManager">
+			<property name="dashboardDAO" ref="dashboardDAO" />				
+		</bean>
+		<bean id="dashboardDAO" class="com.worldcheck.atlas.dao.dashboard.DashboardDAO">
+			<property name = "dataSource" ref= "atlasDS" />
+			<property name="sqlMapClient" ref="sqlMapCMSClient" />
+		</bean>
+		
+		<bean id="dashBoardControllerImpl" class="com.worldcheck.atlas.frontend.dashboard.DashBoardControllerImpl">
+			<property name="dashboardService" ref="dashboardService" />				
+		</bean>
+		
+		<bean id="chartReportDAO" class="com.worldcheck.atlas.dao.report.ChartReportDAO">
+			<property name = "dataSource" ref= "reportDS" />
+			<property name="sqlMapClient" ref="sqlMapReportClient" />
+	   </bean>
+
+	   <bean id="createDashboardController" class="com.worldcheck.atlas.frontend.dashboard.CreateDashboardController">
+		    <property name="dashboardService" ref="dashboardService" />
+			<property name="propertyReader" ref="propertyReader" />
+		</bean>
+		<bean id="atlasDashboardService" class="com.worldcheck.atlas.services.dashboard.AtlasDashboardService">
+		    <property name="dashboardService" ref="dashboardService" />
+			<property name="dashboardManager" ref="dashboardManager" />
+		</bean>
+
+<!-- Dashboard Beans Entries END-->
+
+<!-- Team Assignment Beans Entries starts -->	
+
+<bean id="teamAssignmentController" class="com.worldcheck.atlas.frontend.teamassignment.TeamAssignmentController">
+			<property name="teamAssignmentManager" ref="teamAssignmentManager" />				
+			<property name="successReassignView" value="redirect:/bpmportal/myhome/confirmreassigntask.jsp" />				
+		</bean>
+		<bean id="teamAssignmentManager" class="com.worldcheck.atlas.bl.teamassignment.TeamAssignmentManager">
+			<property name="teamAssignmentDAO" ref="teamAssignmentDAO" />				
+		</bean>
+		
+		<bean id="teamAssignmentDAO" class="com.worldcheck.atlas.dao.teamassignment.TeamAssignmentDAO">
+			<property name = "dataSource" ref= "atlasDS" />
+			<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	   </bean>
+	    <bean id="teamAssignmentService" class="com.worldcheck.atlas.services.teamassignment.TeamAssignmentService">	 	
+		<property name="teamAssignmentManager" ref="teamAssignmentManager" />	
+	</bean>
+	
+	<bean id="jsonTeamAssignmentTaskController" class="com.worldcheck.atlas.frontend.teamassignment.JSONTeamAssignmentController">
+		<property name="teamAssignmentManager" ref="teamAssignmentManager" />
+	</bean>
+<!-- Team Assignment Beans Entries END-->
+
+	<!-- mapping for Comments starts -->
+		<bean id="commentsController" class="com.worldcheck.atlas.frontend.comment.CommentsController">
+			<property name="commentsManager" ref="commentsManager" />				
+		</bean>
+		<bean id="commentsManager" class="com.worldcheck.atlas.bl.comment.CommentsManager">
+			<property name="commentsDAO" ref="commentsDAO" />				
+		</bean>
+		
+		<bean id="commentsDAO" class="com.worldcheck.atlas.dao.comment.CommentsDAO">
+			<property name = "dataSource" ref= "atlasDS" />
+			<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	   </bean>	
+		<bean id="commentService" class="com.worldcheck.atlas.services.comments.CommentService">	 	
+			<property name="commentsManager"><ref bean="commentsManager"/></property>
+		</bean>
+	
+		<bean id="jsonCommentsController" class="com.worldcheck.atlas.frontend.comment.JSONCommentsController">
+			<property name="commentsManager" ref="commentsManager" />
+		</bean>
+	<!-- mapping for Comments ends -->
+
+	<!-- mapping for VisualKey starts -->		
+		<bean id="visualKeyDAO" class="com.worldcheck.atlas.dao.visualkey.VisualKeyDAO">
+			<property name = "dataSource" ref= "atlasDS" />
+			<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	   </bean>	
+	   <bean id="visualKeyManager" class="com.worldcheck.atlas.bl.visualkey.VisualKeyManager">
+			<property name="visualKeyDAO" ref="visualKeyDAO" />				
+		</bean>
+		<bean id="visualKeyService" class="com.worldcheck.atlas.services.visualkey.VisualKeyService">	 	
+			<property name="visualKeyManager"><ref bean="visualKeyManager"/></property>
+		</bean>
+	<!-- mapping for VisualKey ends -->
+	<!-- mapping for AuditHistory Starts -->
+  	   <bean id="reviewHistoryDAO" class="com.worldcheck.atlas.dao.audit.ReviewHistoryDAO">
+		<property name = "dataSource" ref= "atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+  	   </bean>
+	   <bean id="reviewHistoryManager" class="com.worldcheck.atlas.bl.audit.ReviewHistoryManager">
+		<property name="reviewHistoryDAO" ref="reviewHistoryDAO" />
+           </bean>	
+	   <bean id="reviewHistoryService" class="com.worldcheck.atlas.services.audit.ReviewHistoryService">
+		<property name="reviewHistoryManager" ref="reviewHistoryManager" />
+	    </bean>	
+
+		 <bean id="caseHistoryDAO" class="com.worldcheck.atlas.dao.audit.CaseHistoryDAO">
+			<property name = "dataSource" ref= "atlasDS" />
+			<property name="sqlMapClient" ref="sqlMapCMSClient" />
+  	   </bean>
+	   <bean id="caseHistoryEventManager" class="com.worldcheck.atlas.bl.audit.CaseHistoryEventManager">
+			<property name="caseHistoryDAO" ref="caseHistoryDAO" />
+          </bean>	
+	   <bean id="caseHistoryService" class="com.worldcheck.atlas.services.audit.CaseHistoryService">
+			<property name="caseHistoryEventManager" ref="caseHistoryEventManager" />
+	    </bean>	
+		<bean id="jsonCaseHistoryController" class="com.worldcheck.atlas.frontend.audit.JSONCaseHistoryController">
+		<property name="caseHistoryEventManager" ref="caseHistoryEventManager" />
+	</bean>
+
+	<!-- mapping for AuditHistory ends -->
+
+	<!-- Created by Anurag Mapping for Risk History for Risk Profile CR -->
+			<bean id="riskHistoryDAO" class="com.worldcheck.atlas.dao.audit.RiskHistoryDAO">
+				<property name = "dataSource" ref= "atlasDS" />
+				<property name="sqlMapClient" ref="sqlMapCMSClient" />
+  			</bean>
+			<bean id="riskHistoryEventManager" class="com.worldcheck.atlas.bl.audit.RiskHistoryEventManager">
+				<property name="riskHistoryDAO" ref="riskHistoryDAO" />
+			</bean>	
+			<bean id="jsonRiskHistoryController" class="com.worldcheck.atlas.frontend.audit.JSONRiskHistoryController">
+				<property name="riskHistoryEventManager" ref="riskHistoryEventManager" />
+			</bean>
+	<!-- Endedd by Anurag Mapping for Risk History for Risk Profile CR -->
+
+
+	<bean id="mailService" class="com.worldcheck.atlas.services.mail.MailService">
+		<property name="email" value="${atlas.d_email}" />	
+		<property name="password" value="${atlas.d_password}" />
+		<property name="host" value="${atlas.d_host}" />
+		<property name="port" value="${atlas.d_port}" />
+		<property name="authentication" value="${mail.smtp.auth}" />
+		<property name="starttlsProp" value="${mail.smtp.starttls.enable}" />
+	</bean>
+	
+	<!--  SBM query manager  -->
+	<bean id="SBMQueryManager" class="com.worldcheck.atlas.sbm.queryService.SBMQueryManager">
+		<property name="java_naming_factory_initial" value="${atlas.pramati.factory.initial}" />	
+		<property name="java_naming_provider_url" value="${atlas.pramati.principal}" />
+		<property name="java_naming_security_principal" value="${atlas.pramati.credentials}" />
+		<property name="java_naming_security_credentials" value="${atlas.pramati.provider.jndiname}" />
+		<property name="savvion_datasource" value="${atlas.pramatids.jndi}" />
+	</bean>
+	
+	<!-- Flow Controller implementation starts -->
+	
+	<bean id="flowService" class="com.worldcheck.atlas.services.flowcontroller.FlowService">	 	
+		<property name="flowController"><ref bean="flowController"/></property>
+	</bean>
+	
+	<bean id="flowController" class="com.worldcheck.atlas.bl.flowcontroller.FlowController">	 	
+	</bean>
+	
+	<!-- Flow Controller implementation ends -->
+
+<!-- Reports mapping -->
+	<bean id="reportTypeAndOfficeSummaryController" class="com.worldcheck.atlas.frontend.report.ReportTypeAndOfficeSummaryController">
+			<property name = "atlasReportService" ref= "atlasReportService" />
+	 </bean>
+	<bean id="jsonReportTypeAndOfficeSummaryController" class="com.worldcheck.atlas.frontend.report.JSONReportTypeAndOfficeSummaryController">
+			<property name = "atlasReportService" ref= "atlasReportService" />	
+			</bean>
+	<bean id="reportTypeAndOfficeSummaryManager" class="com.worldcheck.atlas.bl.report.ReportTypeAndOfficeSummaryManager">
+				<property name="tabularReportDAO" ref="tabularReportDAO" />
+	</bean>	
+	
+	
+	<bean id="teamJLPSummaryController" class="com.worldcheck.atlas.frontend.report.TeamJLPSummaryController">
+			<property name = "atlasReportService" ref= "atlasReportService" />
+			<property name = "teamJLPSummaryManager" ref= "teamJLPSummaryManager" />
+			<property name="propertyReader" ref="propertyReader" />	
+			
+	 </bean>
+	<bean id="jsonTeamJLPSummaryController" class="com.worldcheck.atlas.frontend.report.JSONTeamJLPSummaryController">
+			<property name = "atlasReportService" ref= "atlasReportService" />	
+			<property name = "teamJLPSummaryManager" ref= "teamJLPSummaryManager" />			
+	</bean>
+	<bean id="teamJLPSummaryManager" class="com.worldcheck.atlas.bl.report.TeamJLPSummaryManager">
+				<property name="tabularReportDAO" ref="tabularReportDAO" />
+				<property name="teamJLPSummaryDAO" ref="teamJLPSummaryDAO" />
+	</bean>
+	<bean id="teamJLPSummaryDAO" class="com.worldcheck.atlas.dao.report.TeamJLPSummaryDAO">
+		<property name = "dataSource" ref= "atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />
+	 </bean>
+
+	<bean id="officePerformanceController" class="com.worldcheck.atlas.frontend.report.OfficePerformanceController">
+			<property name="propertyReader" ref="propertyReader" />	
+			<property name = "atlasReportService" ref= "atlasReportService" />							
+	</bean>
+	
+	<bean id="jsonOfficePerformanceController" class="com.worldcheck.atlas.frontend.report.JSONOfficePerformanceController">
+				
+			<property name = "atlasReportService" ref= "atlasReportService" />							
+	</bean>
+	
+	<bean id="revenueByOfficePerformanceReport" class="com.worldcheck.atlas.bl.report.RevenueByOfficePerformanceReport">
+				<property name="chartReportDAO" ref="chartReportDAO" />				
+	</bean>
+	
+	<bean id="revenueAndAnalystByOfficePerformanceReport" class="com.worldcheck.atlas.bl.report.RevenueAndAnalystByOfficePerformanceReport">
+				<property name="chartReportDAO" ref="chartReportDAO" />				
+	</bean>
+	<bean id="productivityPointByOfficePerReport" class="com.worldcheck.atlas.bl.report.ProductivityPointByOfficePerReport">
+				<property name="chartReportDAO" ref="chartReportDAO" />				
+	</bean>
+	
+	<bean id="productivityPointAnalystByOfficeReport" class="com.worldcheck.atlas.bl.report.ProductivityPointAnalystByOfficeReport">
+				<property name="chartReportDAO" ref="chartReportDAO" />				
+	</bean>
+	<bean id="completedCaseByOfficeReport" class="com.worldcheck.atlas.bl.report.CompletedCaseByOfficeReport">
+				<property name="chartReportDAO" ref="chartReportDAO" />				
+	</bean>
+	<bean id="completedCaseAnalystByOfficeReport" class="com.worldcheck.atlas.bl.report.CompletedCaseAnalystByOfficeReport">
+				<property name="chartReportDAO" ref="chartReportDAO" />				
+	</bean>
+	
+	<bean id="invoiceTATReportController" class="com.worldcheck.atlas.frontend.report.InvoiceTATReportController">
+		<property name="propertyReader" ref="propertyReader" />				
+	</bean>
+	<bean id="jsonInvoiceTATReportController" class="com.worldcheck.atlas.frontend.report.JSONInvoiceTATReportController">
+		<property name = "atlasReportService" ref= "atlasReportService" />				
+	</bean>
+	<bean id="invoiceTATReportManager" class="com.worldcheck.atlas.bl.report.InvoiceTATReportManager">
+				<property name="chartReportDAO" ref="chartReportDAO" />
+				
+	</bean>
+	
+	<bean id="jsonRevenueSummaryController" class="com.worldcheck.atlas.frontend.report.JSONRevenueSummaryController">
+			<property name = "atlasReportService" ref= "atlasReportService" />	
+	</bean>
+	<bean id="revenueSummaryManager" class="com.worldcheck.atlas.bl.report.RevenueSummaryManager">
+			<property name="chartReportDAO" ref="chartReportDAO" />
+			<property name="tabularReportDAO" ref="tabularReportDAO" />
+	</bean>
+	
+	  <bean id="teamPerformanceReport" class="com.worldcheck.atlas.bl.report.TeamPerformanceReport">
+		<property name="teamPerformanceDAO" ref="teamPerformanceDAO" />
+	</bean>
+	<bean id="teamPerformanceController" class="com.worldcheck.atlas.frontend.report.TeamPerformanceController">
+		<property name = "atlasReportService" ref= "atlasReportService" />	
+		<property name="propertyReader" ref="propertyReader" />
+	</bean>
+	   
+	
+	<!-- End   Reports mapping -->
+	<!-- CaseRawData Bean implementation start -->
+	<bean id="caseRawDataDAO" class="com.worldcheck.atlas.dao.report.CaseRawDataDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient">
+			<ref bean="sqlMapCMSClient" />
+		</property>
+	</bean>
+
+	<bean id="caseRawDataReport" class="com.worldcheck.atlas.bl.report.CaseRawDataReport">
+		<property name="caseRawDataDAO" ref="caseRawDataDAO" />
+	</bean>
+	
+		<bean id="caseRawDataController"
+		class="com.worldcheck.atlas.frontend.report.CaseRawDataController">
+		<property name="caseRawDataReport" ref="caseRawDataReport" /> </bean>
+	
+
+	<bean name="jsonCaseRawDataController"
+		class="com.worldcheck.atlas.frontend.report.JsonCaseRawDataController"
+		autowire="byName">
+		<property name="caseRawDataReport" ref="caseRawDataReport" />
+	</bean>
+	<!-- CaseRawData Bean implementation End -->
+	
+	<!-- ScoreSheetMIS REPORT Bean implementation start -->
+	<bean id="scoreSheetMISReportController"
+		class="com.worldcheck.atlas.frontend.report.ScoreSheetMISReportController">		
+		<property name="propertyReader" ref="propertyReader" />
+		<property name="tabularReportDAO" ref="tabularReportDAO" />	
+	</bean>
+	
+	<bean id="jsonScoreSheetMISReportController"
+		class="com.worldcheck.atlas.frontend.report.JSONScoreSheetMISReportController">
+		<property name="atlasReportService" ref="atlasReportService" />
+		<property name="tabularReportDAO" ref="tabularReportDAO" />		
+	</bean>
+	<bean id="scoreSheetMISReportManager"
+		class="com.worldcheck.atlas.bl.report.ScoreSheetMISReportManager">
+		<property name="tabularReportDAO" ref="tabularReportDAO" />
+	</bean>
+	<!-- ScoreSheetMIS REPORT Bean implementation End -->	
+
+<!-- Review Task starts-->
+
+	<bean id="reviewTaskManagementDAO" class="com.worldcheck.atlas.dao.task.ReviewTaskManagementDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient" /></property>
+	</bean>
+		
+		<bean id="reviewTaskManagementService" class="com.worldcheck.atlas.services.task.ReviewTaskManagementService">		
+		<property name="reviewTaskManagementDAO" ref="reviewTaskManagementDAO" />
+	</bean>
+	<bean id="jsonTaskReviewController" class="com.worldcheck.atlas.frontend.sbm.task.JsonTaskReviewController">
+		<property name="reviewTaskManagementService" ref="reviewTaskManagementService"></property>
+		<property name="connectionPath" value="${atlas.lbr.connection.path}" />
+			</bean>
+<!--  Review task ends -->
+
+<!-- Vendor Detail implementation Start -->
+	<bean id="vendorDetailDAO" class="com.worldcheck.atlas.dao.vendordetail.VendorDetailDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>   		
+	</bean>
+	
+	<bean id="vendorDetailManager" class="com.worldcheck.atlas.bl.vendordetail.VendorDetailManager">
+		<property name="vendorDetailDAO" ref="vendorDetailDAO" />		
+	</bean>
+	
+	<bean id="vendorDetailMultiActionController" class="com.worldcheck.atlas.frontend.VendorDetailMultiActionController">
+			<property name="vendorDetailManager" ref="vendorDetailManager" />
+	</bean>
+	<bean id="jsonVendorDetailMultiActionController" class="com.worldcheck.atlas.frontend.JSONVendorDetailMultiActionController">
+		<property name="vendorDetailManager" ref="vendorDetailManager" />	
+	</bean>
+<!-- Vendor Detail implementation ends --> 
+
+
+<!-- Case Details implementation starts -->
+
+	<bean id="caseDetailsDAO" class="com.worldcheck.atlas.dao.casedetails.CaseDetailsDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>   		
+	</bean>
+
+	<bean id="caseDetailManager" class="com.worldcheck.atlas.bl.casedetails.CaseDetailsManager">
+		<property name="caseDetailsDAO" ref="caseDetailsDAO" />		
+		<property name="propertyReader" ref="propertyReader" />
+<property name="riskDAO" ref="riskDAO" />	
+		<property name="riskProfileDAO" ref="riskProfileDAO" />
+		<property name="riskHistoryDAO" ref="riskHistoryDAO" />
+	</bean>
+
+	<bean id="caseDetailsController" class="com.worldcheck.atlas.frontend.casedetails.CaseDetailsController">
+		<property name="caseDetailManager" ref="caseDetailManager" />	
+	</bean>
+
+	<bean name="jsonCaseDetailsController"
+		class="com.worldcheck.atlas.frontend.casedetails.JSONCaseDetailsController">
+		<property name="caseDetailManager" ref="caseDetailManager" />
+	</bean>
+
+	<bean id="caseDetailService" class="com.worldcheck.atlas.services.casedetail.CaseDetailService">
+		<property name="caseDetailManager" ref="caseDetailManager" />	
+	</bean>
+
+	<!-- Case Details implementation ends -->
+
+		<!-- Search implementation starts -->
+	
+	<bean id="caseSearchManager" class="com.worldcheck.atlas.bl.search.CaseSearchManager">
+		<property name="propertyReader" ref="propertyReader" />
+		<property name="caseSearchDAO" ref="caseSearchDAO" />
+	 </bean>
+	
+	<bean id="caseSearchDAO" class="com.worldcheck.atlas.dao.search.CaseSearchDAO">
+		<property name = "dataSource" ref= "atlasSearchDS" />
+		<property name="sqlMapClient" ref="sqlMapSearchClient" />
+	 </bean>
+	
+	<bean id="messageSearchDAO" class="com.worldcheck.atlas.dao.search.MessageSearchDAO">
+		<property name="dataSource" ref="atlasSearchDS" />
+		<property name="sqlMapClient" ref="sqlMapSearchClient" />
+	 </bean>
+	
+	
+	<bean id="messageSearchManager" class="com.worldcheck.atlas.bl.search.MessageSearchManager">
+		<property name="messageSearchDAO" ref="messageSearchDAO" />
+		<property name="propertyReader" ref="propertyReader" />
+	</bean>	
+	
+	<bean id="keywordSearch" class="com.worldcheck.atlas.bl.search.KeywordSearch">
+	</bean>	
+	
+	<bean id="subjectSearchManager" class="com.worldcheck.atlas.bl.search.SubjectSearchManager">
+		<property name="subjectSearchDAO" ref="subjectSearchDAO" />
+	</bean>	
+	
+	<bean id="subjectSearchDAO" class="com.worldcheck.atlas.dao.search.SubjectSearchDAO">
+		<property name = "dataSource" ref= "atlasSearchDS" />
+		<property name="sqlMapClient" ref="sqlMapSearchClient" />
+	</bean>	
+			
+	
+	<bean id="atlasSearchFactory" class="com.worldcheck.atlas.bl.search.SearchFactory">
+		<property name="teamSearch" ref="teamSearchManager" />
+		<property name="caseSearch" ref="caseSearchManager" />
+		<property name="messageSearch" ref="messageSearchManager" />
+		<property name="keywordSearch" ref="keywordSearch" />		
+		<property name="subjectSearch" ref="subjectSearchManager" />
+	</bean>
+
+	<bean id="caseSearchController" class="com.worldcheck.atlas.frontend.search.CaseSearchController">
+		<property name="searchFactory" ref="atlasSearchFactory" />
+	</bean>
+	
+	<bean id="jsonCaseSearchController" class="com.worldcheck.atlas.frontend.search.JSONCaseSearchController">
+		<property name="searchFactory" ref="atlasSearchFactory" />
+		<property name="caseSearchManager" ref="caseSearchManager" />
+	</bean>
+	
+	<bean id="teamSearchManager" class="com.worldcheck.atlas.bl.search.TeamSearchManager">
+		<property name="propertyReader" ref="propertyReader" />
+		<property name="teamSearchDAO" ref="teamSearchDAO" />
+	</bean>	
+	<bean id="teamSearchDAO" class="com.worldcheck.atlas.dao.search.TeamSearchDAO">
+		<property name = "dataSource" ref= "atlasSearchDS" />
+		<property name="sqlMapClient" ref="sqlMapSearchClient" />
+	 </bean>
+	
+	<bean id="teamSearchController" class="com.worldcheck.atlas.frontend.search.TeamSearchController">
+		<property name="searchFactory" ref="atlasSearchFactory" />
+	</bean>
+	
+	<bean id="jsonTeamSearchController" class="com.worldcheck.atlas.frontend.search.JSONTeamSearchController">
+		<property name="searchFactory" ref="atlasSearchFactory" />
+		<property name="teamSearchManager" ref="teamSearchManager" />
+	</bean>
+	
+	<bean id="subjectSearchController" class="com.worldcheck.atlas.frontend.search.SubjectSearchController">
+		<property name="searchFactory" ref="atlasSearchFactory" />
+	</bean>
+	
+	<bean id="jsonSubjectSearchController" class="com.worldcheck.atlas.frontend.search.JSONSubjectSearchController">
+		<property name="searchFactory" ref="atlasSearchFactory" />
+		<property name="subjectSearchManager" ref="subjectSearchManager" />
+	</bean>
+	
+	<bean id="messageSearchController" class="com.worldcheck.atlas.frontend.search.MessageSearchController">
+		<property name="searchFactory" ref="atlasSearchFactory" />
+	</bean>
+	
+	<bean id="jsonMessageSearchController" class="com.worldcheck.atlas.frontend.search.JSONMessageSearchController">
+		<property name="searchFactory" ref="atlasSearchFactory" />
+	</bean>
+
+	<!-- Search implementation ends -->
+
+<!-- Rejection implementation Start -->
+	<bean id="rejectionREDAO" class="com.worldcheck.atlas.dao.rejection.RejectionREDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>   		
+	</bean>
+
+	<bean id="rejectionREManager" class="com.worldcheck.atlas.bl.rejection.RejectionREManager">
+		<property name="rejectionREDAO" ref="rejectionREDAO" />		
+	</bean>	
+	
+	<bean id="jsonRejectionREMultiActionController" class="com.worldcheck.atlas.frontend.JSONRejectionREMultiActionController">
+		<property name="rejectionREManager" ref="rejectionREManager" />	
+	</bean>
+        <bean id="rejectionMultiActionController" class="com.worldcheck.atlas.frontend.RejectionMultiActionController">
+		<property name="rejectionREManager" ref="rejectionREManager" />	
+		<property name="successForwardView" value="/bpmportal/atlas/completeTask.do" />
+	</bean>
+<!-- Rejection implementation ends --> 
+	
+	<!-- Time Tracker starts --> 
+	
+	<bean id="timeTrackerService" class="com.worldcheck.atlas.services.timetracker.TimeTrackerService">
+		<property name="timeTrackerManager" ref="timeTrackerManager" />	
+	</bean>
+	
+	<bean id="timeTrackerManager" class="com.worldcheck.atlas.bl.timetracker.TimeTrackerManager">
+		<property name="timeTrackerDAO" ref="timeTrackerDAO" />	
+	</bean>
+	
+	<bean id="timeTrackerDAO" class="com.worldcheck.atlas.dao.timetracker.TimeTrackerDAO">
+		<property name="dataSource"><ref local="atlasDS"/></property>
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />	
+	</bean>
+	
+	<!-- Time Tracker ends --> 
+	<!-- scheduler -->
+		 <bean id="schedulerDAO" class="com.worldcheck.atlas.scheduler.dao.SchedulerDAO">
+			<property name = "dataSource" ref= "atlasDS" />
+			<property name="sqlMapClient" ref="sqlMapCMSClient" />
+  	   </bean>
+	   <bean id="schedulerManager" class="com.worldcheck.atlas.scheduler.bl.SchedulerManager">
+			<property name="schedulerDAO" ref="schedulerDAO" />
+			<property name="propertyReader" ref="propertyReader" />
+          </bean>	
+	   <bean id="atlasRecurrCaseSchedulerService" class="com.worldcheck.atlas.scheduler.service.RecurrenceCaseScheduleService">
+			<property name="schedulerManager" ref="schedulerManager" />
+	    </bean>	
+		<bean id="atlasOverDueCasesService" class="com.worldcheck.atlas.scheduler.service.OverdueCaseScheduleService">
+			<property name="schedulerManager" ref="schedulerManager" />
+	    </bean>	
+	    <!-- Added By Himanshu for R-1.3.1 CR-12 -->
+	    <bean id="atlasEmailPrepaymentCaseService" class="com.worldcheck.atlas.scheduler.service.EmailPrepaymentCaseService">
+			<property name="schedulerManager" ref="schedulerManager" />
+	    </bean>
+	    <!-- Added By Himanshu for R-1.3.1 CR-12 END -->
+		 <!-- Added By Himanshu for BI-40 -->
+	    <bean id="atlasTempFeedbackAttachRemoveService" class="com.worldcheck.atlas.scheduler.service.TempFeedbackAttachRemoveService">
+			<property name="schedulerManager" ref="schedulerManager" />
+	    </bean>
+	    <!-- Added By Himanshu for BI-40 END -->
+	<!-- scheduler -->
+
+	<!-- Transaction Management starts --> 
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+       <tx:attributes>
+            <tx:method name="*" rollback-for="com.worldcheck.atlas.exception.CMSException"/>
+       </tx:attributes>
+	</tx:advice>
+
+
+	<aop:config>
+		<aop:pointcut id="BranchOfficeOperations" expression="execution(* com.worldcheck.atlas.bl.masters.BranchOfficeMultiActionManager.*(..))"/>
+        <aop:advisor pointcut-ref="BranchOfficeOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>
+			<aop:pointcut id="CurrencyOperations" expression="execution(* com.worldcheck.atlas.bl.masters.CurrencyManager.*(..))"/>
+	        <aop:advisor pointcut-ref="CurrencyOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>
+			<aop:pointcut id="CurrencyConversionOperations" expression="execution(* com.worldcheck.atlas.bl.masters.CurrencyConverisonManager.*(..))"/>
+	        <aop:advisor pointcut-ref="CurrencyConversionOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>
+			<aop:pointcut id="ClientReqOperations" expression="execution(* com.worldcheck.atlas.bl.masters.ClientRequirementManager.*(..))"/>
+	        <aop:advisor pointcut-ref="ClientReqOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>
+			<aop:pointcut id="ReportTemplDownOperations" expression="execution(* com.worldcheck.atlas.bl.masters.ReportTemplateManager.*(..))"/>
+	        <aop:advisor pointcut-ref="ReportTemplDownOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>	 
+			<aop:pointcut id="CountryDBOperations" expression="execution(* com.worldcheck.atlas.bl.masters.CountryDBManager.*(..))"/>
+	        <aop:advisor pointcut-ref="CountryDBOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>	 
+			<aop:pointcut id="VendorMasterOperations" expression="execution(* com.worldcheck.atlas.bl.masters.VendorMultiActionManager.*(..))"/>
+	        <aop:advisor pointcut-ref="VendorMasterOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>	 
+			<aop:pointcut id="REManagerOperations" expression="execution(* com.worldcheck.atlas.bl.masters.REMultiActionManager.*(..))"/>
+	        <aop:advisor pointcut-ref="REManagerOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+<aop:config>
+		<aop:pointcut id="UserMasterOperations" expression="execution(* com.worldcheck.atlas.bl.masters.UserMultiActionManager.*(..))"/>
+        <aop:advisor pointcut-ref="UserMasterOperations" advice-ref="txAdvice"/>
+			 
+	         
+	</aop:config>
+	<aop:config>	 
+		<aop:pointcut id="VendorMasterManagerOperations" expression="execution(* com.worldcheck.atlas.bl.masters.VendorMultiActionManager.*(..))"/>
+        <aop:advisor pointcut-ref="VendorMasterManagerOperations" advice-ref="txAdvice"/>
+	</aop:config>
+
+<aop:config>	 
+			<aop:pointcut id="LeaveManagerOperations" expression="execution(* com.worldcheck.atlas.bl.masters.LeaveManager.*(..))"/>
+	        <aop:advisor pointcut-ref="LeaveManagerOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>	 
+			<aop:pointcut id="NonCrnExpenditureOperations" expression="execution(* com.worldcheck.atlas.bl.noncrnexpenditure.NonCrnExpenditureService.*(..))"/>
+	        <aop:advisor pointcut-ref="NonCrnExpenditureOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>	 
+			<aop:pointcut id="MassVendorUploadOperations" expression="execution(* com.worldcheck.atlas.bl.massvendordataentry.MassVendorUploadManager.*(..))"/>
+	        <aop:advisor pointcut-ref="MassVendorUploadOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>	 
+			<aop:pointcut id="MasterDataValidator" expression="execution(* com.worldcheck.atlas.validation.bl.MasterDataValidator.*(..))"/>
+	        <aop:advisor pointcut-ref="MasterDataValidator" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>	 
+			<aop:pointcut id="ClientManagerOperations" expression="execution(* com.worldcheck.atlas.bl.masters.ClientMultiActionManager.*(..))"/>
+	        <aop:advisor pointcut-ref="ClientManagerOperations" advice-ref="txAdvice"/>
+	</aop:config>
+
+<aop:config>	 
+			<aop:pointcut id="OAManagerOperations" expression="execution(* com.worldcheck.atlas.bl.officeassignment.OfficeAssignmentManager.*(..))"/>
+	        <aop:advisor pointcut-ref="OAManagerOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+<aop:config>	 
+			<aop:pointcut id="TAManagerOperations" expression="execution(* com.worldcheck.atlas.bl.teamassignment.TeamAssignmentManager.*(..))"/>
+	        <aop:advisor pointcut-ref="TAManagerOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+<aop:config>	 
+			<aop:pointcut id="CaseDetailsManagerOperations" expression="execution(* com.worldcheck.atlas.bl.casedetails.CaseDetailsManager.*(..))"/>
+	        <aop:advisor pointcut-ref="CaseDetailsManagerOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+<aop:config>	 
+			<aop:pointcut id="ReviewTaskManagerOperations" expression="execution(* com.worldcheck.atlas.services.task.ReviewTaskManagementService.*(..))"/>
+	        <aop:advisor pointcut-ref="ReviewTaskManagerOperations" advice-ref="txAdvice"/>
+	</aop:config>
+
+	<aop:config>	 
+			<aop:pointcut id="TTManagerOperations" expression="execution(* com.worldcheck.atlas.bl.timetracker.TimeTrackerManager.*(..))"/>
+	        <aop:advisor pointcut-ref="TTManagerOperations" advice-ref="txAdvice"/>
+	</aop:config>
+<aop:config>	 
+			<aop:pointcut id="RejectionREManager" expression="execution(* com.worldcheck.atlas.bl.rejection.RejectionREManager.*(..))"/>
+	        <aop:advisor pointcut-ref="RejectionREManager" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>
+		<aop:pointcut id="CommentsManagerOperations" expression="execution(* com.worldcheck.atlas.bl.comment.CommentsManager.*(..))"/>
+                <aop:advisor pointcut-ref="CommentsManagerOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>	 
+			<aop:pointcut id="SubjectManagerOperations" expression="execution(* com.worldcheck.atlas.bl.subject.SubjectManager.*(..))"/>
+	        <aop:advisor pointcut-ref="SubjectManagerOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>	 
+			<aop:pointcut id="UnconfirmBudgetOperations" expression="execution(* com.worldcheck.atlas.bl.unconfirmbudget.UnconfirmBudgetManager.*(..))"/>
+	        <aop:advisor pointcut-ref="UnconfirmBudgetOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	
+	<aop:config>
+		<aop:pointcut id="CaseRawDataReport" expression="execution(* com.worldcheck.atlas.bl.report.CaseRawDataReport.*(..))"/>
+                <aop:advisor pointcut-ref="CaseRawDataReport" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>
+		<aop:pointcut id="CountryController" expression="execution(* com.worldcheck.atlas.bl.masters.CountryManager.*(..))"/>
+                <aop:advisor pointcut-ref="CountryController" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>
+		<aop:pointcut id="ScoreSheetMultiActionController" expression="execution(* com.worldcheck.atlas.bl.masters.ScoreSheetManager.*(..))"/>
+                <aop:advisor pointcut-ref="ScoreSheetMultiActionController" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>	 
+		<aop:pointcut id="IndustryMultiActionController" expression="execution(* com.worldcheck.atlas.bl.masters.IndustryManager.*(..))"/>
+                <aop:advisor pointcut-ref="IndustryMultiActionController" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>
+		<aop:pointcut id="RisksMultiActionController" expression="execution(* com.worldcheck.atlas.bl.masters.RiskManager.*(..))"/>
+                <aop:advisor pointcut-ref="RisksMultiActionController" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>
+		<aop:pointcut id="ReportTypeMultiActionController" expression="execution(* com.worldcheck.atlas.bl.masters.ReportTypeManager.*(..))"/>
+                <aop:advisor pointcut-ref="ReportTypeMultiActionController" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>	 
+		<aop:pointcut id="ClientFeedBackController" expression="execution(* com.worldcheck.atlas.bl.masters.ClientFeedBackManager.*(..))"/>
+                <aop:advisor pointcut-ref="ClientFeedBackController" advice-ref="txAdvice"/>
+	</aop:config>
+
+	<aop:config>	 
+			<aop:pointcut id="AtlasWebServiceManagerOperations1" expression="execution(* com.worldcheck.atlas.isis.bl.AtlasWebServiceManager.updateCaseForISIS(..))"/>
+	        <aop:advisor pointcut-ref="AtlasWebServiceManagerOperations1" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>	 
+			<aop:pointcut id="AtlasWebServiceManagerOperations2" expression="execution(* com.worldcheck.atlas.isis.bl.AtlasWebServiceManager.downloadOnlineReport(..))"/>
+	        <aop:advisor pointcut-ref="AtlasWebServiceManagerOperations2" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>	 
+			<aop:pointcut id="AtlasWebServiceManagerOperations3" expression="execution(* com.worldcheck.atlas.isis.bl.AtlasWebServiceManager.cancelOnlineOrder(..))"/>
+	        <aop:advisor pointcut-ref="AtlasWebServiceManagerOperations3" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>
+			<aop:pointcut id="AtlasWebServiceManagerOperations4" expression="execution(* com.worldcheck.atlas.isis.bl.AtlasWebServiceManager.createCaseForISIS(..))"/>
+	        <aop:advisor pointcut-ref="AtlasWebServiceManagerOperations4" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>
+	<aop:pointcut id="CaseHistoryEventManagerOperations" expression="execution(* com.worldcheck.atlas.bl.audit.CaseHistoryEventManager.*(..))"/>
+        <aop:advisor pointcut-ref="CaseHistoryEventManagerOperations" advice-ref="txAdvice"/>
+	</aop:config>
+	<aop:config>	 
+			<aop:pointcut id="DbUtil" expression="execution(* com.worldcheck.atlas.utils.DBUtilisManager.*(..))"/>
+	        <aop:advisor pointcut-ref="DbUtil" advice-ref="txAdvice"/>
+	</aop:config>
+	<!-- Transaction Management ends -->
+	
+<!-- Backup implementation Start -->
+	<bean id="userBackUpDAO" class="com.worldcheck.atlas.dao.backup.UserBackUpDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient">
+			<ref bean="sqlMapCMSClient" />
+		</property>
+	</bean>
+
+	<bean id="userBackUpManager" class="com.worldcheck.atlas.bl.backup.UserBackUpManager">
+		<property name="userBackUpDAO" ref="userBackUpDAO" />		
+	</bean>	
+	
+	<bean id="jsonUserBackUpMultiActionController"
+		class="com.worldcheck.atlas.frontend.JSONUserBackUpMultiActionController">
+		<property name="userBackUpManager" ref="userBackUpManager" />	
+	</bean>
+	
+	<bean id="userBackUpMultiActionController"
+		class="com.worldcheck.atlas.frontend.UserBackUpMultiActionController">
+		<property name="userBackUpManager" ref="userBackUpManager" />	
+	</bean>
+<!-- BackUp implementation ends --> 	
+
+<bean id="ctDataValidator" class="com.worldcheck.atlas.validation.bl.CTDataValidator">
+		<property name="propertyReader" ref="propertyReader"></property>
+		<property name="validationDAO" ref="validationDAO"></property>
+			
+	</bean>
+	<bean id = "updateCTDataDAO" class="com.worldcheck.atlas.dao.updateCTDataEntry.UpdateCTDataDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>  
+	
+	</bean>
+	<bean id="updateCTDataManager" class="com.worldcheck.atlas.bl.updateCTDataEntry.UpdateCTDataManager">
+		<property name="propertyReader" ref="propertyReader"></property>
+		<property name="ctDataValidator" ref="ctDataValidator"></property>
+		<property name="updateCTDataDAO" ref="updateCTDataDAO"></property>
+		
+	</bean>
+	<bean id="updateCTDataController" class="com.worldcheck.atlas.frontend.UpdateCTDataController">
+		<property name="propertyReaderUtil" ref="propertyReader"></property>
+		<property name="ctDataValidator" ref="ctDataValidator"></property>
+		<property name="updateCTDataManager" ref="updateCTDataManager"></property>
+	</bean>
+	<bean id="jsonUpdateCTDataController" class="com.worldcheck.atlas.frontend.JSONUpdateCTDataController">
+	</bean>
+ 
+ 		<!-- ====================Bean for clientFeedBack Added By Vishal for CR-7 R-1.3.1==================== -->
+	
+	<bean id="clientFeedBackDAO" class="com.worldcheck.atlas.dao.masters.ClientFeedBackDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />     		
+	</bean>
+	
+	<bean id="clientFeedBackManager" class="com.worldcheck.atlas.bl.masters.ClientFeedBackManager">
+		<property name="propertyReader" ref="propertyReader"></property>
+		<property name="clientFeedBackDAO" ref="clientFeedBackDAO" />		
+	</bean>  
+	
+	<bean id="clientFeedBackController" class="com.worldcheck.atlas.frontend.masters.ClientFeedBackController">
+		<property name="clientFeedBackManager" ref="clientFeedBackManager"></property>		
+		<property name="propertyReader" ref="propertyReader" />
+	</bean>
+	  <bean id="jsonClientFeedBackController" class="com.worldcheck.atlas.frontend.masters.JSONClientFeedbackController">
+		<property name="clientFeedBackManager" ref="clientFeedBackManager"></property>		
+	</bean> 
+	<!-- ====================/End By Vishal CR-7 R1.3.1==================== -->
+
+
+		<!-- ====================Bean for Support App Added By Vishal for R-1.3.1==================== -->
+	
+	<bean id="supportAppDAO" class="com.worldcheck.atlas.dao.masters.SupportAppDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />     		
+	</bean>
+	
+	<bean id="supportAppManager" class="com.worldcheck.atlas.bl.masters.SupportAppManager">
+		<property name="supportAppDAO" ref="supportAppDAO" />		
+	</bean>  
+	
+	<bean id="supportAppController" class="com.worldcheck.atlas.frontend.masters.SupportAppController">
+		<property name="supportAppManager" ref="supportAppManager"></property>		
+	</bean>
+	  <bean id="jsonSupportAppController" class="com.worldcheck.atlas.frontend.masters.JSONSupportAppController">
+		<property name="supportAppManager" ref="supportAppManager"></property>		
+	</bean> 
+	<!-- ====================/End By Vishal R1.3.1==================== -->
+	
+
+	<!-- Added by U6027780 for CR BI-293 Start -->
+	
+	<bean id="subjectLevelSubReportManager" class="com.worldcheck.atlas.bl.sublevelsubreport.SubjectLevelSubReportManager">		
+		<property name="propertyConfigurer" ref="propertyConfigurer"></property>
+	</bean>
+	<bean id="dbUtils" class="com.worldcheck.atlas.utils.DBUtils">		
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient"><ref bean="sqlMapCMSClient"/></property>  
+	</bean>
+	<!-- get value for the id based on parameter table -->
+	<bean id="dBUtilisManager" class="com.worldcheck.atlas.utils.DBUtilisManager">
+		<property name="dbUtils" ref="dbUtils" />		
+	</bean> 	
+	<!-- Added by U6027780 for CR BI-293 END -->		
+	
+	<!-- Added by U6027780 for CR BI-293 END -->
+
+		
+	
+	<!-- Start BI-293 Invoice MIS added by 6035037-->
+
+
+	
+
+	<bean id="invoiceMISDAO" class="com.worldcheck.atlas.dao.report.InvoiceMISDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />     		
+	</bean>
+	
+	<bean id="invoiceMISManager" class="com.worldcheck.atlas.bl.invoicemis.InvoiceMISManager">	
+		<property name="invoiceMISDao" ref="invoiceMISDAO" />		
+	</bean> 
+
+	
+	<bean id="invoiceMISController" class="com.worldcheck.atlas.frontend.masters.InvoiceMISController">
+		<property name="invoiceMISManager" ref="invoiceMISManager"></property>	
+		<property name="propertyReader" ref="propertyReader"></property>		
+	</bean>
+
+
+	
+	<!-- End BI-293 Invoice MIS added by 6035037-->
+		<!--Start: Added for JPMC Adhoc Reports BI-244-->
+	<bean id="jpmcReportDAO" class="com.worldcheck.atlas.dao.report.JPMCReportDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />     		
+	</bean>
+	
+	<bean id="jpmcReportManager" class="com.worldcheck.atlas.bl.masters.JPMCReportManager">
+		<property name="jpmcReportDAO" ref="jpmcReportDAO" />		
+	</bean>  
+	
+	<bean id="jpmcReportController" class="com.worldcheck.atlas.frontend.masters.JPMCReportController">
+	    <property name="propertyReader" ref="propertyReader"></property>
+		<property name="jpmcReportManager" ref="jpmcReportManager"></property>		
+	</bean>
+	
+	<bean name="jsonJPMCReportController"
+		class="com.worldcheck.atlas.frontend.report.JSONJPMCReportController"
+		autowire="byName">
+		<property name="jpmcReportManager" ref="jpmcReportManager" />
+	</bean>
+	<!--End: Added for JPMC Adhoc Reports BI-244-->
+	
+
+
+	
+		<!-- Start History Module added by 6035037-->
+
+
+	
+	<bean id="atlasHistoryDAO" class="com.worldcheck.atlas.dao.history.AtlasHistoryDAO">
+		<property name="dataSource" ref="atlasDS" />
+		<property name="sqlMapClient" ref="sqlMapCMSClient" />     		
+	</bean>
+
+	<bean id="atlasHistoryUtil" class="com.worldcheck.atlas.utils.AtlasHistoryUtil">
+		<property name="atlasHistoryDAO" ref="atlasHistoryDAO" />		
+	</bean> 
+	
+</beans>

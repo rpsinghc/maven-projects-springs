@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE FileTypes SYSTEM "Designer.dtd" >
+<!--
+For Windows NT 4 with Internet Explorer 6, the list of programs that
+can be used to open a file with a specified extension is stored in
+MyComputer\HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.EXT\OpenWithList
+-->
+<FileTypes>
+  <FileType name="Text File" ext="txt">
+    <OpenWith name="Default" command="cmd /c &quot;{0}&quot;"/>
+    <OpenWith name="Notepad" command="C:\WINNT\NOTEPAD.EXE &quot;{0}&quot;"/>
+  </FileType>
+  <FileType name="HTML File" ext="htm,html,htx">
+    <OpenWith name="Default" command="cmd /c &quot;{0}&quot;"/>
+    <OpenWith name="Internet Explorer" command="C:\Program Files\Internet Explorer\IEXPLORE.EXE &quot;{0}&quot;"/>
+    <OpenWith name="WordPad" command="C:\WINNT\system32\write.exe &quot;{0}&quot;"/>
+    <OpenWith name="Notepad" command="C:\WINNT\NOTEPAD.EXE &quot;{0}&quot;"/>
+    <OpenWith name="Front Page" command="C:\Program Files\Microsoft Office\Office\FRONTPG.EXE &quot;{0}&quot;"/>
+  </FileType>
+  <FileType name="JSP File" ext="jsp">
+    <OpenWith name="Default" command="cmd /c &quot;{0}&quot;"/>
+    <OpenWith name="WordPad" command="C:\WINNT\system32\write.exe &quot;{0}&quot;"/>
+  </FileType>
+  <FileType name="Java File" ext="java">
+    <OpenWith name="Default" command="cmd /c &quot;{0}&quot;"/>
+    <OpenWith name="WordPad" command="C:\WINNT\system32\write.exe &quot;{0}&quot;"/>
+  </FileType>
+  <FileType name="Excel File" ext="xls">
+    <OpenWith name="Default" command="cmd /c &quot;{0}&quot;"/>
+    <OpenWith name="Excel" command="C:\Program Files\Microsoft Office\Office\EXCEL.EXE &quot;{0}&quot;"/>
+  </FileType>
+  <FileType name="PDF File" ext="pdf">
+    <OpenWith name="Default" command="cmd /c &quot;{0}&quot;"/>
+    <OpenWith name="Adobe Acrobat Reader" command="C:\Program Files\Adobe\Acrobat 6.0\Reader\AcroRd32.exe &quot;{0}&quot;"/>
+  </FileType>
+  <FileType name="RTF File" ext="rtf">
+    <OpenWith name="Default" command="cmd /c &quot;{0}&quot;"/>
+    <OpenWith name="Word" command="C:\Program Files\Microsoft Office\Office\WINWORD.EXE &quot;{0}&quot;"/>
+  </FileType>
+</FileTypes>

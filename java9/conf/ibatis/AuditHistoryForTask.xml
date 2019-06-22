@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap 
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AuditHistoryForTask">
+
+	<select id="getCaseHistoryCount" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM CMS_CASE_HISTORY ch
+		LEFT JOIN
+		CMS_CASE_HISTORY_DETAILS chd ON
+		chd.CASE_HISTORY_ID =ch.CASE_HISTORY_ID
+	</select>
+	<insert id="insertCaseHistoryEvent" parameterClass="java.util.HashMap">
+		<selectKey resultClass="int" type="pre" keyProperty="caseHistoryID">
+			select
+			CMS_CASEHISTORY_SEQ.NEXTVAL AS VALUE FROM DUAL
+   </selectKey>
+		insert into CMS_CASE_HISTORY (
+		CASE_HISTORY_ID,
+		PID,
+		PROCESSCYCLE,
+		CRN,
+		TASKNAME,
+		TASKSTATUS,
+		PERFORMER,
+		MODTIME
+		)values(
+		#caseHistoryID#,
+		#pid#,
+		#processCycle#,
+		#CRN#,
+		#taskName#,
+		#taskStatus#,
+		#performer#,
+		SYSDATE
+		)
+	</insert>
+	<insert id="insertCaseHistoryDetail" parameterClass="java.util.HashMap">
+		
+		insert into CMS_CASE_HISTORY_DETAILS (
+		CASE_HISTORY_ID,
+		OLDINFO,
+		NEWINFO,
+		FIELDNAME,
+		MODTIME
+		)values(
+		#caseHistoryID#,
+		#oldInfo#,
+		#newInfo#,
+		#action#,
+		SYSDATE
+		)
+	</insert>
+	<select id="getTeamDueDates" parameterClass="java.util.HashMap"
+		resultClass="java.lang.String">
+		select
+		to_char(ctd.REV_INTDUEDATE1,'dd-Mon-YYYY')||'::'||to_char(ctd.REV_INTDUEDATE2,
+		'dd-Mon-YYYY')||'::'||to_char(ctd.REV_FINDUEDATE, 'dd-Mon-YYYY') 
+		from
+		CMS_TEAM_DETAILS ctd
+		where ctd.CRN = #crn# and
+		ctd.TEAM_ID=#teamId#
+	</select>
+</sqlMap>

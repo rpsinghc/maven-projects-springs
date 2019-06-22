@@ -1,0 +1,884 @@
+﻿<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean name="viewResolver" class="org.springframework.web.servlet.view.XmlViewResolver" />
+
+	<bean name="urlMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/bpmportal/atlas/getReportTypeMasterForSubjectLevel.json">jsonSubjectLevelSubReportController</prop><!-- Added by U6027780 for CR BI-293 -->
+				<prop key="/bpmportal/atlas/getUserMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getClientMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getVendorMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getCountryMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getIndustryMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getRiskMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getCurrencyMaster.json">jsonCacheUtilController</prop>
+				<!-- Start: Added for BI-293 by 6032662 -->
+				<prop key="/bpmportal/atlas/getReportTypeMasterAll.json">jsonCacheUtilController</prop>
+				<!-- Start: Added for BI-293 by 6032662 -->
+				<prop key="/bpmportal/atlas/getReportTypeMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getLeaveTypeMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getOfficeMaster.json">jsonCacheUtilController</prop>
+				<!-- New entry added for CR 1.2 -->
+				<prop key="/bpmportal/atlas/getClientGroupMaster.json">jsonCacheUtilController</prop>
+				
+				<prop key="/bpmportal/atlas/getREMasterIndividual.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getREMasterCompany.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getScoreSheetFieldsMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getSubReportTypeMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getCntryDbCategMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getCntryDbLbrMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getCntryDbTypeMaster.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getRegion.json">jsonCacheUtilController</prop>
+				<prop key="/bpmportal/atlas/getRiskLevel.json">jsonCacheUtilController</prop>
+				<!--added by juheen.For Risk CR-->
+				<prop key="/bpmportal/atlas/getREMaster.json">jsonCacheUtilController</prop>
+
+				<!-- mapping for TaskManagement starts -->
+				<prop key="/bpmportal/atlas/getCountryNameRet.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getCountryDBNameRet.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getSubjectListForUser.json">JSONTaskManagementController</prop>
+				<!-- created by Anurag for Risk Profile CR start-->
+				<prop key="/bpmportal/atlas/getSubjectLevelRiskForUser.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getCaseLevelRiskForUser.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getCategoryDetails.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getRiskAttributeDefaultValues.json">JSONTaskManagementController</prop>
+				<!-- created by Anurag for Risk Profile CR ends-->
+				<prop key="/bpmportal/atlas/getREList.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getCaseManagerList.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getClientReqData.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getSubReportType.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getVendorDetails.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/isSubjectAdded.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getClientList.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getDueDates.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getReportTypeList.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getSubReportTypesList.json">JSONTaskManagementController</prop>
+				<!-- Added by Vishal for Risk Profile -->
+				<prop key="/bpmportal/atlas/saveCategoryRisk.json">JSONTaskManagementController</prop>
+			
+				<prop key="/bpmportal/atlas/saveAfterCaseCompletionCategoryRisk.json">JSONTaskManagementController</prop>
+				<!-- End by Vishal -->
+				<!-- Added by saurabh for risk profile change 26 may 2015 -->
+				<prop key="/bpmportal/atlas/isRiskAssociatedWithCase.json">JSONTaskManagementController</prop>
+				<!-- End -->
+						<!-- Added by satish for L11 R.13 -->
+				<prop key="/bpmportal/atlas/checkHolidayWeakend.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/checkHolidayWeakendAnalyst.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/checkHolidayWeakendForCaseOffice.json">JSONTaskManagementController</prop>
+					<!-- Added by Himanshu R1.3.2 -->
+				<prop key="/bpmportal/atlas/checkHolidayWeakendCDD.json">JSONTaskManagementController</prop>
+					<!-- End by Himanshu -->
+<!-- Added by Vinay. For CR-4 part-2(R1.3.2) -->
+				<prop key="/bpmportal/atlas/getRDDForST.json">JSONTaskManagementController</prop>
+				
+				        <!-- Added by satish for L11 R.13 -->
+				<prop key="/bpmportal/atlas/addSubAndCompleteCase.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/editSubAndCompleteCase.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/addSubIndustry.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getOfficeForClient.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getCountryDBForCountry.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getOfficeId.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/getOfficeCode.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/hasDeletePermission.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/hasUploadPermission.json">JSONTaskManagementController</prop>
+				<prop key="/bpmportal/atlas/checkISISAvailability.json">JSONTaskManagementController</prop>
+				<!-- mapping for TaskManagement ends-->
+				
+				<prop key="/bpmportal/atlas/getBudgetRecords.json">unconfirmBudgetController</prop>
+				<!-- Added by Vinay. For CR-L3(Release 1.3)-->
+				<prop key="/bpmportal/atlas/getCBDDetails.json">unconfirmBudgetController</prop>
+				<prop key="/bpmportal/atlas/saveISISConfirmationDetails.json">unconfirmBudgetController</prop>
+				<!-- End by Vinay -->
+				
+				<!-- mapping for DMS starts-->
+				<prop key="/bpmportal/atlas/displayAllDocuments.json">JSONDocumentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/markStatusAsFinal.json">JSONDocumentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/deleteDocuments.json">JSONDocumentMultiActionController</prop>
+				<!-- Added by Vinay. For CR-93(Release 1.3)-->
+				<prop key="/bpmportal/atlas/downloadDocuments.json">JSONDocumentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/deleteDownloadedZipFile.json">JSONDocumentMultiActionController</prop>
+				<!-- End by Vinay-->
+				<prop key="/bpmportal/atlas/getFolderNames.json">JSONDocumentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/isDocumentMarked.json">JSONDocumentMultiActionController</prop>
+				<!-- Added by Anurag BI-39 -->
+				<prop key="/bpmportal/atlas/markRevisedDocumentAsFinal.json">JSONDocumentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/checkTATOverdue.json">JSONDocumentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getTimeStampOfCCS.json">JSONDocumentMultiActionController</prop>
+				
+				
+				<!-- End by Anurag -->
+				<!-- mapping for DMS ends-->
+
+				<!-- mapping for InvoiceManagement starts -->
+				<prop key="/bpmportal/atlas/getInvoiceDetails.json">JSONInvoiceManagementController</prop>
+				<prop key="/bpmportal/atlas/getAccountLinkcase.json">JSONInvoiceManagementController</prop>
+				<prop key="/bpmportal/atlas/generateRegisterNo.json">JSONInvoiceManagementController</prop>
+				<prop key="/bpmportal/atlas/getUnlinkedCRN.json">JSONInvoiceManagementController</prop>
+			        <!-- Added by Chetan. For CR-96(Release 1.3)-->	
+                                <prop key="/bpmportal/atlas/getUnlinkedCRNParent.json">JSONInvoiceManagementController</prop>
+				<prop key="/bpmportal/atlas/getPrepaymentSummary.json">JSONInvoiceManagementController</prop>
+				<prop key="/bpmportal/atlas/unlinkCRN.json">JSONInvoiceManagementController</prop>
+				<prop key="/bpmportal/atlas/unlinkChildCRN.json">JSONInvoiceManagementController</prop>
+				<prop key="/bpmportal/atlas/linkCRN.json">JSONInvoiceManagementController</prop>
+				<prop key="/bpmportal/atlas/inserLinkCRN.json">JSONInvoiceManagementController</prop>
+				<prop key="/bpmportal/atlas/inserLinkCRNParent.json">JSONInvoiceManagementController</prop>
+				<prop key="/bpmportal/atlas/getLegacyInvoiceDetail.json">JSONInvoiceManagementController</prop>
+				<prop key="/bpmportal/atlas/getParentCRN.json">JSONInvoiceManagementController</prop>
+				<!--
+					<prop
+					key="/bpmportal/atlas/getAccountDetails.json">JSONInvoiceManagementController</prop>
+				--><!-- mapping for TaskManagement ends-->
+
+				<!-- mapping for Reports starts -->
+
+				<prop key="bpmportal/atlas/checkExcelGeneration.json">jsonMISUtilController</prop>
+				<prop key="bpmportal/atlas/publicHoliday.json">jsonPublicHolidayController</prop>
+				<prop key="/bpmportal/atlas/viewPPRS.json">jsonProductivityAndRevenueSummaryController</prop>
+				<prop key="/bpmportal/atlas/officeUBPPC.json">jsonOfficeUBPPCController</prop>
+				<prop key="/bpmportal/atlas/viewUBPPC.json">jsonUtilizationByProductivityController</prop>
+				<prop key="/bpmportal/atlas/viewTTDS.json">jsonTimeTrackerDataSummaryController</prop>
+				<prop key="/bpmportal/atlas/viewNCRS.json">jsonCasesReceivedSummaryController</prop>
+				<prop key="/bpmportal/atlas/getNCRSHeader.json">jsonCasesReceivedSummaryController</prop>
+				<prop key="/bpmportal/atlas/viewVEODS.json">jsonVendorDataSummaryController</prop>
+
+                <prop key="/bpmportal/atlas/viewOfficeSummary.json">jsonOfficeSummaryController</prop>
+				<!--Added by Himanshu UI Graph(Release 1.4) -->
+				<prop key="/bpmportal/atlas/getDataRevenueSummaryFO.json">jsonRevenueSummaryController</prop>
+				<!--End by Himanshu -->
+				<prop key="/bpmportal/atlas/getTeamPerformanceUsers.json">jsonTeamPerformanceController</prop>
+				<prop key="/bpmportal/atlas/getUserTemplates.json">jsonTeamPerformanceController</prop>
+				<prop key="/bpmportal/atlas/deleteUserTemplates.json">jsonTeamPerformanceController</prop>
+				<prop key="/bpmportal/atlas/fetchReport.json">jsonTeamPerformanceController</prop>
+				<prop key="/bpmportal/atlas/checkUserTemplateExists.json">jsonTeamPerformanceController</prop>
+				<prop key="/bpmportal/atlas/fetchReportType.json">jsonTeamPerformanceController</prop>
+				
+				<!-- mapping for Reports ends-->
+				
+				<prop key="/bpmportal/atlas/getVendorTypeList.json">jsonVendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/searchVendor.json">jsonVendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/changeVendorStatus.json">jsonVendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getAllCountries.json">jsonVendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getSelectedCountries.json">jsonVendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/checkAssociatedWIPCases.json">jsonVendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getVendorUploads.json">jsonVendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/deleteVendorUploads.json">jsonVendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/vendorFileExists.json">jsonVendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/vendorUploadLimitExceeded.json">jsonVendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/vendorExists.json">jsonVendorMultiActionController</prop>
+				<prop key="/bpmportal/atlas/tempFilesExist.json">jsonVendorMultiActionController</prop>
+				
+				<!-- mapping for Admin Console starts -->
+				<prop key="bpmportal/atlas/leave.json">jsonLeaveController</prop>
+				<prop key="bpmportal/atlas/checkExistLeave.json">jsonLeaveController</prop>
+				<prop key="bpmportal/atlas/checkExistLeaveBulk.json">jsonLeaveController</prop>
+				<prop key="bpmportal/atlas/updatepassword.json">jSONUpdatePasswordController</prop>
+				<!-- Added by 6035037 for BI-437 -->
+				<prop key="bpmportal/atlas/validDateResetPassword.json">jSONUpdatePasswordController</prop>
+				<prop key="bpmportal/atlas/customValidationforUpdatePassword.json">jSONUpdatePasswordController</prop>
+				<prop key="bpmportal/atlas/saveNewPassword.json">jSONUpdatePasswordController</prop>
+				<prop key="bpmportal/atlas/updatepasswordProfile.json">jSONUpdatePasswordController</prop>
+				<prop key="bpmportal/atlas/saveNewPasswordProfile.json">jSONUpdatePasswordController</prop>
+			
+				<!-- END BI-437 -->
+				<prop key="bpmportal/atlas/getUpdatePasswordUserList.json">jSONUpdatePasswordController</prop>
+				<prop key="bpmportal/atlas/getPaymentCycle.json">JSONNonCrnExpenditureController</prop>
+				<prop key="bpmportal/atlas/getCountryVendorMaster.json">JSONNonCrnExpenditureController</prop>
+				<!-- mapping for Admin Console ends-->
+				<!-- mapping for Notification starts -->
+			<prop key="bpmportal/atlas/getNotificatiosnAsssignedUsers.json">JSONUserNotificationController</prop>
+				   <prop key="bpmportal/atlas/getNotificatiosnAllUsers.json">JSONUserNotificationController</prop>
+				   <prop key="bpmportal/atlas/getUserNotifications.json">JSONUserNotificationController</prop>
+				   <prop key="bpmportal/atlas/getSystemNotifications.json">JSONUserNotificationController</prop>
+				   <prop key="bpmportal/atlas/getCRNUserNotifications.json">JSONUserNotificationController</prop>
+				   <prop key="bpmportal/atlas/getMessageTrail.json">JSONUserNotificationController</prop>
+				   <prop key="bpmportal/atlas/getNotificationSentToList.json">JSONUserNotificationController</prop>
+				   <prop key="bpmportal/atlas/getRecCaseSystemNotifications.json">JSONUserNotificationController</prop>
+				   <prop key="bpmportal/atlas/getNotificationsCount.json">JSONUserNotificationController</prop>
+				   <!-- Added by satish for L CR27 R1.3 -->
+				   <prop key="bpmportal/atlas/updateFlag.json">JSONUserNotificationController</prop>				   	
+				   	
+				   	<!-- mapping for Notification ends -->
+
+
+				<!-- <Usermaster Json Controller> -->
+				<prop key="/bpmportal/atlas/user.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getUserFullNameFromID.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/searchUser.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/deActivateUser.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/displayDetails.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getUserDetailForClient.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/displayBackup.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/vaildateUser.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getUserIDs.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/supervisorinfo.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/roleInfo.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getCountryMasterDetailValue.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/userFullNameExist.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/emailIdExist.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getUserForRoles.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/deactivateOnUpdate.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/checkTimeTrackerForR3.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getBDMRegionList.json">jsonUserMultiActionController</prop>
+				<prop key="/bpmportal/atlas/checkForbdmWIPCases.json">jsonUserMultiActionController</prop>
+				<!--Start: Added by 6032662 for BI-702 -->
+				<prop key="/bpmportal/atlas/getUserMasterHistory.json">jsonUserMultiActionController</prop>
+				<!--End: Added by 6032662 for BI-702 -->
+				<!-- </Usermaster Json Controller> -->
+
+				<!-- mapping for Client Feed Back CR-7 R-1.3.1 -->
+
+					<prop key="/bpmportal/atlas/getcaseOwnerList.json">jsonClientFeedBackController</prop>
+					<prop key="/bpmportal/atlas/getFeedBackCategoryList.json">jsonClientFeedBackController</prop>
+					<prop key="/bpmportal/atlas/getCRNList.json">jsonClientFeedBackController</prop>
+					<prop key="/bpmportal/atlas/searchFeedback.json">jsonClientFeedBackController</prop>
+					<prop key="/bpmportal/atlas/getLinkedCRNList.json">jsonClientFeedBackController</prop>
+					<prop key="/bpmportal/atlas/linkUnlinkCrnOnUpdate.json">jsonClientFeedBackController</prop>
+					<prop key="/bpmportal/atlas/displayAttachDocuments.json">jsonClientFeedBackController</prop>
+					<!-- Added by Ashish for BI-40-->
+					<prop key="/bpmportal/atlas/displayTempAttachDocuments.json">jsonClientFeedBackController</prop>
+					<!-- End by Ashish for BI-40-->	
+					<prop key="/bpmportal/atlas/removeAttachments.json">jsonClientFeedBackController</prop>
+					<!-- Added by Himanshu for BI-40-->
+					<prop key="/bpmportal/atlas/getFeedbackTypeList.json">jsonClientFeedBackController</prop>
+					<!-- End by Himanshu for BI-40-->									
+				<!-- mapping for Client Feed Back CR-7 R-1.3.1 -->
+
+				<!-- mapping for  Support App R-1.3.1 -->
+
+					<prop key="/bpmportal/atlas/searchCRNDetails.json">jsonSupportAppController</prop>
+					<prop key="/bpmportal/atlas/updateCRNDates.json">jsonSupportAppController</prop>
+					<prop key="/bpmportal/atlas/getUserPWD.json">jsonSupportAppController</prop>
+					<!-- Added by juheen.For Pull back case to client Submission. -->
+					<prop key="/bpmportal/atlas/pullBackToClientSubmission.json">jsonSupportAppController</prop>
+																														
+				<!-- mapping for  Support App R-1.3.1 -->
+
+
+				<!-- <Overdue,DueToday,Onhold, MyPerformance Report Json Controller> -->
+
+					<prop key="/bpmportal/atlas/searchOverdue.json">jsonOverdueReportMultiactionController</prop>
+					<prop key="/bpmportal/atlas/searchDueToday.json">jsonDueTodayMultiactionController</prop>
+					<prop key="/bpmportal/atlas/searchAllOnHold.json">jsonAllOnHoldCasesMultiactionController</prop>
+					 <prop key="/bpmportal/atlas/searchMyPerformance.json">jsonMyPerformanceMultiactionController</prop>
+					<prop key="/bpmportal/atlas/numOfCasesByUser.json">jsonMyPerformanceMultiactionController</prop>
+					<prop key="/bpmportal/atlas/getCRNS.json">jsonMyPerformanceMultiactionController</prop>
+				<!-- </Overdue,DueToday,Onhold, Myperformance Report Json Controller> -->
+
+				<!-- Clientmaster Json Controller -->
+
+				<prop key="/bpmportal/atlas/client.json">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/searchClient.json">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/updateClientStatus.json">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/deActivateClient.json">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getClientContact.json">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/checkClientIfExist.json">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/popualteCountryList.json">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/popualteCountryListForRiskHBD.json">clientMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getUserForRole.json">clientMultiActionController</prop>
+				<!-- </Clientmaster Json Controller> -->
+
+					<!-- REMaster Json Controller -->
+
+				<prop key="/bpmportal/atlas/searchReSearchElement.json">reSearchElementMultiActionController</prop>
+				<prop key="/bpmportal/atlas/deActivateReSearchElement.json">reSearchElementMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getREGridInfo.json">reSearchElementMultiActionController</prop>
+				<prop key="/bpmportal/atlas/isGroupNameUnique.json">reSearchElementMultiActionController</prop>
+				<prop key="/bpmportal/atlas/isSubjectTypeREUnique.json">reSearchElementMultiActionController</prop>
+				<prop key="/bpmportal/atlas/isWIPCaseImpacted.json">reSearchElementMultiActionController</prop>
+				<prop key="/bpmportal/atlas/canReDeactivated.json">reSearchElementMultiActionController</prop>
+
+				<!-- BOMaster Json Controller -->
+				<prop key="/bpmportal/atlas/searchBranchOffice.json">jsonBranchOfficeMultiActionController</prop>
+				<prop key="/bpmportal/atlas/deActivatebranchOffice.json">jsonBranchOfficeMultiActionController</prop>
+				<prop key="/bpmportal/atlas/checkAssociatedtoDeactivateOffice.json">jsonBranchOfficeMultiActionController</prop>
+				<!--</ BOMaster Json Controller >-->
+
+				<!-- Subject Start -->
+
+				<prop key="/bpmportal/atlas/getSubjectListForCase.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/saveSubjectRisk.json">jsonSubjectController</prop>
+				<!-- Added By 6027481 for BI-293 -->
+				<prop key="/bpmportal/atlas/updateSubjectBudget.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/getSubjectDetailsForCRN.json">jsonSubjectController</prop>
+				<!--END-->
+				<!--
+					<prop
+					key="/bpmportal/atlas/getCountryMaster.json">jsonSubjectController</prop>
+				-->
+				<prop key="/bpmportal/atlas/getAssociateCasesForSub.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/deleteSubjectsForCase.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/deleteSubject.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/deleteAssCRN.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/getResearchElements.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/getCaseSubjectsIndustryList.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/test.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/popualteCountryList.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/getSubjectRiskForCase.json">jsonSubjectController</prop>
+				<!-- Added By Saurabh Mittal 16/09/2014 to get the the case and subject level risk categories -->
+				<prop key="/bpmportal/atlas/getCaseLevelRiskCategory.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/getSubjectLevelRiskCategory.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/getSubjectLevelRiskCategoryForResearch.json">jsonSubjectController</prop>
+				<!-- Ended By Saurabh Mittal -->
+				
+				<!--
+					need to remove for paging testing
+				-->
+				<prop key="/bpmportal/atlas/getResearchElementsForNewSubject.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/getMatchingAssociateCasesForSub.json">jsonSubjectController</prop>
+				<!--
+					<prop
+					key="/bpmportal/atlas/saveNewSubjectForCase.json">jsonSubjectController</prop>
+				-->
+				<prop key="/bpmportal/atlas/addAssociateCaseForSubject.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/confirmDeleteSubject.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/subjectNameAndCountryValidation.json">jsonSubjectController</prop>
+				<!-- A new JSON request is added by satish -->
+				
+				<prop key="/bpmportal/atlas/watchListedsubjectValidation.json">jsonSubjectController</prop>
+				
+				<prop key="/bpmportal/atlas/getMatchingAssociateCasesForAddSub.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/checkForBI.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/getBIManagerList.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/biValidation.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/getLegacyCaseSubjectDetails.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/getLegacyPastRecords.json">jsonSubjectController</prop>
+				<prop key="/bpmportal/atlas/getCRNStatus.json">jsonSubjectController</prop>
+				
+
+				<prop key="/bpmportal/atlas/displayAllLegacyDocumentsInfo.json">jsonLegacyDocAttachmentController</prop>
+
+				<!-- Subject End -->
+
+				<!-- mapping for Country Master starts -->
+				<prop key="/bpmportal/atlas/country/searchCountry.json">jsonCountryMaster</prop>
+				<prop key="/bpmportal/atlas/searchExistCountryCodeAndCountry.json">jsonCountryMaster</prop>
+				<prop key="/bpmportal/atlas/changeStatusCountry.json">jsonCountryMaster</prop>
+				<prop key="/bpmportal/atlas/isCountryAssociated.json">jsonCountryMaster</prop>
+				<!-- Temporary Entries -->
+				<!-- <prop key="/bpmportal/atlas/country/getRegion.json">jsonCountryMaster</prop>
+				<prop key="/bpmportal/atlas/country/getRiskLevel.json">jsonCountryMaster</prop> -->
+				<!-- mapping for Country Master ends-->
+
+				<!-- mapping for Industry Master starts -->
+				<prop key="/bpmportal/atlas/industry/searchIndustry.json">jsonIndustryMaster</prop>
+				<prop key="/bpmportal/atlas/changeIndustryStatus.json">jsonIndustryMaster</prop>
+				<prop key="/bpmportal/atlas/searchExistIndustry.json">jsonIndustryMaster</prop>				
+				<prop key="/bpmportal/atlas/isIndustryAssociated.json">jsonIndustryMaster</prop>				
+				<!-- mapping for Industry Master ends-->
+
+				<!-- mapping for Risk Master starts -->
+				<!--updated by jyoti.yadav-->
+				<prop key="/bpmportal/atlas/risk/searchRisk.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/changeRiskStatus.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/searchExistRisk.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/isRiskAssociated.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/getRiskCategory.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/getRiskAttributes.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/saveMappingList.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/addMapping.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/getAllRisks.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/changeMappingStatus.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/getMappingHistory.json">jsonRiskMaster</prop>
+				<!--updated by jyoti.yadav-->
+				<!--Added by Himanshu for Risk Master-->
+				<prop key="/bpmportal/atlas/getLHSClientList.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/getRHSClientList.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/getLHSCountryList.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/getRHSCountryList.json">jsonRiskMaster</prop>
+				
+				<!--End by Himanshu for Risk Master-->
+<!-- Added by Juheen.For Risk Search CR-->
+				<prop key="/bpmportal/atlas/risk/getRisks.json">jsonRiskMaster</prop>
+				<prop key="/bpmportal/atlas/risk/getRiskCaseHistory.json">jsonRiskMaster</prop>
+				
+				
+				
+				<!-- mapping for Risk Master ends-->
+
+				<!-- mapping for Public Holiday Master starts -->
+				<prop key="/bpmportal/atlas/searchPublicHoliyday.json">jsonPublicHolidayMaster</prop>
+				<prop key="/bpmportal/atlas/getYearList.json">jsonPublicHolidayMaster</prop>
+				<prop key="/bpmportal/atlas/deletePublicHoliday.json">jsonPublicHolidayMaster</prop>
+				<prop key="/bpmportal/atlas/isPublicHoliydayExist.json">jsonPublicHolidayMaster</prop>
+				<!-- mapping for Public Holiday Master ends-->
+
+				<!-- mapping for ScoreSheet Master starts -->
+				<prop key="/bpmportal/atlas/searchScoreSheet.json">jsonScoreSheetMaster</prop>
+				<prop key="/bpmportal/atlas/searchExistScoreSheetName.json">jsonScoreSheetMaster</prop>
+				<prop key="/bpmportal/atlas/deleteScoreSheet.json">jsonScoreSheetMaster</prop>
+				<prop key="/bpmportal/atlas/getScoreSheetInfo.json">jsonScoreSheetMaster</prop>
+				<!-- mapping for ScoreSheet Master ends-->
+				
+				<!-- mapping for CaseRawData Report starts -->
+				<prop key="/bpmportal/atlas/searchCaseRawDataTemplate.json">jsonCaseRawDataController</prop>
+				<prop key="/bpmportal/atlas/getAllTemplateCreator.json">jsonCaseRawDataController</prop>
+				<prop key="/bpmportal/atlas/searchExistCaseRawDataTemplate.json">jsonCaseRawDataController</prop>				
+				<prop key="/bpmportal/atlas/getInfoListCaseRawDataTemplate.json">jsonCaseRawDataController</prop>		
+				<prop key="/bpmportal/atlas/getAvailableOption.json">jsonCaseRawDataController</prop>		
+				<prop key="/bpmportal/atlas/saveCaseRawDataTemplate.json">jsonCaseRawDataController</prop>
+				<prop key="/bpmportal/atlas/deleteCaseRawDataTemplate.json">jsonCaseRawDataController</prop>
+				<prop key="/bpmportal/atlas/getCaseRawDataTemplateInfo.json">jsonCaseRawDataController</prop>		
+				<prop key="/bpmportal/atlas/getSelectedInfoFieldsListCaseRawDataTemplate.json">jsonCaseRawDataController</prop>
+				<prop key="/bpmportal/atlas/setDefaultCaseRawDataTemplate.json">jsonCaseRawDataController</prop>
+				<prop key="/bpmportal/atlas/getSelectedOption.json">jsonCaseRawDataController</prop>
+				<!-- call Added by Juheen.For CR-BI11 (Release 1.4) -->				
+                <prop key="/bpmportal/atlas/getSubReportList.json">jsonCaseRawDataController</prop>
+				<!-- call Added by Himanshu to get refresh time of MV -->				
+				<prop key="/bpmportal/atlas/getMaterializedViewRefreshTime.json">jsonCaseRawDataController</prop>
+				<!-- mapping for CaseRawData Report End -->
+				
+				<!-- mapping for ScoreSheet MIS Report starts -->
+				<prop key="/bpmportal/atlas/getScoreSheetNameList.json">jsonScoreSheetMISReportController</prop>
+				<prop key="/bpmportal/atlas/analystScoringPerformanceScoreSheetMIS.json">jsonScoreSheetMISReportController</prop>
+				<prop key="/bpmportal/atlas/reviewEffortScoreSheetMIS.json">jsonScoreSheetMISReportController</prop>
+											
+				<!-- mapping for ScoreSheet MIS Report End -->
+				
+				<!--Start: Added for JPMC Adhoc Reports BI-244-->
+				<prop key="/bpmportal/atlas/getMaterializedViewRefreshTimeJPMCDailyReports.json">jsonJPMCReportController</prop>
+				<!--End: Added for JPMC Adhoc Reports BI-244-->
+				
+				<!-- <Report type master Json Controller> -->
+					<prop key="/bpmportal/atlas/searchReportType.json">jsonReportTypeController</prop>
+					<prop key="/bpmportal/atlas/deActivateReportType.json">jsonReportTypeController</prop>
+					<prop key="/bpmportal/atlas/getReForRpt.json">jsonReportTypeController</prop>
+					<prop key="/bpmportal/atlas/getReportHistory.json">jsonReportTypeController</prop>
+					<prop key="/bpmportal/atlas/getsubReportType.json">jsonReportTypeController</prop>
+					<prop key="/bpmportal/atlas/getReList.json">jsonReportTypeController</prop>	
+					<prop key="/bpmportal/atlas/checkReportIfExist.json">jsonReportTypeController</prop>
+					<prop key="/bpmportal/atlas/searchReportTypeMaster.json">jsonReportTypeController</prop>
+					<prop key="/bpmportal/atlas/isSubReportTypeExist.json">jsonReportTypeController</prop>
+					<prop key="/bpmportal/atlas/isReportTypeAssociated.json">jsonReportTypeController</prop>
+					<!--Added by 6035037 for BI-293 -->
+					
+					<prop key="/bpmportal/atlas/isSubreportTypeAssociated.json">jsonReportTypeController</prop>
+					<!-- End -->
+					<!-- Added by satish to handle the uniqueness Initials to use at End of CRN  -->
+					<prop key="/bpmportal/atlas/isSubReportInitialExist.json">jsonReportTypeController</prop>
+					<!-- added by juheen for RISK CR -->
+					<prop key="/bpmportal/atlas/getCmpOrIndReForRpt.json">jsonReportTypeController</prop>
+					<prop key="/bpmportal/atlas/getReForSubReport.json">jsonReportTypeController</prop>
+					
+					
+					
+				<!-- </Report type  master Json Controller> -->
+                                  
+                               	<!-- <Country Database Master Json Controller> -->
+				
+				<prop key="/bpmportal/atlas/searchCDBCountryDB.json">jsonCountryDBMultiActionController</prop>
+				<prop key="/bpmportal/atlas/searchLBRCountryDB.json">jsonCountryDBMultiActionController</prop>
+				<prop key="/bpmportal/atlas/isCountryDBUnique.json">jsonCountryDBMultiActionController</prop>
+				<prop key="/bpmportal/atlas/getLBRDatabases.json">jsonCountryDBMultiActionController</prop>
+				<prop key="/bpmportal/atlas/isCountryLBRDBUnique.json">jsonCountryDBMultiActionController</prop>
+				
+
+				<!-- </Country Database Master Json Controller> -->
+				
+
+				<prop key="/bpmportal/atlas/currency/searchCurrencyByName.json">jsoncurrencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/deactivateCurrency.json">jsoncurrencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/activateCurrency.json">jsoncurrencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/searchExistCurrency.json">jsoncurrencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/searchExistCurrencyShortForm.json">jsoncurrencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/searchExistCurrencyCode.json">jsoncurrencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/searchCurrencyByCode.json">jsoncurrencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/updateCurrency.json">jsoncurrencyMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currency/checkAssociatedCurrency.json">jsoncurrencyMultiActionController</prop>
+
+
+
+				<prop key="/bpmportal/atlas/reportTmpl/searchReportTemplate.json">jsonreportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTmpl/getUploadableReportTemplate.json">jsonreportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTmpl/getClientSelectionData.json">jsonreportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTmpl/getSelectedClientData.json">jsonreportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTmpl/deleteReportTemplate.json">jsonreportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTmpl/upLoadReportTemplate.json">jsonreportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTmpl/getCurrentlyUploadedFiles.json">jsonreportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTmpl/downloadReportTmplFile.json">jsonreportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTmpl/removeHistoryReportTemplate.json">jsonreportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTmpl/historyReportTemplate.json">jsonreportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTmpl/getGeneralClients.json">jsonreportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTmpl/resetClientSelectionGrid.json">jsonreportTemplateMultiActionController</prop>
+				<prop key="/bpmportal/atlas/reportTmpl/getFilesForCaseDetail.json">jsonreportTemplateMultiActionController</prop>
+
+
+
+				<prop key="/bpmportal/atlas/clientReq/searchClientRequirment.json">jsonclientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientReq/getUploadableClientReq.json">jsonclientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientReq/getClientSelectionData.json">jsonclientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientReq/getSelectedClientData.json">jsonclientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientReq/deleteClientReq.json">jsonclientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientReq/upLoadClientRequirment.json">jsonclientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientReq/getCurrentlyUploadedFiles.json">jsonclientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientReq/downloadReportTmplFile.json">jsonclientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientReq/removeHistoryClientRequirment.json">jsonclientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientReq/historyClientRequirment.json">jsonclientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientReq/getGeneralClients.json">jsonclientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientReq/resetClientSelectionGrid.json">jsonclientRequirmentMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientReq/getFilesForCaseDetail.json">jsonclientRequirmentMultiActionController</prop>
+				
+
+
+
+				<prop key="/bpmportal/atlas/currencyConverison/updateRate.json">jsonCurrencyConversionMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currencyConverison/getAllRates.json">jsonCurrencyConversionMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currencyConverison/viewHistory.json">jsonCurrencyConversionMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currencyConverison/getAllCurrencyForHistory.json">jsonCurrencyConversionMultiActionController</prop>
+				<prop key="/bpmportal/atlas/currencyConverison/getActiveCurrencyMaster.json">jsonCurrencyConversionMultiActionController</prop>
+				
+				<prop key="/bpmportal/atlas/clientGroup/viewGroup.json">jsonClientGroupMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientGroup/addGroup.json">jsonClientGroupMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientGroup/searchExistGroup.json">jsonClientGroupMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientGroup/searchGroupByName.json">jsonClientGroupMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientGroup/updateGroup.json">jsonClientGroupMultiActionController</prop>
+				<prop key="/bpmportal/atlas/clientGroup/deactivateGroup.json">jsonClientGroupMultiActionController</prop>
+				
+				<prop key="/bpmportal/atlas/branchOffice/searchExistBranchOffice.json">jsonBranchOfficeMultiActionController</prop>
+				
+				<!-- mapping for loginUserStatus Master starts -->
+				<prop key="/bpmportal/atlas/getLoginUserStatus.json">JSONUserLoginController</prop>
+				<prop key="/bpmportal/atlas/getUserStatus.json">JSONUserLoginController</prop>
+				<prop key="/bpmportal/atlas/setSessionLogout.json">JSONUserLoginController</prop>
+				<!--Added by 6035037 for Bi-437 -->
+				<prop key="/bpmportal/atlas/logUserLoginStatus.json">JSONUserLoginController</prop>
+				<!-- mapping for loginUserStatus Master ends -->
+
+				<!-- mapping for Dashboard starts-->
+				<prop key="/bpmportal/atlas/viewDashboard.json">jsonViewDashboardController</prop>
+				<prop key="/bpmportal/atlas/getDashboardReportParams.json">jsonGetDashboardReportParams</prop>
+				<prop key="/bpmportal/atlas/getAllDashboardMetrics.json">jsonCreateDashboardController</prop>
+				<prop key="/bpmportal/atlas/getUserDashboardMetrics.json">jsonCreateDashboardController</prop>
+				<prop key="/bpmportal/atlas/checkDuplicateDashboardName.json">jsonCreateDashboardController</prop>
+				<!-- mapping for Dashboard ends-->
+				
+				
+				<!-- Mapping for Reprots -->
+				<prop key="/bpmportal/atlas/reportTpeAndOfficeSummary/viewReportTypeAndOfficeSummary.json">jsonReportTypeAndOfficeSummaryController</prop>
+				
+				<prop key="/bpmportal/atlas/invoiceTATReport/viewInvoiceTATReport.json">jsonInvoiceTATReportController</prop>
+				<prop key="/bpmportal/atlas/teamJLPSummary/getAllActiveUsers.json">jsonTeamJLPSummaryController</prop>
+				<prop key="/bpmportal/atlas/teamJLPSummary/getAllTemplateCreator.json">jsonTeamJLPSummaryController</prop>
+				<prop key="/bpmportal/atlas/teamJLPSummary/searchTeamJLPTemplate.json">jsonTeamJLPSummaryController</prop>
+				<prop key="/bpmportal/atlas/teamJLPSummary/isExistTemplateName.json">jsonTeamJLPSummaryController</prop>
+				<prop key="/bpmportal/atlas/teamJLPSummary/addTeamJLPTemplate.json">jsonTeamJLPSummaryController</prop>
+				<prop key="/bpmportal/atlas/teamJLPSummary/deleteTeamJLPTemplate.json">jsonTeamJLPSummaryController</prop>
+				<prop key="/bpmportal/atlas/teamJLPSummary/getSelectedUsers.json">jsonTeamJLPSummaryController</prop>
+				<prop key="/bpmportal/atlas/teamJLPSummary/addToDefaultTeamJLPTemplate.json">jsonTeamJLPSummaryController</prop>
+				<prop key="/bpmportal/atlas/teamJLPSummary/removeFromDefaultTeamJLPTemplate.json">jsonTeamJLPSummaryController</prop>
+				<prop key="/bpmportal/atlas/teamJLPSummary/searchTeamJLPExcelReport.json">jsonTeamJLPSummaryController</prop>
+				
+				
+				
+				<prop key="/bpmportal/atlas/officePerformance/productivityPointByOffice.json">jsonOfficePerformanceController</prop>
+				<prop key="/bpmportal/atlas/officePerformance/completedCaseByOffice.json">jsonOfficePerformanceController</prop>
+				<prop key="/bpmportal/atlas/officePerformance/revenueByOfficePerformance.json">jsonOfficePerformanceController</prop>
+				
+				
+				<!-- End Mapping for Reprots -->
+				
+				<!-- mapping for Office Assignment starts-->
+				<prop key="/bpmportal/atlas/getCaseDetails.json">jsonOfficeAssignmentController</prop>
+					<prop key="/bpmportal/atlas/getAutoOfficeDetails.json">jsonOfficeAssignmentController</prop>
+					<prop key="/bpmportal/atlas/getRHForOffice.json">jsonOfficeAssignmentController</prop>
+					<prop key="/bpmportal/atlas/getTabCaseDetails.json">jsonOfficeAssignmentController</prop>
+					<!-- Added by Juheen for CR-2 Part-1 (Release 1.3.2) -->
+					<prop key="/bpmportal/atlas/getTabSubjectREDetails.json">jsonOfficeAssignmentController</prop>
+					<!-- ended here -->  
+					<prop key="/bpmportal/atlas/getTabOtherDetails.json">jsonOfficeAssignmentController</prop>
+					<prop key="/bpmportal/atlas/checkDueDates.json">jsonOfficeAssignmentController</prop>
+                                        <!-- Added by Juheen for L10 R.13 -->
+					<prop key="/bpmportal/atlas/checkClientDueDates.json">jsonOfficeAssignmentController</prop>
+					<prop key="/bpmportal/atlas/checkClientDueDatesTab.json">jsonOfficeAssignmentController</prop>
+                                         <!-- ended here -->   
+					<prop key="/bpmportal/atlas/checkDueDatesTab.json">jsonOfficeAssignmentController</prop>
+					<prop key="/bpmportal/atlas/getLegacyCaseDetails.json">jsonOfficeAssignmentController</prop>
+					
+							<!-- Added by Himanshu for CR-1(New Enhancemnets) -->
+					<prop key="/bpmportal/atlas/getAssociatedSubjectsGCC.json">jsonOfficeAssignmentController</prop>
+							<!-- End by Himanshu -->
+					<!-- Added by Vinay. For CR-4 part-2(R1.3.2) -->
+					<prop key="/bpmportal/atlas/getDaysBeforePT.json">jsonOfficeAssignmentController</prop>
+							
+				<!-- mapping for Office Assignment ends-->
+				
+	<!-- mapping for Team Assignment starts-->
+				<prop key="/bpmportal/atlas/getTeamOfficeMaster.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="/bpmportal/atlas/getTeamAnalystMaster.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="/bpmportal/atlas/getTeamReviewerMaster.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="/bpmportal/atlas/getReviewerForAllOffice.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="/bpmportal/atlas/getTeamOfficeDetails.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="/bpmportal/atlas/getAnalystForManager.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="bpmportal/atlas/team/getCaseTeamDetails.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="bpmportal/atlas/getTeamAssignmentTaskDetails.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="bpmportal/atlas/getTeamOtherDetails.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="bpmportal/atlas/getTeamSubjectDetails.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="bpmportal/atlas/getTeamAssignmentDone.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="bpmportal/atlas/team/getLegacyCaseTeamDetails.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="bpmportal/atlas/team/getLegacyTeamDetails.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="/bpmportal/atlas/getOtherTeamDetails.json">jsonTeamAssignmentTaskController</prop>
+				<!-- Added by Vinay. For CR-67(Release 1.3)-->
+				<prop key="bpmportal/atlas/getTeamAssignmentWINames.json">jsonTeamAssignmentTaskController</prop>
+				<!-- End by Vinay -->
+                                 <!-- Added by Juheen for L10 R.13 -->
+				<prop key="/bpmportal/atlas/checkTeamDueDates.json">jsonTeamAssignmentTaskController</prop>
+				<prop key="/bpmportal/atlas/checkTeamDueDatesTab.json">jsonTeamAssignmentTaskController</prop>
+				<!-- mapping for Team Assignment ends-->
+				
+				<!-- Mapping for mytaskPage starts -->
+				<prop key="/bpmportal/atlas/getUserAllTask.json">jsonTaskSearchController</prop>
+				<prop key="/bpmportal/atlas/getUserTeamTask.json">jsonTaskSearchController</prop>
+				<prop key="/bpmportal/atlas/getTaskStatus.json">jsonTaskSearchController</prop>
+				<prop key="/bpmportal/atlas/getOnHoldCases.json">jsonTaskSearchController</prop>
+				<prop key="/bpmportal/atlas/getUnCompletedCases.json">jsonTaskSearchController</prop>
+				<prop key="/bpmportal/atlas/getIncomingTasks.json">jsonTaskSearchController</prop>
+				<prop key="/bpmportal/atlas/getSubordinateList.json">jsonTaskSearchController</prop>
+				<!-- Mapping for mytaskPage ends -->
+
+
+				<!-- Mapping for Comments starts -->
+					<prop key="/bpmportal/atlas/getCommentsList.json">jsonCommentsController</prop>
+					<prop key="/bpmportal/atlas/deleteCommentsForCRN.json">jsonCommentsController</prop>
+				<!-- Mapping for Comments ends -->
+
+				<!-- Mapping for Case Details starts -->
+				<prop key="/bpmportal/atlas/getCaseStatus.json">jsonCaseDetailsController</prop>
+				<!--
+                     	        by Chetan Bhandari
+                                This was fixed for PET ISSUE-60
+                                -->
+                                <prop key="/bpmportal/atlas/getAllCountryList.json">jsonCaseDetailsController</prop>
+				<prop key="/bpmportal/atlas/caseDetailsOnSubjectSearch.json">jsonCaseDetailsController</prop>
+				<prop key="/bpmportal/atlas/getRecurranceCaseDetails.json">jsonCaseDetailsController</prop>
+				<prop key="/bpmportal/atlas/updateRecurranceCaseDetails.json">jsonCaseDetailsController</prop>
+				
+				
+				<!-- Mapping for Case Details ends -->
+
+				<!-- VendorDetail benas start -->
+				 <prop key="/bpmportal/atlas/searchVendorDetailList.json">jsonVendorDetailMultiActionController</prop>
+				 <prop key="/bpmportal/atlas/getVendorNameList.json">jsonVendorDetailMultiActionController</prop>
+				 <prop key="/bpmportal/atlas/saveVendorDetail.json">jsonVendorDetailMultiActionController</prop>
+				 <prop key="/bpmportal/atlas/getVendorDetailList.json">jsonVendorDetailMultiActionController</prop>
+				 <prop key="/bpmportal/atlas/getVendorInformation.json">jsonVendorDetailMultiActionController</prop>
+				 <prop key="/bpmportal/atlas/deAssociatedVendorDetail.json">jsonVendorDetailMultiActionController</prop>
+				 <prop key="/bpmportal/atlas/sendEmailTemplate.json">jsonVendorDetailMultiActionController</prop>
+				<!-- VendorDetail Beans End -->
+				
+				<prop key="/bpmportal/atlas/getAllSubjectInfoByTeam.json">jsonRejectionREMultiActionController</prop>
+				<prop key="/bpmportal/atlas/rejectedREInfo.json">jsonRejectionREMultiActionController</prop>
+				
+				<!-- Start Mapping for back  -->
+				<prop key="/bpmportal/atlas/getUserBackUpList.json">jsonUserBackUpMultiActionController</prop>
+				<!-- End Mapping for back  -->
+				
+                     <!-- Mapping for Audit history starts -->
+					<prop key="/bpmportal/atlas/getReviewHistoryList.json">jsonReviewHistoryController</prop>
+					<prop key="/bpmportal/atlas/getCaseHistoryList.json">jsonCaseHistoryController</prop>
+					
+				    <!-- Mapping for  Audit history ends -->
+				    
+					<!-- Created by Anurag Mapping for Risk History for Risk Profile CR -->
+						<prop key="/bpmportal/atlas/getRiskHistoryList.json">jsonRiskHistoryController</prop>
+						<prop key="/bpmportal/atlas/updateOptionalRiskData.json">JSONTaskManagementController</prop>
+						<prop key="/bpmportal/atlas/insertOptionalRiskData.json">JSONTaskManagementController</prop>
+						<prop key="/bpmportal/atlas/insertHBDCountryRiskData.json">JSONTaskManagementController</prop>
+						
+						
+				    <!-- Endedd by Anurag Mapping for Risk History for Risk Profile CR -->
+				    
+					
+				    <!-- Mapping for review Task starts -->
+					<prop key="/bpmportal/atlas/getScoreSheetForReview.json">jsonTaskReviewController</prop>
+					<prop key="/bpmportal/atlas/getReviewScoreSheetTemplate.json">jsonTaskReviewController</prop>
+					<prop key="/bpmportal/atlas/getReviewScoreItemList.json">jsonTaskReviewController</prop>
+					<prop key="/bpmportal/atlas/saveReviewScoreSheet.json">jsonTaskReviewController</prop>
+					<prop key="/bpmportal/atlas/isAnalystReviewedScoresheet.json">jsonTaskReviewController</prop>
+					<prop key="/bpmportal/atlas/getReviewedScoreSheet.json">jsonTaskReviewController</prop>
+					<prop key="/bpmportal/atlas/saveReviewComment.json">jsonTaskReviewController</prop>
+					<prop key="/bpmportal/atlas/getReviewedSSCategoryDetails.json">jsonTaskReviewController</prop>
+					<prop key="/bpmportal/atlas/getReviewedSSItemDetails.json">jsonTaskReviewController</prop>
+					<prop key="/bpmportal/atlas/updateReviewSSCategoryDetail.json">jsonTaskReviewController</prop>
+					<prop key="/bpmportal/atlas/getLBRTableReport.json">jsonTaskReviewController</prop>		
+					<prop key="/bpmportal/atlas/removedReviewedScoresheet.json">jsonTaskReviewController</prop>						
+			<!-- Mapping for review Task ends -->
+<!-- Mapping for search starts -->
+				<!-- Case Search -->
+				<prop key="/bpmportal/atlas/getCaseCreator.json">jsonCaseSearchController</prop>
+				<prop key="/bpmportal/atlas/getNormalCaseSearchResults.json">jsonCaseSearchController</prop>
+				<prop key="/bpmportal/atlas/getRecurrenceCaseSearchResults.json">jsonCaseSearchController</prop>
+				<prop key="/bpmportal/atlas/checkSessionID.json">jsonCaseSearchController</prop>
+				<!-- Case Search Ends -->
+				<!-- Team Search -->
+					<prop key="/bpmportal/atlas/analystInfo.json">jsonTeamSearchController</prop>
+					<prop key="/bpmportal/atlas/reviewerInfo.json">jsonTeamSearchController</prop>
+					<prop key="/bpmportal/atlas/biVendorInfo.json">jsonTeamSearchController</prop>
+					<prop key="/bpmportal/atlas/vendorTeamSearchInfo.json">jsonTeamSearchController</prop>
+					<prop key="/bpmportal/atlas/getTeamSearchResults.json">jsonTeamSearchController</prop>
+					<prop key="/bpmportal/atlas/getTeamSearchProcessData.json">jsonTeamSearchController</prop>
+					
+					
+				<!-- /Team Search -->
+				<!-- Subject search starts -->
+					<prop key="/bpmportal/atlas/getSearchSubjectType.json">jsonSubjectSearchController</prop>
+					<prop key="/bpmportal/atlas/getSubjectSearchResults.json">jsonSubjectSearchController</prop>
+					<prop key="/bpmportal/atlas/getAssociateCasesForSubSearch.json">jsonSubjectSearchController</prop>
+				<!-- Subject search ends -->
+                                 <!-- Message Search Starts -->
+					<prop key="/bpmportal/atlas/getMessageSearchResults.json">jsonMessageSearchController</prop>
+					<prop key="/bpmportal/atlas/getRecurrenceMessageSearchResults.json">jsonMessageSearchController</prop>
+					<prop key="/bpmportal/atlas/createSearchRecCase.json">jsonMessageSearchController</prop>
+					<prop key="/bpmportal/atlas/getUsersForMessageSearch.json">jsonMessageSearchController</prop>
+				<!-- Message Search Ends -->
+			<!-- Mapping for search ends -->
+			<!--  Mapping for Update CT Data -->
+			<prop key="/bpmportal/atlas/updateCTData/getUpdatedCTDataStatus.json">jsonUpdateCTDataController</prop>
+					
+
+			</props>
+		</property>
+	</bean>
+	
+
+	<!-- MytaskPage -->
+<bean name="jsonTaskSearchController" class="com.worldcheck.atlas.frontend.sbm.task.JsonTaskSearchController">
+	</bean>
+	
+	
+	<!-- Reports implementation starts -->
+
+	<bean name="jsonMISUtilController"
+		class="com.worldcheck.atlas.frontend.report.JSONMISUtilController">
+	</bean>
+
+	<bean name="jsonPublicHolidayController"
+		class="com.worldcheck.atlas.frontend.report.JSONPublicHolidayController">
+		<property name="publicHolidayManager" ref="publicHolidayManager" />
+	</bean>
+
+	<bean id="jsonProductivityAndRevenueSummaryController"
+		class="com.worldcheck.atlas.frontend.report.JSONProductivityAndRevenueSummaryController">
+		<property name="atlasReportService" ref="atlasReportService" />
+	</bean>
+
+	<bean id="jsonOfficeUBPPCController"
+		class="com.worldcheck.atlas.frontend.report.JSONOfficeUBPPCController">
+		<property name="branchOfficeMultiActionManager" ref="branchOfficeMultiActionManager" />
+	</bean>
+
+	<bean id="jsonUtilizationByProductivityController"
+		class="com.worldcheck.atlas.frontend.report.JSONUtilizationByProductivityController">
+		<property name="atlasReportService" ref="atlasReportService" />
+	</bean>
+
+	<bean id="jsonTimeTrackerDataSummaryController"
+		class="com.worldcheck.atlas.frontend.report.JSONTimeTrackerDataSummaryController">
+		<property name="atlasReportService" ref="atlasReportService" />
+	</bean>
+
+	<bean id="jsonCasesReceivedSummaryController"
+		class="com.worldcheck.atlas.frontend.report.JSONCasesReceivedSummaryController">
+		<property name="atlasReportService" ref="atlasReportService" />
+		<property name="tabularReportDAO" ref="tabularReportDAO" />
+	</bean>
+
+	<bean id="jsonVendorDataSummaryController"
+		class="com.worldcheck.atlas.frontend.report.JSONVendorDataSummaryController">
+		<property name="atlasReportService" ref="atlasReportService" />
+	</bean>
+
+	<bean id="jsonOfficeSummaryController" class="com.worldcheck.atlas.frontend.report.JSONOfficeSummaryController">		
+		<property name="atlasReportService" ref="atlasReportService" />
+	</bean>
+	
+	<bean id="jsonTeamPerformanceController" class="com.worldcheck.atlas.frontend.report.JSONTeamPerformanceController">		
+		<property name="atlasReportService" ref="atlasReportService" />
+	</bean>
+	<!-- <bean id="jsonGeneratetRevenueSummaryChartController" class="com.worldcheck.atlas.frontend.report.JSONGeneratetRevenueSummaryChartController">
+			<property name="chartReportDAO" ref="chartReportDAO" />
+	</bean> -->
+	<!-- Reports implementation ends -->
+
+
+	<!-- TaskManagement implementation starts -->
+	<bean id="JSONTaskManagementController"
+		class="com.worldcheck.atlas.frontend.sbm.JSONTaskManagementController">
+	</bean>
+
+	<!-- JSONInvoiceManagementController implementation ends -->
+
+	<!-- TaskManagement implementation starts -->
+	<bean id="JSONInvoiceManagementController"
+		class="com.worldcheck.atlas.frontend.invoice.JSONInvoiceManagementController">
+	</bean>
+	<!-- JSONInvoiceManagementController implementation ends -->
+
+
+<!-- JSONUserLoginController implements Starts -->
+		<bean id="JSONUserLoginController" class="com.worldcheck.atlas.frontend.sbm.JSONUserLoginController">
+		<property name="propertyConfigurer" ref="propertyConfigurer"></property>
+		<property name="masterDataValidator" ref="masterDataValidator" />
+		</bean>
+	<!-- JSONUserLoginController ends -->
+	<!-- DMS mapping starts -->
+	<bean id="JSONDocumentMultiActionController" class="com.worldcheck.atlas.frontend.document.JSONDocumentMultiActionController">
+		<property name="propertyReader" ref="propertyReader" />
+	</bean>
+	<!-- DMS mapping ends -->
+	<bean name="jsonView" class="org.springframework.web.servlet.view.json.JsonView">
+		<property name="encoding" value="UTF-8" />
+		<property name="contentType" value="application/json" />
+		<property name="jsonWriter" ref="sojoJsonWriter" />
+		<property name="jsonErrors">
+			<list>
+				<ref bean="statusError" />
+				<ref bean="modelflagError" />
+			</list>
+		</property>
+	</bean>
+
+  <!-- mapping for Dashboard starts-->
+	<bean id="jsonViewDashboardController" class="com.worldcheck.atlas.frontend.dashboard.JSONViewDashboardController">		
+		<property name="dashboardManager" ref="dashboardManager" />		
+	</bean>
+	<bean id="jsonGetDashboardReportParams" class="com.worldcheck.atlas.frontend.dashboard.JSONGetDashboardReportParams">		
+		<property name="propertyReader" ref="propertyReader" />
+	</bean>
+
+	<bean id="jsonCreateDashboardController" class="com.worldcheck.atlas.frontend.dashboard.JSONCreateDashboardController">		
+		<property name="propertyReader" ref="propertyReader" />
+		<property name="dashboardService" ref="dashboardService" />
+	</bean>
+<!-- mapping for Dashboard ends-->
+
+   	<!-- Mapping for Audit History starts -->				
+	<bean id="jsonReviewHistoryController" class="com.worldcheck.atlas.frontend.audit.JSONReviewHistoryController">
+		<property name="reviewHistoryManager" ref="reviewHistoryManager" />
+	</bean>
+	
+	
+
+   <!-- Mapping for Audit History ends -->
+
+	<bean name="sojoJsonWriter"
+		class="org.springframework.web.servlet.view.json.writer.sojo.SojoJsonStringWriter">
+		<property name="convertAllMapValues" value="true" />
+		<property name="enableJsonConfigSupport" value="true" />
+	</bean>
+	<bean name="statusError"
+		class="org.springframework.web.servlet.view.json.error.HttpStatusError">
+		<property name="errorCode" value="311" />
+	</bean>
+	<bean name="modelflagError"
+		class="org.springframework.web.servlet.view.json.error.ModelFlagError">
+		<property name="name" value="failure" />
+		<property name="value" value="true" />
+	</bean>
+	<!-- Added by U6027780 for CR BI-293 Start -->
+	<bean id="jsonSubjectLevelSubReportController" class="com.worldcheck.atlas.frontend.JSONSubjectLevelSubReportController">		
+		<property name="subjectLevelSubReportManager" ref="subjectLevelSubReportManager" />
+	</bean>	
+	<!-- Added by U6027780 for CR BI-293 END -->
+</beans>

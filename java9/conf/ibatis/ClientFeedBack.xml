@@ -1,0 +1,562 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ClientFeedBack">
+	
+	<select id="getcaseOwnerList" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+
+		Select distinct		
+		UM.LOGIN_ID "username",
+		USER_FULL_NAME "userFullName"
+		FROM
+		CMS_USER_MASTER UM,
+		CMS_USER_ROLE_MAP RM
+		WHERE
+		UM.status=1
+		AND
+		UM.USER_MASTER_ID = RM.USER_ID
+		AND
+		RM.ROLE_ID in ('R1', 'R2', 'R3','R4')
+		ORDER BY UPPER(USER_FULL_NAME)
+
+	    </select>
+
+	    <select id="getFeedBackCategoryList" resultClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		 SELECT feedback_category_id "feedBackCategoryID",
+		  feedback_category "feedBackCategoryName"
+		   FROM cms_feedback_category
+		   ORDER by feedback_category
+	    </select>
+
+		<!-- Updated by Himanshu for BI-40, to get legacy and non-legacy CRN for the feedback-->
+	    <select id="getUnlinkedCRN" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO" resultClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (
+			(select cc.crn crn, cc.client_code clientCode, cc.req_recd_dt caseReceivedDate, cs.SUBJECT_NAME primarySubject
+		from cms_clientcase cc left join cms_subject cs on cc.crn = cs.crn where 
+		cs.IS_PRIMARY_SUB = 1
+
+		<isNotNull prepend="AND" property="crn">
+			<isNotEmpty property="crn">
+				UPPER(cc.crn) LIKE '%'|| UPPER(#crn#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="primarySubject">
+			<isNotEmpty property="primarySubject">
+				UPPER(cs.SUBJECT_NAME)  LIKE '%'|| UPPER(#primarySubject#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="clientCode">
+			<isNotEmpty property="clientCode">
+				UPPER(cc.client_code)  LIKE '%'|| UPPER(#clientCode#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="caseReceivedDate">
+			<isNotEmpty property="caseReceivedDate">
+				TO_DATE(cc.req_recd_dt,'DD-MM-YY') = TO_DATE(#caseReceivedDate#,'DD-MM-YY')
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="newFbSeqId">
+			<isNotEmpty property="newFbSeqId">
+				cc.crn not in(select crn from cms_feedback_crn_map where feedback_id = #newFbSeqId#)
+			</isNotEmpty>
+		</isNotNull>
+
+			UNION ALL
+		
+			select cmv.crn crn,
+			cmv.CLIENTCODE clientCode, 
+			cmv.REQRECDDT caseReceivedDate,
+			smv.SUBJECTNAME primarySubject
+			from clientcase_mv cmv, subject_mv smv
+			where cmv.crn = smv.crn
+			and smv.isprimarysub=1
+			 
+			 <isNotNull prepend="AND" property="crn">
+				<isNotEmpty property="crn">
+					UPPER(cmv.crn) LIKE '%'|| UPPER(#crn#) || '%'
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="AND" property="primarySubject">
+				<isNotEmpty property="primarySubject">
+					UPPER(smv.SUBJECTNAME)  LIKE '%'|| UPPER(#primarySubject#) || '%'
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="AND" property="clientCode">
+				<isNotEmpty property="clientCode">
+					UPPER(cmv.CLIENTCODE)  LIKE '%'|| UPPER(#clientCode#) || '%'
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="AND" property="caseReceivedDate">
+				<isNotEmpty property="caseReceivedDate">
+					TO_DATE(cmv.REQRECDDT,'DD-MM-YY') = TO_DATE(#caseReceivedDate#,'DD-MM-YY')
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="AND" property="newFbSeqId">
+				<isNotEmpty property="newFbSeqId">
+					cmv.crn not in(select crn from cms_feedback_crn_map where feedback_id = #newFbSeqId#)
+				</isNotEmpty>
+			</isNotNull>
+			
+			)ORDER BY ($sortColumnName$) $sortType$
+
+		) a WHERE ROWNUM <![CDATA[ <= ]]> 100) WHERE rn <![CDATA[ >= ]]> 0
+	
+	    </select>
+		<!-- Updated by Himanshu for BI-40, to get legacy and non-legacy CRN for the feedback-->
+	     <select id="getUnlinkedCRNCount" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO" resultClass="java.lang.Long">
+
+			 SELECT count(*) FROM (SELECT  a.*, ROWNUM rn FROM (
+			(select cc.crn
+			from cms_clientcase cc left join cms_subject cs on cc.crn = cs.crn 
+			where cs.IS_PRIMARY_SUB = 1
+
+		<isNotNull prepend="AND" property="crn">
+			<isNotEmpty property="crn">
+					UPPER(cc.crn) LIKE '%'|| UPPER(#crn#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="primarySubject">
+			<isNotEmpty property="primarySubject">
+					UPPER(cs.SUBJECT_NAME)  LIKE '%'|| UPPER(#primarySubject#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="clientCode">
+			<isNotEmpty property="clientCode">
+					UPPER(cc.client_code)  LIKE '%'|| UPPER(#clientCode#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="caseReceivedDate">
+			<isNotEmpty property="caseReceivedDate">
+				TO_DATE(cc.req_recd_dt,'DD-MM-YY') = TO_DATE(#caseReceivedDate#,'DD-MM-YY')
+			</isNotEmpty>
+		</isNotNull>
+	
+		
+			 union all
+		
+			select cmv.crn
+			from clientcase_mv cmv, subject_mv smv
+			where cmv.crn = smv.crn
+			and smv.isprimarysub=1
+			
+			 <isNotNull prepend="AND" property="crn">
+				<isNotEmpty property="crn">
+					UPPER(cmv.crn) LIKE '%'|| UPPER(#crn#) || '%'
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="AND" property="primarySubject">
+				<isNotEmpty property="primarySubject">
+					UPPER(smv.SUBJECTNAME)  LIKE '%'|| UPPER(#primarySubject#) || '%'
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="AND" property="clientCode">
+				<isNotEmpty property="clientCode">
+					UPPER(cmv.CLIENTCODE)  LIKE '%'|| UPPER(#clientCode#) || '%'
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="AND" property="caseReceivedDate">
+				<isNotEmpty property="caseReceivedDate">
+					TO_DATE(cmv.REQRECDDT,'DD-MM-YY') = TO_DATE(#caseReceivedDate#,'DD-MM-YY')
+				</isNotEmpty>
+			</isNotNull>
+			
+			)) a WHERE ROWNUM <![CDATA[ <= ]]> 100) WHERE rn <![CDATA[ >= ]]> 0
+		
+	    </select>
+
+	    
+		<select id="getnewfeedbackID" resultClass="java.lang.Long">
+
+		 select CMS_FEEDBACK_SEQ.nextVal from Dual
+
+	    </select>
+
+
+	 <insert id="addFeedback" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		insert into CMS_FEEDBACK
+		(FEEDBACK_ID,CLIENT_CODE,CLIENT_CONTACT,FEEDBACK_CATEGORY_ID,FEEDBACK_DESCRIPTION,ACTION,STATUS,CASE_OWNER,DATE_CLOSED,UPDATED_BY,feedback_type)
+		VALUES
+		(#newFbSeqId#,#clientNameField#,#clientContactField#,#fbCategoryField#,#fbDescriptionField#,#actionTakenField#,#fbStatusField#,#casOwnerField#,TO_DATE(#dateClosed#,'DD-MM-YY'),#updatedBy#,#feedback_type_id#)
+
+	</insert>
+
+	    
+	 <insert id="addCRNFBMap" parameterClass="java.util.HashMap">
+
+	
+
+			  insert into CMS_FEEDBACK_CRN_MAP (FEEDBACK_ID,CRN,LINKED_BY) select * from
+			<iterate property="recList" open="("
+			   close=")" conjunction="union all">
+				
+				select #recList[].crnMapID# FEEDBACK_ID,#recList[].crnName# CRN,#recList[].crnLinkedBy# LINKED_BY from Dual
+				
+			  </iterate>
+		
+	 </insert>
+
+
+	   <select id="searchFeedBack" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO" resultClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (
+
+		 SELECT cm.CLIENT_CODE
+		  ||'-'
+		  ||cm.CLIENT_NAME searchClientName, 
+		  (select wm_concat(crn) 
+		  from cms_feedback_crn_map fbm  where fbm.feedback_id = fb.feedback_id ) searchCRN,
+		  um.USER_FULL_NAME searchCaseOwner,
+		  csm.DESCRIPTION searchCaseStatus,
+		  fb.feedback_description searchfbDescription,
+		  fb.DATE_LOGGED searchDateLogged,
+		  fb.feedback_id searchFBID
+		  FROM cms_feedback fb
+		LEFT JOIN cms_client_master cm
+		ON fb.CLIENT_CODE = cm.CLIENT_CODE 
+		left join CMS_USER_MASTER um on fb.CASE_OWNER = um.LOGIN_ID
+		left join cms_case_status_master csm on fb.status = csm.CASE_STATUS_ID 
+		where 1 = 1
+		<isNotNull prepend="AND" property="dateLoggedStart">
+			<isNotEmpty property="dateLoggedStart">
+			TO_DATE(fb.DATE_LOGGED,'DD-MM-YY') <![CDATA[ >= ]]> TO_DATE(#dateLoggedStart#,'DD-MM-YY') 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="dateLoggedEnd">
+			<isNotEmpty property="dateLoggedEnd">
+			TO_DATE(fb.DATE_LOGGED,'DD-MM-YY') <![CDATA[ <= ]]> TO_DATE(#dateLoggedEnd#,'DD-MM-YY') 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="clientCodeList">
+			<isNotEmpty property="clientCodeList">
+				fb.CLIENT_CODE in <iterate property="clientCodeList" open="(" close=")" conjunction=",">
+							#clientCodeList[]#
+						</iterate> 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="caseOwnerList">
+			<isNotEmpty property="caseOwnerList">
+				fb.CASE_OWNER in <iterate property="caseOwnerList" open="(" close=")" conjunction=",">
+							#caseOwnerList[]#
+						</iterate> 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="statusList">
+			<isNotEmpty property="statusList">
+				fb.status in <iterate property="statusList" open="(" close=")" conjunction=",">
+							#statusList[]#
+						</iterate> 
+			</isNotEmpty>
+		</isNotNull>
+	
+		
+		ORDER BY TO_TIMESTAMP(TO_CHAR($sortColumnName$,'DD-MM-YY HH24:MI:SS'),'DD-MM-YY HH24:MI:SS') $sortType$
+
+		) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+		
+	    </select>
+
+		
+		 <select id="searchFeedBackCount" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO" resultClass="java.lang.Long">
+
+		 SELECT count(fb.feedback_id)
+		   FROM cms_feedback fb
+		LEFT JOIN cms_client_master cm
+		ON fb.CLIENT_CODE = cm.CLIENT_CODE 
+		left join CMS_USER_MASTER um on fb.CASE_OWNER = um.LOGIN_ID
+		left join cms_case_status_master csm on fb.status = csm.CASE_STATUS_ID 
+		where 1 = 1
+		<isNotNull prepend="AND" property="dateLoggedStart">
+			<isNotEmpty property="dateLoggedStart">
+			TO_DATE(fb.DATE_LOGGED,'DD-MM-YY') <![CDATA[ >= ]]> TO_DATE(#dateLoggedStart#,'DD-MM-YY') 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="dateLoggedEnd">
+			<isNotEmpty property="dateLoggedEnd">
+			TO_DATE(fb.DATE_LOGGED,'DD-MM-YY') <![CDATA[ <= ]]> TO_DATE(#dateLoggedEnd#,'DD-MM-YY') 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="clientCodeList">
+			<isNotEmpty property="clientCodeList">
+				fb.CLIENT_CODE in <iterate property="clientCodeList" open="(" close=")" conjunction=",">
+							#clientCodeList[]#
+						</iterate> 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="caseOwnerList">
+			<isNotEmpty property="caseOwnerList">
+				fb.CASE_OWNER in <iterate property="caseOwnerList" open="(" close=")" conjunction=",">
+							#caseOwnerList[]#
+						</iterate> 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="statusList">
+			<isNotEmpty property="statusList">
+				fb.status in <iterate property="statusList" open="(" close=")" conjunction=",">
+							#statusList[]#
+						</iterate> 
+			</isNotEmpty>
+		</isNotNull>
+	
+		
+	    </select>
+
+	
+	 <select id="getFeedBackInfo" parameterClass="java.lang.Long" resultClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		 SELECT FEEDBACK_ID newFbSeqId,
+		 CLIENT_CODE clientNameField,
+		 CLIENT_CONTACT clientContactField,
+		 FEEDBACK_CATEGORY_ID fbCategoryField,
+		 FEEDBACK_DESCRIPTION fbDescriptionField,
+		 ACTION actionTakenField,
+		 FEEDBACK_TYPE feedback_type_id,
+		 STATUS fbStatusField,
+		 CASE_OWNER casOwnerField
+		From cms_feedback
+		where feedback_id = #feedBackId#	
+	
+		
+	    </select>
+	<!-- Updated by Himanshu for BI-40, to get legacy and non-legacy linked CRN for the feedback-->
+	<select id="getLinkedCRNList" parameterClass="java.lang.Long" resultClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		select cfc.CRN,
+		case 
+		when (cfc.crn=cc.crn) then '0'
+		else '1'
+		end as isLegacyData
+		FROM cms_feedback_crn_map cfc left join cms_clientcase cc  on  cfc.crn = cc.crn 
+		where cfc.feedback_id = #fbId#	
+	    </select>
+
+
+	    <delete id="UnlinkCRNOnUpdate" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+	
+		 delete from cms_feedback_crn_map fcm where fcm.FEEDBACK_ID = #newFbSeqId#
+		 <isNotNull prepend="AND" property="linkUnlinkCrnList">
+			<isNotEmpty property="linkUnlinkCrnList">
+		 fcm.crn in <iterate property="linkUnlinkCrnList" open="(" close=")" conjunction=",">
+							#linkUnlinkCrnList[]#
+						</iterate>
+		</isNotEmpty>
+		</isNotNull>
+		</delete>
+
+
+	 <insert id="linkCRNOnUpdate" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		  insert into CMS_FEEDBACK_CRN_MAP (FEEDBACK_ID,CRN,LINKED_BY) select * from
+			<iterate property="recList" open="("
+			   close=")" conjunction="union all">
+				
+				select #recList[].crnMapID# FEEDBACK_ID,#recList[].crnName# CRN,#recList[].crnLinkedBy# LINKED_BY from Dual
+				
+			  </iterate>
+
+	</insert>
+
+
+		<update id="updateFeedback" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+		UPDATE
+		CMS_FEEDBACK SET
+		CLIENT_CODE = #clientNameField#,
+		CLIENT_CONTACT = #clientContactField#,
+		FEEDBACK_CATEGORY_ID = #fbCategoryField#,
+		FEEDBACK_DESCRIPTION = #fbDescriptionField#,
+		feedback_type = #feedback_type_id#,
+		ACTION = #actionTakenField#,
+		STATUS = #fbStatusField#,
+		CASE_OWNER = #casOwnerField#,
+		DATE_CLOSED = TO_DATE(#dateClosed#,'DD-MM-YY'),
+		UPDATED_BY = #updatedBy#
+		WHERE
+		CMS_FEEDBACK.FEEDBACK_ID = #newFbSeqId#
+		
+	</update>
+	
+
+	 <insert id="addAttachmentDetails" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		insert into CMS_FEEDBACK_ATTACHEMENTS
+		(ATTACHEMENT_ID,FEEDBACK_ID,ATTACHEMENT,ATTACHED_BY,ATTACHEMENT_SIZE,ATTACHEMENT_PATH)
+		VALUES
+		(CMS_FEEDBACK_ATTACHMENTS_SEQ.nextVal,#newFbSeqId#,#fileName#,#updatedBy#,#fileSize#,#filePath#)
+
+	</insert>
+
+	 <select id="getAttachmentDetails" parameterClass="java.lang.Long" resultClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		 SELECT ATTACHEMENT_ID fileId,
+			ATTACHEMENT fileName,
+			ATTACHED_BY updatedBy,
+			ATTACHEMENT_SIZE fileSize,
+			ATTACHEMENT_PATH filePath
+		From CMS_FEEDBACK_ATTACHEMENTS
+		where FEEDBACK_ID = #fbSeqId#	
+	
+		
+	    </select>
+		<!-- Added by Ashish for BI-40, add temp attachments-->
+		<insert id="addTempAttachmentDetails" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		insert into CMS_TEMPORARY_ATTACHMENT
+		(ATTACHEMENT_ID,ATTACHEMENT,ATTACHED_BY,ATTACHEMENT_SIZE,ATTACHEMENT_PATH,ATLAS_SESSION_ID)
+		VALUES
+		(CMS_TEMPORARY_ATTACHMENT_SEQ.nextVal,#fileName#,#updatedBy#,#fileSize#,#filePath#,#sessionID#)
+
+	</insert>
+
+	<!-- Added by Ashish for BI-40, get temp attachments-->
+	<select id="getTempAttachmentDetails" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO" resultClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		
+SELECT 
+    att.ATTACHEMENT_ID fileId, 
+    att.ATTACHEMENT fileName,
+    att.ATTACHED_BY updatedBy,
+		att.ATTACHEMENT_SIZE fileSize,
+		att.ATTACHEMENT_PATH filePath,
+    to_char(att.attached_on,'DD-MON-YYYY hh24:mi:ss')
+FROM CMS_TEMPORARY_ATTACHMENT att,
+(
+    SELECT attachement, MAX(attached_on) latest_upload FROM cms_temporary_attachment
+    WHERE 
+	  
+	  <isNotNull property="attachedFilesList">
+			<isNotEmpty property="attachedFilesList">
+		 attachement IN <iterate property="attachedFilesList" open="(" close=")" conjunction=",">
+							#attachedFilesList[]#
+						</iterate>
+		</isNotEmpty>
+		</isNotNull>
+	  
+      AND
+      ATTACHED_BY = #logInUserId#	
+      AND
+      ATLAS_SESSION_ID = #sessionID#
+    GROUP BY attachement
+) a
+WHERE 
+att.attachement = a.attachement AND att.attached_on = a.latest_upload
+
+
+	    </select>
+		
+		
+	<select id="searchFeedbackForExport" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO" resultClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+		
+		SELECT  TO_CHAR(fb.DATE_LOGGED, 'dd-mm-yy') searchDateLogged,
+		      cm.CLIENT_CODE searchClientCode,
+		      cm.CLIENT_NAME searchClientName,
+		      fb.CLIENT_CONTACT clientContactField,
+		     replace((SELECT wm_concat(crn)
+			 FROM cms_feedback_crn_map fbm
+			WHERE fbm.feedback_id = fb.feedback_id
+		      ), ',','; ') searchCRN,
+		      (select FEEDBACK_CATEGORY from cms_feedback_category where feedback_category_id=fb.FEEDBACK_CATEGORY_ID) feedBackCategoryName,
+		      fb.feedback_description searchfbDescription,
+		      (select action from cms_feedback_action cfa1 where cfa1.feedback_id=fb.feedback_id and updated_on=
+			  ( select max(UPDATED_ON) from cms_feedback_action cfa where cfa.feedback_id=fb.feedback_id) ) actionTakenField,
+		       case
+		      when ((select count(*) from cms_feedback_attachements where feedback_id=fb.feedback_id)>0)
+			 then 'Yes'
+		       else
+			'No'
+			End "isAttach",
+		      csm.DESCRIPTION searchCaseStatus,
+		      um.USER_FULL_NAME searchCaseOwner,
+		      TO_CHAR(fb.DATE_CLOSED, 'dd-mm-yy') dateClosed,
+		      fb.feedback_id searchFBID       
+		  FROM cms_feedback fb
+		LEFT JOIN cms_client_master cm
+		ON fb.CLIENT_CODE = cm.CLIENT_CODE 
+		left join CMS_USER_MASTER um on fb.CASE_OWNER = um.LOGIN_ID
+		left join cms_case_status_master csm on fb.status = csm.CASE_STATUS_ID 
+		where 1 = 1
+		<isNotNull prepend="AND" property="dateLoggedStart">
+			<isNotEmpty property="dateLoggedStart">
+			TO_DATE(fb.DATE_LOGGED,'DD-MM-YY')  <![CDATA[ >= ]]> TO_DATE(#dateLoggedStart#,'DD-MM-YY') 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="dateLoggedEnd">
+			<isNotEmpty property="dateLoggedEnd">
+			TO_DATE(fb.DATE_LOGGED,'DD-MM-YY')  <![CDATA[ <= ]]>  TO_DATE(#dateLoggedEnd#,'DD-MM-YY') 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="clientCodeList">
+			<isNotEmpty property="clientCodeList">
+				fb.CLIENT_CODE in <iterate property="clientCodeList" open="(" close=")" conjunction=",">
+							#clientCodeList[]#
+						</iterate> 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="caseOwnerList">
+			<isNotEmpty property="caseOwnerList">
+				fb.CASE_OWNER in <iterate property="caseOwnerList" open="(" close=")" conjunction=",">
+							#caseOwnerList[]#
+						</iterate> 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="statusList">
+			<isNotEmpty property="statusList">
+				fb.status in <iterate property="statusList" open="(" close=")" conjunction=",">
+							#statusList[]#
+						</iterate> 
+			</isNotEmpty>
+		</isNotNull>
+	
+		ORDER BY TO_TIMESTAMP(TO_CHAR(fb.DATE_LOGGED,'DD-MM-YY HH24:MI:SS'),'DD-MM-YY HH24:MI:SS') DESC
+
+		
+	</select>
+
+
+	    <delete id="removeAttachments" parameterClass="java.util.List">
+	
+		 delete from CMS_FEEDBACK_ATTACHEMENTS cfa 
+		 where 
+		 cfa.ATTACHEMENT_ID in <iterate open="(" close=")" conjunction=",">
+							#docIDList[]#
+						</iterate>
+		
+	</delete>
+	<!-- Added by Ashish for BI-40, to remove temp attachments-->
+	<delete id="removeTempAttachments" parameterClass="java.util.List">
+	
+		 delete from CMS_TEMPORARY_ATTACHMENT cta 
+		 where 
+		 cta.ATTACHEMENT_ID in <iterate open="(" close=")" conjunction=",">
+							#docIDList[]#
+						</iterate>
+		
+	</delete>
+
+	
+	 <insert id="actionHistory" parameterClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		insert into CMS_FEEDBACK_ACTION
+		(ACTON_ID,FEEDBACK_ID,ACTION,UPDATED_BY)
+		VALUES
+		(CMS_FEEDBACK_ACTION_SEQ.nextVal,#newFbSeqId#,#actionTakenField#,#updatedBy#)
+
+	</insert>
+	<!-- Added by Himanshu for BI-40, get list of feedback type-->
+	<select id="getFeedBackTypeList" parameterClass="java.util.Map" 
+			resultClass="com.worldcheck.atlas.vo.masters.ClientFeedBackVO">
+
+		SELECT field_value_id "feedback_type_id",
+		field_value "feedback_type_value"
+		FROM CMS_FIELD_VALUE_MASTER
+		where field_id=to_number(#fieldId#)
+		and moduleId=to_number(#moduleId#)
+		ORDER by field_value_id
+	 </select>
+	
+</sqlMap>
+
+

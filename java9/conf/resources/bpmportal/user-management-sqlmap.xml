@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+    <typeAlias type="com.savvion.sbm.bpmportal.domain.User" alias="user"/>
+    <typeAlias type="com.savvion.sbm.bpmportal.domain.Group" alias="group"/>
+    <typeAlias type="com.savvion.sbm.bpmportal.domain.Queue" alias="queue"/>
+    <typeAlias type="com.savvion.sbm.bpmportal.domain.Organization" alias="organization"/>
+    <typeAlias type="java.util.HashMap" alias="hashmap"/>
+    <resultMap id="users" class="user">
+        <result property="id" column="userId"/>
+        <result property="name" column="userName"/>
+        <result property="attributes" column="userId" select="getUserAtrributesById"/>
+    </resultMap>
+    
+    <resultMap id="groups" class="group">
+        <result property="id" column="groupId"/>
+        <result property="name" column="groupName"/>
+        <result property="users" column="groupId" select="getUsersByGroupId"/>
+        <result property="groups" column="groupId" select="getGroupsByGroupId"/>      
+    </resultMap>
+    
+    <resultMap id="groupsByGroupId" class="group">
+        <result property="name" column="groupName"/>       
+    </resultMap>
+    
+    <resultMap id="groupsByQueueId" class="group">
+        <result property="name" column="groupName"/>        
+    </resultMap>
+    
+    <resultMap id="queues" class="queue">
+        <result property="id" column="queueId"/>
+        <result property="name" column="queueName"/>
+        <result property="users" column="queueId" select="getUsersByQueueId"/>
+        <result property="groups" column="queueId" select="getGroupsByQueueId"/>        
+        
+    </resultMap>
+    <resultMap id="organizations" class="organization">
+        <result property="name" column="organizationName"/>
+        <result property="users"  column="organizationName" select="getUsers"/>
+        <result property="groups" column="organizationName" select="getGroups"/>
+        <result property="queues" column="organizationName" select="getQueues"/>
+    </resultMap>
+        
+    <select id="getOrganizations" resultMap="organizations">
+		SELECT DISTINCT ORGANIZATION_NAME as organizationName 
+		FROM UMUSER
+    </select>
+    <select id="getUsers" resultMap="users">
+		SELECT UMUSER.USER_ID as userId, UMUSER.USER_NAME as userName , UMUSER.ORGANIZATION_NAME as organizationName 
+		FROM UMUSER
+                WHERE UMUSER.ORGANIZATION_NAME = #organizationName#
+    </select>
+    
+    <select id="getUserAtrributesById" resultClass="java.util.HashMap">
+		SELECT USERATTR.ATTR_NAME, USERATTR.ATTR_VALUE
+		FROM UMUSER,USERATTR
+                WHERE UMUSER.USER_ID = #userId#
+                AND UMUSER.USER_ID = USERATTR.USER_ID
+    </select>
+    
+    <select id="getUsersByQueueId" resultMap="users">
+		SELECT QUEUE_RESOURCE.MEMBER_NAME as userName, UMUSER.USER_ID as userId, UMUSER.ORGANIZATION_NAME as organizationName 
+		FROM QUEUE_RESOURCE, UMUSER
+                WHERE QUEUE_RESOURCE.QUEUE_ID = #queueId#
+                AND UMUSER.USER_NAME = QUEUE_RESOURCE.MEMBER_NAME 
+                AND QUEUE_RESOURCE.IS_GROUP = 0
+    </select>
+    <select id="getUsersByGroupId" resultMap="users">
+		SELECT DISTINCT UMGROUP.GROUP_ID, UMGROUP.GROUP_NAME, UMUSER.USER_NAME as userName, UMUSER.USER_ID as userId  
+		FROM UMGROUP, UMUSER, GROUPUSERROLE
+                WHERE UMGROUP.GROUP_ID = #groupId#
+                AND UMGROUP.GROUP_ID = GROUPUSERROLE.GROUP_ID
+                AND GROUPUSERROLE.USER_ID = UMUSER.USER_ID 
+                AND GROUPUSERROLE.IS_GROUP = 0
+                GROUP BY UMGROUP.GROUP_ID, UMGROUP.GROUP_NAME, UMUSER.USER_NAME, UMUSER.USER_ID 
+                ORDER BY UMGROUP.GROUP_ID, UMGROUP.GROUP_NAME, UMUSER.USER_NAME, UMUSER.USER_ID
+    </select>
+    
+    <select id="getGroupsByGroupId" resultMap="groupsByGroupId">
+		SELECT DISTINCT GROUPUSERROLE.GROUP_ID as groupId, GROUPUSERROLE.USER_ID as userId, UMGROUP.GROUP_NAME as groupName  
+		FROM UMGROUP, GROUPUSERROLE
+                WHERE GROUPUSERROLE.GROUP_ID = #groupId#
+                AND GROUPUSERROLE.USER_ID = UMGROUP.GROUP_ID
+                AND GROUPUSERROLE.IS_GROUP = 1
+                GROUP BY GROUPUSERROLE.GROUP_ID, GROUPUSERROLE.USER_ID, UMGROUP.GROUP_NAME
+                ORDER BY GROUPUSERROLE.GROUP_ID, GROUPUSERROLE.USER_ID, UMGROUP.GROUP_NAME
+    </select>
+    
+    <select id="getGroupsByQueueId" resultMap="groupsByQueueId">
+		SELECT QUEUE_RESOURCE.QUEUE_ID as queueId, UMGROUP.GROUP_ID as groupId, UMGROUP.GROUP_NAME as groupName  
+		FROM UMGROUP, QUEUE_RESOURCE, SBM_QUEUE
+                WHERE SBM_QUEUE.QUEUE_ID = #queueId#
+                AND QUEUE_RESOURCE.QUEUE_ID = SBM_QUEUE.QUEUE_ID 
+                AND QUEUE_RESOURCE.MEMBER_NAME = UMGROUP.GROUP_NAME
+                AND QUEUE_RESOURCE.IS_GROUP = 1
+                GROUP BY QUEUE_RESOURCE.QUEUE_ID , UMGROUP.GROUP_ID, UMGROUP.GROUP_NAME 
+                ORDER BY QUEUE_RESOURCE.QUEUE_ID , UMGROUP.GROUP_ID, UMGROUP.GROUP_NAME 
+    </select>    
+    
+    <select id="getGroups" resultMap="groups">
+		SELECT UMGROUP.GROUP_ID as groupId, UMGROUP.GROUP_NAME as groupName, UMGROUP.ORGANIZATION_NAME as organizationName 
+		FROM UMGROUP
+    </select>   
+    <select id="getQueues" resultMap="queues">
+		SELECT DISTINCT SBM_QUEUE.QUEUE_NAME as queueName, SBM_QUEUE.QUEUE_ID as queueId
+		FROM SBM_QUEUE
+            ORDER BY SBM_QUEUE.QUEUE_NAME,SBM_QUEUE.QUEUE_ID
+    </select>
+    <select id="getQueues1" resultMap="queues">
+		SELECT DISTINCT SBM_QUEUE.QUEUE_NAME as queueName, QUEUE_RESOURCE.QUEUE_ID as queueId
+		FROM QUEUE_RESOURCE, SBM_QUEUE
+                WHERE QUEUE_RESOURCE.QUEUE_ID = SBM_QUEUE.QUEUE_ID
+                GROUP BY SBM_QUEUE.QUEUE_NAME, QUEUE_RESOURCE.QUEUE_ID 
+                ORDER BY SBM_QUEUE.QUEUE_NAME,QUEUE_RESOURCE.QUEUE_ID
+    </select>
+</sqlMap>

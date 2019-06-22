@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" 
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="AtlasHistory">
+	<insert id="addHistory" parameterClass="com.worldcheck.atlas.vo.history.AtlasHistoryVO">
+	
+		<selectKey resultClass="long" type="pre" keyProperty="historyId">
+			
+			select cms_report_master_history_SEQ.NEXTVAL AS VALUE FROM DUAL
+		
+		</selectKey>
+		
+		insert into
+			CMS_REPORT_TYPE_MASTER_HISTORY
+			(
+			  HISTORY_ID,PARENT_FK,ACTION,OLD_INFO,NEW_INFO,UPDATED_BY,UPDATED_ON
+			)
+			values
+			(
+			#historyId#,#historyKey#,#action#,#oldInfo#,#newInfo#,(select USER_FULL_NAME from CMS_USER_MASTER WHERE LOGIN_ID = #updatedBy#),sysdate
+			)
+	</insert>
+	
+	<select id="getHistoryData" resultClass="com.worldcheck.atlas.vo.history.AtlasHistoryVO" parameterClass = "com.worldcheck.atlas.vo.history.AtlasHistoryVO">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM ( select history.HISTORY_ID historyKey, history.ACTION action,
+				history.OLD_INFO oldInfo,
+				history.NEW_INFO newInfo, 
+				history.UPDATED_BY updatedBy,
+				TO_CHAR(history.UPDATED_ON, 'DD-MON-YYYY HH24:MI:SS') updatedOn
+				from  cms_report_type_master_history history 
+				where history.PARENT_FK=#historyKey#
+				ORDER BY upper($sortColumnName$) $sortType$ ) a WHERE ROWNUM <![CDATA[ <= ]]>
+				#limit#) WHERE rn <![CDATA[ >= ]]>#start#
+     </select>
+
+
+	 <select id="getHistoryDataCount" parameterClass="com.worldcheck.atlas.vo.history.AtlasHistoryVO"
+		resultClass="java.lang.Integer">
+		select count(*)
+		from  cms_report_type_master_history history 
+		where history.PARENT_FK=#historyKey#
+     </select>
+	 
+	 <!-- Start: Added by 6032662 for BI-702 -->
+	 <insert id="addUserHistory" parameterClass="com.worldcheck.atlas.vo.history.AtlasHistoryVO">
+		
+		<selectKey resultClass="long" type="pre" keyProperty="historyId">
+			
+			select CMS_USER_MASTER_HISTORY_SEQ.NEXTVAL AS VALUE FROM DUAL
+		
+		</selectKey>
+
+		insert into
+			CMS_USER_MASTER_HISTORY
+			(
+			  HISTORY_ID,PARENT_FK,ACTION,OLD_INFO,NEW_INFO,UPDATED_BY,UPDATED_ON
+			)
+			values
+			(
+			#historyId#,#historyKey#,#action#,#oldInfo#,#newInfo#,(select USER_FULL_NAME from CMS_USER_MASTER WHERE LOGIN_ID = #updatedBy#),sysdate
+			)
+	</insert>
+
+	<select id="getUserHistoryData" resultClass="com.worldcheck.atlas.vo.history.AtlasHistoryVO" parameterClass = "com.worldcheck.atlas.vo.history.AtlasHistoryVO">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM ( select history.HISTORY_ID historyKey, history.ACTION action,
+				history.OLD_INFO oldInfo,
+				history.NEW_INFO newInfo, 
+				history.UPDATED_BY updatedBy,
+				TO_CHAR(history.UPDATED_ON, 'DD-MON-YYYY HH24:MI:SS') updatedOn
+				from  CMS_USER_MASTER_HISTORY history 
+				where history.PARENT_FK=#historyKey#
+				ORDER BY upper($sortColumnName$) $sortType$ ) a WHERE ROWNUM <![CDATA[ <= ]]>
+				#limit#) WHERE rn <![CDATA[ >= ]]>#start#
+     </select>
+
+
+	 <select id="getUserHistoryDataCount" parameterClass="com.worldcheck.atlas.vo.history.AtlasHistoryVO"
+		resultClass="java.lang.Integer">
+		select count(*)
+		from  CMS_USER_MASTER_HISTORY history 
+		where history.PARENT_FK=#historyKey#
+     </select>
+	<!-- End: Added by 6032662 for BI-702 -->
+</sqlMap>

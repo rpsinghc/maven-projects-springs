@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="MyPerformance">
+
+<resultMap id="fullMap" class="com.worldcheck.atlas.vo.report.MyPerformanceReportVO" groupBy = "month">
+		<result property="month" column="month" />
+		<result property="listMyPerformanceReportVO" resultMap="MyPerformance.mini" />			
+	</resultMap>
+
+	<resultMap id="mini" class="com.worldcheck.atlas.vo.report.MyPerformanceReportVO" >
+		<result property="month" column="month" />
+		<result property="reportType" column="reportType" />
+		<result property="numOfCases" column="caseCount" />	
+			
+	</resultMap>
+
+<select id='myPerformanceDetails' parameterClass="com.worldcheck.atlas.vo.report.MyPerformanceReportVO" resultMap="fullMap">
+
+
+ SELECT TO_CHAR(to_date(MONTH,'MM'),'Month') MONTH,
+  ('MP'
+  ||reportType) reportType,
+  caseCount
+   FROM
+  (SELECT DISTINCT A.month MONTH   ,
+    A.report_crn_initial reportType,
+    A.year YEAR                    ,
+    DECODE(cmp_1.case_count,NULL,'',TO_CHAR(cmp_1.case_count))caseCount
+     FROM
+    (SELECT YEAR        ,
+      MONTH             ,
+      report_crn_initial,
+      COUNT(CRN)case_count
+       FROM DW_CASE_RECVD_ANALYST
+      WHERE ANALYST = #analyst#
+       AND YEAR        = #year#
+   GROUP BY YEAR,
+      MONTH     ,
+      report_crn_initial
+    ) cmp_1                  ,
+    (SELECT DISTINCT C.month ,
+      B.report_crn_initial   ,
+      cmp_1.year
+       FROM
+      (SELECT YEAR        ,
+        MONTH             ,
+        report_crn_initial,
+        COUNT(CRN) case_count
+         FROM DW_CASE_RECVD_ANALYST
+        WHERE ANALYST = #analyst#
+       AND YEAR        = #year#
+     GROUP BY YEAR,
+        MONTH     ,
+        report_crn_initial
+      ) cmp_1,
+      (SELECT report_crn_initial FROM cms_report_type_master
+      )B,
+      (SELECT TO_CHAR(add_months(to_date('01-Jan-2001','dd-Mon-yyyy'),level -1),'MM') MONTH
+         FROM dual CONNECT BY level <![CDATA[ <= ]]> 12
+      ) C
+    )A
+    WHERE cmp_1.report_crn_initial(+) = A.report_crn_initial
+  AND cmp_1.month(+)                  = A.month
+ ORDER BY A.month,
+    A.report_crn_initial
+  )
+  WHERE YEAR = #year#
+
+UNION ALL
+ 
+ SELECT 'Total' MONTH,
+  ('MP'
+  || REPORT_CRN_INITIAL) reportType,
+  TO_CHAR(COUNT(CRN)) caseCount
+   FROM DW_CASE_RECVD_ANALYST
+  WHERE YEAR = #year#
+AND ANALYST  = #analyst#
+GROUP BY REPORT_CRN_INITIAL
+
+</select>
+
+
+<select id="noOfCases" resultClass="com.worldcheck.atlas.vo.report.MyPerformanceReportVO" parameterClass="com.worldcheck.atlas.vo.report.MyPerformanceReportVO">
+	
+   select 
+    ROUND(DECODE(b.CMP_CASE_COUNT,NULL,to_char('0.0'),to_char(b.CMP_CASE_COUNT)),2)numOfCasesCMP, 
+    ROUND(DECODE(b.WIP_CASE_COUNT,NULL,to_char('0.0'),to_char(b.WIP_CASE_COUNT)),2)numOfCasesWIP , 
+    ROUND(DECODE(b.CMP_JLP,NULL,to_char('0.0'),to_char(b.CMP_JLP)),2) cmpJLP,
+    ROUND(DECODE(b.WIP_JLP,NULL,to_char('0.0'),to_char(b.WIP_JLP)),2) wipJLP,
+    c.month month from
+(select  to_char(add_months(to_date('01-Jan-2001','dd-Mon-yyyy'),level -1),'MM') month from  dual connect by level <![CDATA[ <= ]]> 12) C
+left join
+(select cmp_1.month month, cmp_1.analyst analyst, cmp_1.year year, 
+  sum(cmp_1.CMP_CASE_COUNT) CMP_CASE_COUNT, sum(cmp_1.wip_case_count) wip_case_count, sum(cmp_1.wip_jlp) wip_jlp, sum(cmp_1.cmp_jlp) cmp_jlp 
+  from DW_TEAM_PERFORMANCE cmp_1 where cmp_1.analyst =#analyst#  group by cmp_1.month, cmp_1.analyst, cmp_1.year)B
+on c.month = b.month
+and b.year = #year#
+order by c.month
+
+
+</select>
+
+
+<select id="noOfCRNS" resultClass = "com.worldcheck.atlas.vo.report.MyPerformanceReportVO" parameterClass="java.util.HashMap">
+
+select  CRN 
+from DW_CASE_RECVD_ANALYST
+where 
+Analyst = #userId# 
+<isNotNull prepend="AND" property="reportType">
+			<isNotEmpty property="reportType">
+REPORT_CRN_INITIAL = #reportType#
+</isNotEmpty>
+</isNotNull>
+
+<isNotNull prepend="AND" property="month">
+			<isNotEmpty property="month">
+Month = to_char(to_date(#month#,'Month'),'MM')
+
+</isNotEmpty>
+</isNotNull>
+AND
+year = #year#
+Order by CRN
+
+
+</select>
+
+</sqlMap>

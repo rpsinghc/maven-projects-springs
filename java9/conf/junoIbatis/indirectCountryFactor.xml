@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="InDirectRiskFactorVO">
+	
+	<resultMap id="countryIccrVO" class="com.worldcheck.juno.vo.master.CountryIccrVO">
+		<result property="fatfStatus" column="fatf_status" />
+		<result property="fatfPhrase" column="fatf_phrase" />
+		<result property="stateTerrorrism" column="state_terrorism" />
+		<result property="otherSanction" column="other_sanctions" />
+	</resultMap>
+	
+	<resultMap id="countryIccrVOMaster" class="com.worldcheck.juno.vo.master.CountryIccrVO">
+		<result property="fatfStatus" column="fatf_status" />
+		<result property="fatfPhrase" column="fatf_phrase" />
+		<result property="stateTerrorrism" column="state_terrorism" />
+		<result property="otherSanction" column="other_sanctions" />
+		<result property="designatedOn" column="designated_on" />
+		<result property="delistedOn" column="delisted_on" />
+		<result property="terrorismDate" column="terrorismDate" />
+	</resultMap>
+			
+	<resultMap id="saveResult" class="com.worldcheck.juno.vo.component.InDirectRiskFactorVO">
+		<result property="countryId" column="country_master_id" />
+		<result property="countryName" column="country" />
+		<result property="corruptionSrcMI" column="corruption_source_mi" />
+		<result property="amlRankingMI" column="aml_ranking_mi" />
+		<result property="amlRankingRiskband" column="aml_ranking_riskband" />
+		<result property="corruptionSrcRB" column="corruption_source_riskband" />
+		<result property="countryIccrVO" resultMap="InDirectRiskFactorVO.countryIccrVO" />
+	</resultMap>
+			
+	<resultMap id="masterResult" class="com.worldcheck.juno.vo.component.InDirectRiskFactorVO">
+		<result property="countryId" column="country_master_id" />
+		<result property="countryName" column="country" />
+		<result property="corruptionSrcMI" column="corruption_source_mi" />
+		<result property="amlRankingMI" column="aml_ranking_mi" />
+		<result property="amlRankingRiskband" column="aml_ranking_riskband" />
+		<result property="corruptionSrcRB" column="corruption_source_riskband" />
+		<result property="countryIccrVO" resultMap="InDirectRiskFactorVO.countryIccrVOMaster" />
+	</resultMap>
+
+	<select id="getSaveData" parameterClass="java.util.HashMap" resultMap="masterResult">		
+		select ccm.country_master_id, ccm.country, rccm.corruption_source_mi, rccm.aml_ranking_mi, rccm.aml_ranking_riskband,
+		rccm.corruption_source_riskband, rcidm.fatf_status, stat.fatf_text as fatf_phrase, 
+		TO_CHAR(TO_DATE(rcidm.designated_on,'dd/MM/YYYY'),'FMDD Month YYYY') designated_on, 
+	    TO_CHAR(TO_DATE(rcidm.delisted_on,'dd/MM/YYYY'),'FMDD Month YYYY') delisted_on,
+		rcidm.other_sanctions, terr.fatf_text as state_terrorism, 
+		TO_CHAR(TO_DATE(rcidm.terrorism_date,'dd/MM/YYYY'),'FMDD Month YYYY') terrorismDate
+		from cms_country_master ccm
+		left outer join RG_COUNTRY_CHECK_MASTER rccm on rccm.country_id = ccm.country_master_id
+		left outer join RG_COUNTRY_ICRR_DATA_MASTER rcidm on rcidm.country_id = ccm.country_master_id 
+    	left outer join RG_COUNTRY_ICRR_MST_FATFSTATUS stat on stat.fatf_phrase = rcidm.fatf_phrase
+		left outer join RG_COUNTRY_ICRR_MST_FATFSTATUS terr on terr.fatf_phrase = rcidm.state_terrorism
+		where ccm.country_master_id= (select country_id from CMS_SUBJECT 
+		where upper(crn)=upper(#crn#) and is_primary_sub=1) 
+ 		and  rccm.status=1 and rcidm.status=1
+	</select>
+
+	<resultMap id="cntryResult" class="com.worldcheck.juno.vo.component.InDirectRiskFactorVO">
+		<result property="countryId" column="country_id" />
+		<result property="isPrimary" column="isprimary" />
+	</resultMap>
+	
+	
+	<select id="canMarkDone" resultClass="java.lang.Boolean">
+		select case when count(*) > 0 then 'true' else 'false' END
+		from RG_INDIRECT_RISKS where case_id = #crn# and processcycleid = #processCycleId# and nvl(is_auto_saved,'N') != 'Y'
+	</select>
+	
+	<select id="getCountryList" parameterClass="java.util.HashMap" resultMap="cntryResult">		
+		select country_id,ISPRIMARY from rg_indirect_risks 		
+		where upper(case_id)=upper(#crn#)  and PROCESSCYCLEID=#processCycleId#  
+		order by INDIRECT_RISKS_ID
+	</select>
+
+	<select id="getRefreshData" parameterClass="java.util.HashMap" resultMap="masterResult">		
+		select ccm.country_master_id, ccm.country, rccm.corruption_source_mi, rccm.aml_ranking_mi, rccm.aml_ranking_riskband,
+		rccm.corruption_source_riskband, rcidm.fatf_status, stat.fatf_text as fatf_phrase, 
+	    TO_CHAR(TO_DATE(rcidm.designated_on,'dd/MM/YYYY'),'FMDD Month YYYY') designated_on, 
+	    TO_CHAR(TO_DATE(rcidm.delisted_on,'dd/MM/YYYY'),'FMDD Month YYYY') delisted_on, 
+		rcidm.other_sanctions, terr.fatf_text as state_terrorism, 
+		TO_CHAR(TO_DATE(rcidm.terrorism_date,'dd/MM/YYYY'),'FMDD Month YYYY') terrorismDate
+		from cms_country_master ccm
+		left outer join RG_COUNTRY_CHECK_MASTER rccm on rccm.country_id = ccm.country_master_id
+		left outer join RG_COUNTRY_ICRR_DATA_MASTER rcidm on rcidm.country_id = ccm.country_master_id 
+    	left outer join RG_COUNTRY_ICRR_MST_FATFSTATUS stat on stat.fatf_phrase = rcidm.fatf_phrase
+		left outer join RG_COUNTRY_ICRR_MST_FATFSTATUS terr on terr.fatf_phrase = rcidm.state_terrorism
+		where ccm.country_master_id= #countryId# 
+ 		and  rccm.status=1 and rcidm.status=1
+	</select>
+
+	<select id="getCountryIcrrDetailsMaster" resultMap="masterResult">
+		select ccm.country_master_id, ccm.country, rgccm.corruption_source_mi, rgccm.aml_ranking_mi, rgccm.aml_ranking_riskband, 
+		rgccm.corruption_source_riskband, rgidm.fatf_status, stat.fatf_text as fatf_phrase, 
+	    TO_CHAR(TO_DATE(rgidm.designated_on,'dd/MM/YYYY'),'FMDD Month YYYY') designated_on, 
+	    TO_CHAR(TO_DATE(rgidm.delisted_on,'dd/MM/YYYY'),'FMDD Month YYYY') delisted_on, 
+	    rgidm.other_sanctions, stat1.fatf_text as state_terrorism, 
+		TO_CHAR(TO_DATE(rgidm.terrorism_date,'dd/MM/YYYY'),'FMDD Month YYYY') terrorismDate
+		from rg_country_check_master rgccm, rg_country_icrr_data_master rgidm, cms_country_master ccm, 
+		RG_COUNTRY_ICRR_MST_FATFSTATUS stat, RG_COUNTRY_ICRR_MST_FATFSTATUS stat1
+		where rgccm.country_id= rgidm.country_id and rgccm.country_id = ccm.country_master_id and rgccm.status=1 and rgidm.status=1
+		and stat.fatf_phrase = rgidm.fatf_phrase  and stat1.fatf_phrase = rgidm.state_terrorism
+		order by ccm.country
+	</select>
+	
+	<select id="checkSaveData" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from rg_indirect_risks where
+		upper(case_id)=upper(#crn#) and PROCESSCYCLEID=#processCycleId#
+	</select>
+
+	<resultMap id="result" class="com.worldcheck.juno.vo.component.InDirectRiskFactorVO">
+		<result property="countryId" column="COUNTRY_ID" />		
+		<result property="countryName" column="country" />
+		<result property="fatfStatusStr" column="FATF_STATUS" />
+		<result property="terrorismStr" column="STATE_TERRORISM" />
+		<result property="allCorruptionSrc" column="COUTRY_CHECK" />
+		<result property="otherSectionsStr" column="OTHER_SANCTIONS" />
+		<result property="lastSave" column="displayDate" />
+		<result property="isPrimary" column="isprimary" />
+		<result property="updateBy" column="UPDATED_BY" />		
+	</resultMap>
+	
+	<select id="getIndirectRisk" resultMap="result">
+		select rir.COUNTRY_ID, rir.FATF_STATUS,rir.STATE_TERRORISM,rir.COUTRY_CHECK,rir.OTHER_SANCTIONS,to_char(rir.UPDATED_ON, 'DD-MM-YY HH24:MI:SS') displayDate,
+		ccm.country, rir.isprimary, rir.UPDATED_BY
+		from RG_INDIRECT_RISKS rir
+		left outer join cms_country_master ccm on ccm.country_master_id = rir.country_id where 
+		upper(rir.case_id)=upper(#crn#) and rir.PROCESSCYCLEID=#processCycleId# 
+		order by INDIRECT_RISKS_ID
+	</select>
+
+	<resultMap id="footNoteDesc" class="com.worldcheck.juno.vo.component.InDirectRiskFactorVO">
+		<result property="id" column="global_icrr_data_id" />				
+		<result property="fatfStatusStr" column="fatf_footnote" />
+		<result property="terrorismStr" column="terrorism_footnote" />
+		<result property="allCorruptionSrc" column="country_check_footnote" />
+		<result property="otherSectionsStr" column="OTHER_SANCTIONS_FOOTNOTE" />
+	</resultMap>
+	
+	<select id="getFootnoteDesc" resultMap="footNoteDesc">
+		select global_icrr_data_id, fatf_footnote, terrorism_footnote, country_check_footnote,OTHER_SANCTIONS_FOOTNOTE from rg_global_icrr_info_master
+	</select>
+	<insert id="insert" parameterClass="com.worldcheck.juno.vo.component.InDirectRiskFactorVO">
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_INDIRECT_RISKS_SEQ.NEXTVAL from dual
+	  </selectKey>
+		INSERT INTO RG_INDIRECT_RISKS
+		(INDIRECT_RISKS_ID,COUNTRY_ID,CASE_ID,FATF_STATUS,STATE_TERRORISM,COUTRY_CHECK,OTHER_SANCTIONS,UPDATED_BY,UPDATED_ON,PROCESSCYCLEID, ISPRIMARY)
+		VALUES(#id#,#countryId#,#crn#,#fatfStatusStr#,#terrorismStr#,#corruptionSrcMI#,#otherSectionsStr#,#userName#,sysdate, #processCycleId#, #isPrimary#)
+	</insert>
+
+	<delete id="delete" parameterClass="java.util.HashMap">
+		delete from RG_INDIRECT_RISKS
+		where CASE_ID=#crn#  and PROCESSCYCLEID=#processCycleId#
+	</delete>
+
+	
+
+</sqlMap>

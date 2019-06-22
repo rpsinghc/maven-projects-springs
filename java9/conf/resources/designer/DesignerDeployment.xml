@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Deployment SYSTEM "Designer.dtd" >
+
+<!-- List of available deployment targets. Used in the Deploy wizard of BPM Studio -->
+
+<Deployment>
+   <Target>
+      <Label>Default</Label>
+      <Description>SBM server</Description>
+      <Description xml:lang="fr">Serveur SBM</Description>
+      <Server url="http://127.0.0.1:18793/sbm/deployment"/>
+   </Target>
+</Deployment>

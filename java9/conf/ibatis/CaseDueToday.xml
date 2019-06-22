@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CaseDueToday">
+
+<select id='dueTodayDetails' parameterClass="com.worldcheck.atlas.vo.report.CaseDueTodayVO" resultClass="com.worldcheck.atlas.vo.report.CaseDueTodayVO">
+
+	SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (
+select 
+CRN crn,
+IS_EXPRESS expressCase,
+PRIORITY priority,
+PRIMARY_SUBJECT_NAME primarySubName,
+CURRENT_PROCESSCYCLE processCycle,
+CASE_MANAGER caseManager
+FROM DW_OVERDUE_CASE_LVL
+WHERE 
+CLIENT_INT_DUE_DATE1 = TO_DATE(sysdate-1,'DD-MON-RR')
+OR
+CLIENT_INT_DUE_DATE2 = TO_DATE(sysdate-1,'DD-MON-RR')
+OR
+CLIENT_FINAL_DUE_DATE = TO_DATE(sysdate-1,'DD-MON-RR')
+ORDER BY priority
+) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+
+</select>
+
+
+<select id="dueTodayDetailsCount" resultClass="java.lang.Integer">
+
+
+ select count
+(CRN)
+FROM DW_OVERDUE_CASE_LVL
+WHERE 
+CLIENT_INT_DUE_DATE1 = TO_DATE(sysdate-1,'DD-MON-RR')
+OR
+CLIENT_INT_DUE_DATE2 = TO_DATE(sysdate-1,'DD-MON-RR')
+OR
+CLIENT_FINAL_DUE_DATE = TO_DATE(sysdate-1,'DD-MON-RR')
+</select>
+
+</sqlMap>
+

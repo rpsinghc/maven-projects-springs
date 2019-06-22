@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CountryCheckMasterVO">
+
+
+	<resultMap id="countryVO" class="com.worldcheck.juno.vo.master.CountryVO">
+		<result property="id" column="COUNTRY_ID" />
+		<result property="name" column="COUNTRY" />
+
+	</resultMap>
+
+	<!--- Showing data by ID -->
+	<resultMap id="result"
+		class="com.worldcheck.juno.vo.master.CountryCheckMasterVO">
+
+		<result property="id" column="COUNTRY_CHECK_MST_ID" />
+		<result property="corruptionMI" column="CORRUPTION_SOURCE_MI" />
+		<result property="amlMI" column="AML_RANKING_MI" />
+		<result property="amlRanking" column="AML_RANKING_RISKBAND" />
+		<result property="corruptionRanking" column="CORRUPTION_SOURCE_RISKBAND" />
+		<result property="status" column="STATUS" />
+		<result property="countryVO" resultMap="CountryCheckMasterVO.countryVO" />
+	</resultMap>
+
+
+	<select id="searchCountryCheck" resultMap="result"
+		parameterClass="java.util.HashMap">
+		SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (select ccm.COUNTRY_CHECK_MST_ID,
+		ccm.COUNTRY_ID,ccm.CORRUPTION_SOURCE_MI,ccm.CORRUPTION_SOURCE_RISKBAND,
+		ccm.AML_RANKING_MI, ccm.AML_RANKING_RISKBAND ,
+		ccm.STATUS ,cm.COUNTRY_MASTER_ID,cm.COUNTRY
+
+		from RG_COUNTRY_CHECK_MASTER ccm,cms_country_master cm
+
+		WHERE
+
+		ccm.COUNTRY_ID=cm.COUNTRY_MASTER_ID
+		<isNotNull property="countryId">
+			<isNotEqual prepend="AND" property="countryId"
+				compareValue="0">
+				ccm.COUNTRY_ID=#countryId# 
+			</isNotEqual>
+		</isNotNull>
+		<isNotNull property="status">
+			<isNotEqual prepend="AND" property="status" compareValue="">
+				upper(ccm.STATUS)=upper(#status#)
+			</isNotEqual>
+		</isNotNull>
+
+		order by cm.COUNTRY) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+
+	</select>
+	<!-- Insert example, using the Account parameter class -->
+	<insert id="insert" parameterClass="com.worldcheck.juno.vo.master.CountryCheckMasterVO">
+
+
+		insert into RG_COUNTRY_CHECK_MASTER (
+		COUNTRY_CHECK_MST_ID, COUNTRY_ID ,
+		CORRUPTION_SOURCE_MI,
+		CORRUPTION_SOURCE_RISKBAND,
+		AML_RANKING_MI,
+		AML_RANKING_RISKBAND,
+		STATUS,UPDATED_BY,UPDATED_ON
+		)values (
+		RG_COUNTRY_CHECK_MASTER_SEQ.NEXTVAL, #countryVO.id#, #corruptionMI#, #corruptionRanking#,
+		#amlMI#,#amlRanking#,#status#,#userName#,sysdate
+		)        
+	  </insert>
+
+	<select id="getById" resultMap="result">
+
+		select ccm.COUNTRY_CHECK_MST_ID,
+		ccm.COUNTRY_ID,ccm.CORRUPTION_SOURCE_MI,ccm.CORRUPTION_SOURCE_RISKBAND,
+		ccm.AML_RANKING_MI, ccm.AML_RANKING_RISKBAND ,
+		ccm.STATUS ,cm.COUNTRY
+		from RG_COUNTRY_CHECK_MASTER ccm,cms_country_master cm
+
+		where ccm.COUNTRY_ID=cm.COUNTRY_MASTER_ID and ccm.COUNTRY_CHECK_MST_ID=#id#
+
+
+	</select>
+
+
+	<update id="update" parameterClass="com.worldcheck.juno.vo.master.CountryCheckMasterVO">
+		update RG_COUNTRY_CHECK_MASTER set
+		CORRUPTION_SOURCE_MI = #corruptionMI#,
+		CORRUPTION_SOURCE_RISKBAND = #corruptionRanking#,
+		AML_RANKING_MI = #amlMI#,
+		AML_RANKING_RISKBAND = #amlRanking#,
+		STATUS = #status#
+		where
+		COUNTRY_CHECK_MST_ID = #id#
+	  </update>
+
+
+	<update id="deActivate" parameterClass="java.util.HashMap">
+		update RG_COUNTRY_CHECK_MASTER set
+		STATUS =0
+		where
+		COUNTRY_CHECK_MST_ID in 
+		
+		<iterate property="id" open="(" close=")" conjunction=",">
+						#id[]#
+	    </iterate>
+	  </update>
+	  
+	  <update id="activate" parameterClass="java.util.HashMap">
+		update RG_COUNTRY_CHECK_MASTER set
+		STATUS =1
+		where
+		COUNTRY_CHECK_MST_ID in 
+		
+		<iterate property="id" open="(" close=")" conjunction=",">
+						#id[]#
+	    </iterate>
+	  </update>
+	  
+	  
+	  <select id="searchCountryCheckCount" resultClass="java.lang.Integer"
+		parameterClass="java.util.HashMap">
+		select count(*)
+
+		from RG_COUNTRY_CHECK_MASTER ccm,cms_country_master cm
+
+		WHERE
+
+		ccm.COUNTRY_ID=cm.COUNTRY_MASTER_ID
+		<isNotNull property="countryId">
+			<isNotEqual prepend="AND" property="countryId"
+				compareValue="0">
+				ccm.COUNTRY_ID=#countryId# 
+			</isNotEqual>
+		</isNotNull>
+		<isNotNull property="status">
+			<isNotEqual prepend="AND" property="status" compareValue="">
+				upper(ccm.STATUS)=upper(#status#)
+			</isNotEqual>
+		</isNotNull>
+
+		order by cm.COUNTRY
+
+	</select>
+	
+	<select id="checkCountryStatus" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+
+		select count(*) from rg_country_check_master
+		where country_id=#countryId# and status=#status#
+	
+	</select>
+	
+</sqlMap>

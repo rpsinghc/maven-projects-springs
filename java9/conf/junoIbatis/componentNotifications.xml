@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ComponentNotifications">
+	<select id="getNotifications" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+		select notification from rg_comp_notifications
+		where case_id =  #crn# and component_id = #componentId#
+		<isNotNull property="componentType">
+		and component_type = #componentType#
+		</isNotNull>
+	</select>
+	
+	<insert id="insertNotification" parameterClass="java.util.HashMap">
+		insert into rg_comp_notifications (CASE_ID, COMPONENT_ID, COMPONENT_TYPE, NOTIFICATION)
+		values (#crn#, #componentId#, #componentType#, #notification#)
+	</insert>
+	
+	<delete id="removeNotifications" parameterClass="java.util.HashMap">
+		delete from rg_comp_notifications
+		where case_id =  #crn# and component_id = #componentId#
+		<isNotNull property="componentType">
+		and component_type = #componentType#
+		</isNotNull>
+	</delete>
+</sqlMap>

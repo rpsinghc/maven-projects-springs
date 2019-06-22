@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="TeamJLP">
+
+	<select id="getAllActiveUsers" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO" 
+	parameterClass = "com.worldcheck.atlas.vo.report.TeamJLPSummaryVO">
+		SELECT userFullName FROM (
+		SELECT 
+		USER_FULL_NAME userFullName
+		FROM CMS_USER_MASTER cum
+		WHERE STATUS = 1
+		<isNotNull property="templateId">
+		<isNotEmpty property="templateId">
+		<isNotEqual property="templateId" compareValue="0">
+		AND NOT EXISTS  
+		(SELECT B.userFullName FROM
+    		(SELECT TRIM(dbms_lob.substr( SUBSTR ( txt , INSTR (txt, ',', 1, level ) +1, INSTR (txt, ',',1, level+1) - INSTR (txt, ',', 1, level) -1)))
+          AS userFullName
+        	FROM (  select ','||TEMPLATE_USER_ID||','  as txt from CMS_TEAM_JLP_TEMPLATE where template_id = #templateId#)  
+         CONNECT BY level <![CDATA[ <= ]]> 	LENGTH(txt)-LENGTH(REPLACE(txt,',','')) -1 )B
+       WHERE B.userFullName = cum.user_full_name
+      )
+		</isNotEqual>
+		</isNotEmpty>
+		</isNotNull>
+		)ORDER BY UPPER(userFullName)
+	</select>
+	
+	<select id="getSelectedUsers" resultClass="java.lang.String" 
+	parameterClass = "com.worldcheck.atlas.vo.report.TeamJLPSummaryVO">
+		SELECT TEMPLATE_USER_ID 
+		FROM CMS_TEAM_JLP_TEMPLATE
+		WHERE TEMPLATE_ID = #templateId#
+	</select>
+
+	<select id="getAllTemplateCreator" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+		SELECT LOGIN_ID loginId,
+		USER_FULL_NAME userFullName
+		FROM CMS_USER_MASTER
+		WHERE USER_MASTER_ID IN(
+		SELECT USER_ID FROM CMS_USER_ROLE_MAP WHERE ROLE_ID IN('R1','R2','R7'))
+		ORDER BY UPPER(userFullName)
+	</select>
+	
+	
+	<select id= "isExistTemplateName" resultClass = "java.lang.Integer" parameterClass = "java.lang.String">
+		SELECT COUNT(template_id) 
+		FROM CMS_TEAM_JLP_TEMPLATE 
+		WHERE UPPER(template_name) = UPPER(#templateName#)
+	</select>
+	
+	<insert id="addTeamJLPTemplate" parameterClass="com.worldcheck.atlas.vo.report.TeamJLPSummaryVO" >
+	<selectKey resultClass="int" type="pre" keyProperty="templateId">
+			SELECT CMS_TEAM_JLP_TEMPLATE_SEQ.NEXTVAL AS VALUE FROM DUAL
+  	</selectKey>
+		INSERT INTO CMS_TEAM_JLP_TEMPLATE(TEMPLATE_ID,
+			TEMPLATE_NAME,
+			TEMPLATE_TYPE,
+			TEMPLATE_USER_ID,
+			TEMPLATE_CREATOR,
+			TEMPLATE_CREATION_DATE,
+			DEFAULT_USERS)
+		 VALUES(
+			 #templateId#,
+			 #templateName#,
+			 #sharedWith#,
+			 #userName#,
+			 #updatedBy#,
+			 SYSDATE,
+			#updatedBy#
+			)
+				
+	
+	</insert>
+	
+	
+	<select id="searchTeamJLPTemplate" parameterClass="com.worldcheck.atlas.vo.report.TeamJLPSummaryVO"
+	resultClass="com.worldcheck.atlas.vo.report.TeamJLPSummaryVO">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM 
+		(select TEMPLATE_ID	templateId,
+		TEMPLATE_NAME templateName,
+		TEMPLATE_TYPE sharedWith,
+		TEMPLATE_USER_ID userName,
+		TEMPLATE_CREATOR templateCreator
+		<isNotNull prepend="," property="templateCreator">
+		CASE  WHEN DEFAULT_USERS IS NULL THEN  '0'
+			WHEN INSTR(DEFAULT_USERS ,#templateCreator#) = 0  THEN '0' 
+			ELSE '1' END as isDefaultUser
+		</isNotNull>
+		FROM CMS_TEAM_JLP_TEMPLATE
+		<dynamic prepend="WHERE">
+		
+		
+			<isNotNull prepend="AND" property="userId">
+				<isNotEmpty property="userId">
+						(TEMPLATE_CREATOR = #userId# and (INSTR(DEFAULT_USERS ,#userId#,1,1 ) > 0)) OR
+							INSTR(DEFAULT_USERS ,#userId#,1,1 ) > 0 
+				</isNotEmpty>
+			</isNotNull>
+	
+			<isNotNull prepend="AND" property="templateCreator">
+				<isNotEmpty property="templateCreator">
+					TEMPLATE_CREATOR = #templateCreator#  
+		 		</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="AND" property="templateName">
+				<isNotEmpty property="templateName">
+					TEMPLATE_NAME like '%' || #templateName# || '%'
+	 	 		</isNotEmpty>
+			</isNotNull>
+	
+			<isNotNull prepend="AND" property="sharedWith">
+				<isNotEmpty property="sharedWith">
+					TEMPLATE_TYPE = #sharedWith#
+				
+				</isNotEmpty>
+	
+			</isNotNull>
+	
+		</dynamic>
+		ORDER BY UPPER($sortColumnName$) $sortType$) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+	</select>
+	
+	<select id="searchTeamJLPTemplateCount" parameterClass= "com.worldcheck.atlas.vo.report.TeamJLPSummaryVO" resultClass="java.lang.Integer">
+		select count(TEMPLATE_ID)
+		FROM CMS_TEAM_JLP_TEMPLATE
+		<dynamic prepend="WHERE">
+	
+			<isNotNull prepend="AND" property="userId">
+				<isNotEmpty property="userId">
+					(TEMPLATE_CREATOR = #userId# and (INSTR(DEFAULT_USERS ,#userId#,1,1 ) > 0)) OR
+						INSTR(DEFAULT_USERS ,#userId#,1,1 ) > 0 
+				</isNotEmpty>
+			</isNotNull>
+	
+			<isNotNull prepend="AND" property="templateCreator">
+				<isNotEmpty property="templateCreator">
+					TEMPLATE_CREATOR = #templateCreator#  
+		 		</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="AND" property="templateName">
+				<isNotEmpty property="templateName">
+					TEMPLATE_NAME like '%' || #templateName# || '%'
+	 	 		</isNotEmpty>
+			</isNotNull>
+	
+			<isNotNull prepend="AND" property="sharedWith">
+				<isNotEmpty property="sharedWith">
+					TEMPLATE_TYPE = #sharedWith#
+				
+				</isNotEmpty>
+	
+			</isNotNull>
+	
+		</dynamic>
+	</select>
+	
+	
+	<update id="updateTeamJLPTemplate" parameterClass="com.worldcheck.atlas.vo.report.TeamJLPSummaryVO" >
+		UPDATE CMS_TEAM_JLP_TEMPLATE
+		SET TEMPLATE_NAME  = #templateName#,
+			TEMPLATE_TYPE = #sharedWith#,
+			TEMPLATE_USER_ID =#userName#,
+			
+			TEMPLATE_CREATION_DATE = SYSDATE
+			WHERE 
+			TEMPLATE_ID = #templateId#
+	
+	</update>
+	
+	<delete id="deleteTeamJLPTemplate" parameterClass="com.worldcheck.atlas.vo.report.TeamJLPSummaryVO">
+		delete CMS_TEAM_JLP_TEMPLATE
+		where TEMPLATE_ID = #templateId#
+	
+	</delete>
+	
+	
+	<update id="addToDefaultTeamJLPTemplate" parameterClass="com.worldcheck.atlas.vo.report.TeamJLPSummaryVO">
+		UPDATE CMS_TEAM_JLP_TEMPLATE
+		SET	 DEFAULT_USERS = 
+		CASE 
+			  WHEN DEFAULT_USERS IS NULL
+			  	THEN #userName#
+			  WHEN INSTR(dbms_lob.substr(DEFAULT_USERS),#userName#,1,1) = 0
+			  	THEN  dbms_lob.substr(DEFAULT_USERS) || ','|| #userName#
+			  WHEN INSTR(dbms_lob.substr(DEFAULT_USERS),#userName#,1,1) = 1
+			  	THEN  dbms_lob.substr(DEFAULT_USERS) 
+			  END
+	   WHERE TEMPLATE_ID = #templateId#
+	</update>
+	
+	<update id="removeFromDefaultTeamJLPTemplate" parameterClass="com.worldcheck.atlas.vo.report.TeamJLPSummaryVO">
+		UPDATE CMS_TEAM_JLP_TEMPLATE
+		SET	 DEFAULT_USERS = 
+		CASE 
+	  		WHEN DEFAULT_USERS IS NULL
+	 			 THEN ''
+	 		 WHEN INSTR(dbms_lob.substr(DEFAULT_USERS),#userName#,1,1) = 0
+	  			THEN  dbms_lob.substr(DEFAULT_USERS) 
+	  		WHEN INSTR(dbms_lob.substr(DEFAULT_USERS),#userName#,1,1) > 0
+	  			THEN  REPLACE(dbms_lob.substr(DEFAULT_USERS),#userName#)
+	  
+	  END
+	   WHERE TEMPLATE_ID = #templateId#
+	
+	</update>
+	
+	<select id="teamLevelJLPReport" parameterClass="java.util.HashMap" resultClass="com.worldcheck.atlas.vo.report.TeamJLPSummaryVO">
+	SELECT USERID userId,
+	USER_NAME userName,
+	NVL(JLP_WIP,0) wipJLP,
+	NVL(JLP_COMPLETED ,0) completedJLP,
+	NVL(JLP_TOTAL ,0) totalJLP
+	FROM DW_TEAM_JLP_MIS dtjm
+	WHERE YEAR = #year#
+	AND MONTH = #month#
+	AND  INSTR((
+          SELECT ','|| TEMPLATE_USER_ID|| ',' FROM CMS_TEAM_JLP_TEMPLATE WHERE TEMPLATE_ID =#templateId#        
+        ),(',' || dtjm.USER_NAME || ',' ) ,1,1 ) > 0
+	ORDER BY UPPER($sortingColumn$) $sortType$
+	</select>
+	<select id="caseLevelJLPReport" parameterClass="java.util.HashMap" resultClass="com.worldcheck.atlas.vo.report.TeamJLPSummaryVO">
+	SELECT USERID userId,
+	USER_NAME userName,
+	NVL(JLP_WIP ,0)wipJLP,
+	NVL(JLP_COMPLETED ,0)completedJLP,
+	NVL(JLP_TOTAL,0) totalJLP
+	FROM DW_CASE_JLP_MIS dcjm
+	WHERE YEAR = #year#
+	AND MONTH = #month#
+	AND  INSTR((
+          SELECT ','|| TEMPLATE_USER_ID|| ',' FROM CMS_TEAM_JLP_TEMPLATE WHERE TEMPLATE_ID = #templateId#          
+        ),(',' || dcjm.USER_NAME || ',' ) ,1,1 ) > 0
+	ORDER BY UPPER($sortingColumn$) $sortType$
+	
+	</select>
+	
+	
+	
+	
+</sqlMap>

@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL MAP Config 2.0//EN"
+  "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+
+	<settings useStatementNamespaces="true" />
+
+	<!--<transactionManager type="JDBC">-->
+	<!--<dataSource type="SIMPLE">-->
+	<!--
+		<property name="JDBC.Driver" value="oracle.jdbc.driver.OracleDriver"/>
+	-->
+	<!--<property name="JDBC.ConnectionURL"-->
+	<!--value="jdbc:oracle:thin:@192.168.0.166:1521:sbm"/>-->
+	<!--<property name="JDBC.Username" value="system"/>-->
+	<!--<property name="JDBC.Password" value="sbm"/>-->
+	<!--</dataSource>-->
+	<!--</transactionManager>-->
+	<sqlMap resource="junoIbatis/reportSubject.xml" />
+	<sqlMap resource="junoIbatis/processCycle.xml" />
+	<!--<sqlMap resource="junoIbatis/otherCompany.xml" />
+	<sqlMap resource="junoIbatis/compAssocEnt.xml" />
+	<sqlMap resource="junoIbatis/otherCompAssocEnt.xml" />
+	<sqlMap resource="junoIbatis/companyRegistry.xml" />
+	<sqlMap resource="junoIbatis/companyShareholder.xml" />
+	<sqlMap resource="junoIbatis/companyBackgroundIS2.xml" />-->
+	<sqlMap resource="junoIbatis/indirectCountryFactor.xml" />
+	<sqlMap resource="junoIbatis/country.xml" />
+	<sqlMap resource="junoIbatis/countryCheck.xml" />
+	<sqlMap resource="junoIbatis/lbrMaster.xml" />
+	<sqlMap resource="junoIbatis/icrrMaster.xml" />
+	<sqlMap resource="junoIbatis/globalIcrrInfo.xml" />
+	<sqlMap resource="junoIbatis/lbrHeader.xml" />
+	<sqlMap resource="junoIbatis/coverpage.xml" />
+
+	<sqlMap resource="junoIbatis/standardLineMaster.xml" />
+	<sqlMap resource="junoIbatis/reportType.xml" />
+	<sqlMap resource="junoIbatis/passwordMaster.xml" />
+	<sqlMap resource="junoIbatis/assignmentComponent.xml" />
+	<sqlMap resource="junoIbatis/companyOperationalAnalysis.xml" />
+	<sqlMap resource="junoIbatis/businessIntelligence.xml" />
+	<sqlMap resource="junoIbatis/common.xml" />
+
+
+	<sqlMap resource="junoIbatis/backgroundInformation.xml" />
+	<sqlMap resource="junoIbatis/otherInformation.xml" />
+	<sqlMap resource="junoIbatis/financialInformation.xml" />
+	<sqlMap resource="junoIbatis/annexures.xml" />
+	<sqlMap resource="junoIbatis/remarks.xml" />
+	<sqlMap resource="junoIbatis/shareholders.xml" />
+	<sqlMap resource="junoIbatis/englishMediaCheck.xml" />
+	<sqlMap resource="junoIbatis/directRiskFactor.xml" />
+	<sqlMap resource="junoIbatis/touchpoints.xml" />
+	<sqlMap resource="junoIbatis/caseReportTemplate.xml" />
+	<sqlMap resource="junoIbatis/localMediaCheck.xml" />
+	<sqlMap resource="junoIbatis/gccwc.xml" />
+	<sqlMap resource="junoIbatis/gccwcis3.xml" />
+	<sqlMap resource="junoIbatis/gccgoc.xml" />
+	<sqlMap resource="junoIbatis/businessComponent.xml" />
+	<sqlMap resource="junoIbatis/management.xml" />
+	<sqlMap resource="junoIbatis/executiveSummary.xml" />
+	<sqlMap resource="junoIbatis/personalDetails.xml" />
+	<sqlMap resource="junoIbatis/lbretable.xml" />
+	<sqlMap resource="junoIbatis/lbreTypeOne.xml" />
+    <sqlMap resource="junoIbatis/reportTemplate.xml" />
+	<sqlMap resource="junoIbatis/lbreTypeTwo.xml" />
+	<sqlMap resource="junoIbatis/lbreTypeThree.xml" />
+	<sqlMap resource="junoIbatis/visualKeys.xml" />
+	<sqlMap resource="junoIbatis/gccIS3RiskFactor.xml" />
+    <sqlMap resource="junoIbatis/individualDetails.xml" />
+    <sqlMap resource="junoIbatis/fcparedflag.xml" />
+
+	<sqlMap resource="junoIbatis/companyBackgroundDetails.xml" />
+	<sqlMap resource="junoIbatis/companyBackgroundIS3Details.xml" />
+	<sqlMap resource="junoIbatis/search.xml" />
+	<sqlMap resource="junoIbatis/tableOfContents.xml" />
+	<sqlMap resource="junoIbatis/reportGenerator.xml" />
+	<sqlMap resource="junoIbatis/tinymce.xml" />
+	
+	
+	 <sqlMap resource="junoIbatis/companyCorporateAnalysis.xml" />
+	 <sqlMap resource="junoIbatis/shareholdersFCPA.xml" />
+	 <sqlMap resource="junoIbatis/remarksFCPA.xml" />
+	<sqlMap resource="junoIbatis/legalRepDirect.xml" />
+	<sqlMap resource="junoIbatis/componentNotifications.xml" />
+</sqlMapConfig>

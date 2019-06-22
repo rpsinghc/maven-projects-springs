@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="StandardLineMasterVO">
+
+	<resultMap id="result"
+		class="com.worldcheck.juno.vo.master.StandardLineMasterVO">
+		<result property="id" column="STD_LINE_ID" />
+		<result property="standardLine" column="STD_LINE" />
+		<result property="status" column="STATUS" />
+		<result property="standardLineText" column="STD_LINE_TEXT" />
+
+	</resultMap>
+
+	<select id="getById" resultMap="result">
+		select
+		STD_LINE_ID,STD_LINE,
+		STATUS,
+		STD_LINE_TEXT
+		from
+		RG_STANDARD_LINE_MASTER
+		where
+		STD_LINE_ID = #id#
+	   
+	   	
+	  </select>
+
+	<!-- Insert example, using the Standardline VO  class -->
+	<insert id="insert" parameterClass="com.worldcheck.juno.vo.master.StandardLineMasterVO">
+
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_STANDARD_LINE_MASTER_SEQ.NEXTVAL from dual
+	  	</selectKey>
+		insert into
+		RG_STANDARD_LINE_MASTER (
+		STD_LINE_ID,
+		STD_LINE,STATUS,UPDATED_BY,UPDATED_ON,STD_LINE_TEXT
+		)values (
+		#id#, #standardLine#,
+		#status#,#userName#,sysdate,#standardLineText#
+		)        
+	  </insert>
+
+	<update id="update" parameterClass="com.worldcheck.juno.vo.master.StandardLineMasterVO">
+		update
+		RG_STANDARD_LINE_MASTER
+		set
+		STD_LINE = #standardLine#,
+		STATUS = #status#,
+		UPDATED_BY = #userName#,
+		UPDATED_ON = sysdate,
+		STD_LINE_TEXT =
+		#standardLineText#
+		WHERE
+		STD_LINE_ID = #id#
+	  </update>
+
+
+	<select id="searchStandardLineMaster" resultMap="result"
+		parameterClass="java.util.HashMap">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (
+		SELECT
+		stl.STD_LINE_ID,stl.STD_LINE,stl.STATUS,stl.STD_LINE_TEXT FROM
+		RG_STANDARD_LINE_MASTER stl
+		<dynamic prepend="where">
+			<isNotNull property="status">
+				<isNotEqual prepend="AND" property="status" compareValue="">
+					stl.STATUS = #status#
+					</isNotEqual>
+			</isNotNull>
+			<isNotNull property="standardLine">
+				<isNotEqual prepend="AND" property="standardLine"
+					compareValue="">
+					UPPER(stl.STD_LINE) LIKE
+					UPPER('%'||#standardLine#||'%')
+				</isNotEqual>
+			</isNotNull>
+
+		</dynamic>
+		order by upper(stl.STD_LINE_TEXT),stl.STD_LINE_ID
+		) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+
+
+	</select>
+
+	<select id="searchStandardLineCount" resultClass="java.lang.Integer"
+		parameterClass="java.util.HashMap">
+		select count(*)
+
+		from RG_STANDARD_LINE_MASTER stl
+		<dynamic prepend="where">
+			<isNotNull property="status">
+				<isNotEqual prepend="AND" property="status" compareValue="">
+					stl.STATUS= #status#
+					</isNotEqual>
+			</isNotNull>
+			<isNotNull property="standardLine">
+				<isNotEqual prepend="AND" property="standardLine"
+					compareValue="">
+					UPPER(stl.STD_LINE) LIKE UPPER(#standardLine#||'%')
+				</isNotEqual>
+			</isNotNull>
+
+		</dynamic>
+		order by stl.STD_LINE_TEXT
+
+	</select>
+
+
+	<select id="list" resultMap="result" parameterClass="java.util.HashMap">
+		SELECT
+		stl.STD_LINE_ID,stl.STD_LINE,stl.STATUS,stl.STD_LINE_TEXT FROM
+		RG_STANDARD_LINE_MASTER stl where STATUS =1 order by upper(stl.STD_LINE_TEXT)
+
+
+	</select>
+
+	<update id="deActivate" parameterClass="java.util.HashMap">
+		update RG_STANDARD_LINE_MASTER set
+		STATUS =0
+		where
+		STD_LINE_ID in
+		<iterate property="id" open="(" close=")" conjunction=",">
+			#id[]#
+	    </iterate>
+	</update>
+
+
+	<update id="activate" parameterClass="java.util.HashMap">
+		update RG_STANDARD_LINE_MASTER set
+		STATUS =1
+		where
+		STD_LINE_ID in
+		<iterate property="id" open="(" close=")" conjunction=",">
+			#id[]#
+	    </iterate>
+	</update>
+	
+	<select id="checkIfexist" parameterClass="map" resultClass="int">
+
+		SELECT count(*) FROM RG_STANDARD_LINE_MASTER  stl
+		WHERE
+		upper( stl.STD_LINE)
+		like
+		upper(#standardLine#) and stl.STATUS= #status# AND STD_LINE_ID !=#id#
+	</select>
+	<select id="checkIfAnotherExist" parameterClass="map" resultClass="int">
+		SELECT count(*) FROM RG_STANDARD_LINE_MASTER
+		WHERE
+		upper(STD_LINE) like (select upper(STD_LINE) from RG_STANDARD_LINE_MASTER where STD_LINE_ID = #id#)
+		and STATUS= 1 AND STD_LINE_ID != #id#
+	</select>
+	
+	<delete id="delete" parameterClass="map">
+		delete from RG_STANDARD_LINE_MASTER where STD_LINE_ID = #id#
+	</delete>
+</sqlMap>

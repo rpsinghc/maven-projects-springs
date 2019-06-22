@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="BackgroundInformationVO">
+
+	<resultMap id="result"
+		class="com.worldcheck.juno.vo.component.BackgroundInformationVO">
+		<result property="id" column="BACKGROUND_SUMMARY_ID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="subjectName" column="SUBJECT_NAME" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="userName" column="UPDATED_BY" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+
+
+	</resultMap>
+
+	<resultMap id="formResult"
+		class="com.worldcheck.juno.vo.component.BackgroundInformationVO">
+		<result property="id" column="BACKGROUND_SUMMARY_ID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="subjectName" column="SUBJECT_NAME" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="tableBottomNotes" column="TABLE_BOTTOM_NOTES" />
+		<result property="title" column="TITLE" />
+
+
+	</resultMap>
+
+
+	<resultMap id="resultHistory"
+		class="com.worldcheck.juno.vo.component.BackgroundInformationVO">
+		<result property="tableBottomNotes" column="TABLE_BOTTOM_NOTES" />
+		<result property="userName" column="UPDATED_BY" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="id" column="HISTORY_ID" />
+	</resultMap>
+
+
+
+
+	<resultMap id="resultVO"
+		class="com.worldcheck.juno.vo.component.BackgroundInformationVO">
+		<result property="id" column="BACKGROUND_SUMMARY_ID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="subjectName" column="SUBJECT_NAME" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="userName" column="UPDATED_BY" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="tableBottomNotes" column="TABLE_BOTTOM_NOTES" />
+		<result property="title" column="TITLE" />
+
+
+	</resultMap>
+
+
+
+	<!-- Insert example, using the Account parameter class -->
+	<insert id="insert"
+		parameterClass="com.worldcheck.juno.vo.component.BackgroundInformationVO">
+
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_BACKGROUND_SUMMARY_SEQ.NEXTVAL from dual
+		</selectKey>
+		INSERT INTO RG_BACKGROUND_SUMMARY
+		(BACKGROUND_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,TITLE,
+		UPDATED_ON,UPDATED_BY,TABLE_BOTTOM_NOTES,IS_AUTO_SAVED)
+		VALUES
+		(#id#,#subjectId#,#processCycleId#,#crn#,#title#,sysdate,#updateBy#,#tableBottomNotes#,'N')
+	</insert>
+
+	<select id="listByCRN" resultMap="result" parameterClass="java.util.HashMap">
+
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (SELECT
+		rbs.BACKGROUND_SUMMARY_ID,rbs.SUBJECT_ID,rbs.PROCESSCYCLEID,rbs.CASE_ID,
+		rbs.UPDATED_ON,
+		NVL(rbs.UPDATED_BY,'System') UPDATED_BY,
+		cms.REPORT_SUBJECT_NAME
+		SUBJECT_NAME,cmscase.DESCRIPTION
+		FROM
+		RG_BACKGROUND_SUMMARY
+		rbs,RG_SUBJECT cms,CMS_CASECYCLE cmscase
+		WHERE
+		cms.SUBJECT_ID=rbs.SUBJECT_ID
+		and cms.ENTITY_TYPE_ID=#componentLevel#
+		ANd
+		rbs.PROCESSCYCLEID=cmscase.CASECYCLE_ID
+		ANd CASE_ID=#crn# AND
+		upper(IS_AUTO_SAVED)=upper('N')
+
+		<isNotNull property="subjectId">
+			<isNotEqual prepend="AND" property="subjectId"
+				compareValue="0">
+				rbs.SUBJECT_ID=#subjectId# 
+			</isNotEqual>
+		</isNotNull>
+
+		<isNotNull property="processCycleId">
+			<isNotEqual prepend="AND" property="processCycleId"
+				compareValue="0">
+				rbs.PROCESSCYCLEID=#processCycleId# 
+			</isNotEqual>
+		</isNotNull>
+
+		order by cms.is_primary_sub desc,cms.REPORT_ORDER
+		asc,upper(cms.REPORT_SUBJECT_NAME) asc,cmscase.processcycle_order desc
+		) a WHERE
+		ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+
+	</select>
+	<select id="getProcessList" resultClass="java.lang.Integer"
+		parameterClass="java.util.HashMap">
+		SELECT PROCESSCYCLEID FROM RG_BACKGROUND_SUMMARY
+		WHERE
+		SUBJECT_ID=#subId#
+		AND CASE_ID=#crn# AND
+		upper(IS_AUTO_SAVED)=upper('N')
+    </select>
+
+
+
+
+
+	<update id="update"
+		parameterClass="com.worldcheck.juno.vo.component.BackgroundInformationVO">
+		update RG_BACKGROUND_SUMMARY set
+		TITLE = #title#,
+		TABLE_BOTTOM_NOTES=#tableBottomNotes# ,
+		PROCESSCYCLEID=#processCycleId# ,
+		UPDATED_ON=sysdate,UPDATED_BY=#updateBy#
+		where
+		BACKGROUND_SUMMARY_ID
+		=#id# AND
+		upper(IS_AUTO_SAVED)=upper('N')
+	</update>
+
+	<delete id="deleteId">
+		delete FROM RG_BACKGROUND_SUMMARY WHERE
+		BACKGROUND_SUMMARY_ID in (#backInformation_id#)
+		
+
+	</delete>
+
+	<insert id="insertHistory"
+		parameterClass="com.worldcheck.juno.vo.component.BackgroundInformationVO">
+		INSERT INTO RG_BACKGROUND_SUMMARY_HST
+		(HISTORY_ID,BACKGROUND_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,TITLE,
+		UPDATED_ON,UPDATED_BY,TABLE_BOTTOM_NOTES)
+
+		(select
+		RG_BACKGROUND_SUMMARY_HST_SEQ.nextval,rg.BACKGROUND_SUMMARY_ID,rg.SUBJECT_ID,rg.PROCESSCYCLEID,rg.CASE_ID,rg.TITLE,sysdate,rg.UPDATED_BY,
+		rg.TABLE_BOTTOM_NOTES from RG_BACKGROUND_SUMMARY rg where
+		rg.BACKGROUND_SUMMARY_ID=#id#
+		)
+
+	</insert>
+
+	<select id="getHistory" resultMap="resultHistory"
+		parameterClass="java.util.HashMap">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (SELECT rghst.UPDATED_ON,
+		rghst.HISTORY_ID,rghst.UPDATED_BY,
+		NVL(rghst.TABLE_BOTTOM_NOTES,' ')
+		TABLE_BOTTOM_NOTES,cmscase.DESCRIPTION
+		FROM
+		RG_BACKGROUND_SUMMARY_HST
+		rghst, cms_casecycle cmscase
+		WHERE BACKGROUND_SUMMARY_ID=#recordId#
+		AND
+		cmscase.casecycle_id= rghst.processcycleid
+		order by rghst.UPDATED_ON
+		desc
+
+		) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+
+	</select>
+
+
+
+
+	<update id="updateAutoSave"
+		parameterClass="com.worldcheck.juno.vo.component.BackgroundInformationVO">
+		update RG_BACKGROUND_SUMMARY set
+		TITLE = #title#,
+		TABLE_BOTTOM_NOTES=#tableBottomNotes# ,
+		PROCESSCYCLEID=#processCycleId# ,
+		UPDATED_ON=sysdate,UPDATED_BY=#updateBy#,
+		PARENT_RECORD_ID = #id#,
+		IS_AUTO_SAVED = 'Y'
+		where
+		BACKGROUND_SUMMARY_ID=#autoSaveId#
+
+	</update>
+
+
+	<delete id="deleteAutoSaveById">
+		delete FROM RG_BACKGROUND_SUMMARY
+		WHERE
+		BACKGROUND_SUMMARY_ID=#id#
+		AND
+		upper(IS_AUTO_SAVED)=upper('Y')
+	</delete>
+
+	<!--generic query-->
+	<delete id="deleteNewAutoSave">
+		delete FROM RG_BACKGROUND_SUMMARY WHERE
+		CASE_ID=#crn#
+		AND
+		upper(IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID IS NULL
+	</delete>
+
+	<!--generic query-->
+	<delete id="deleteAutoSave">
+		delete FROM RG_BACKGROUND_SUMMARY
+		where CASE_ID=#crn#
+		AND
+		upper(IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID = #parentId#
+	</delete>
+
+	<!--generic query-->
+	<select id="findAutoSave" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Long">
+		SELECT rg.BACKGROUND_SUMMARY_ID
+		FROM RG_BACKGROUND_SUMMARY
+		rg
+		WHERE
+		upper(rg.IS_AUTO_SAVED)=upper('Y') AND
+		rg.PARENT_RECORD_ID =
+		#parentId#
+	</select>
+
+	<!--generic query-->
+	<select id="findNewAutoSave" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Long">
+		SELECT rg.BACKGROUND_SUMMARY_ID
+		FROM RG_BACKGROUND_SUMMARY
+		rg
+		WHERE CASE_ID=#crn# AND
+		upper(rg.IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID IS NULL
+	</select>
+
+
+	<!--generic query-->
+	<select id="findById" resultClass="int">
+		select
+		count(rg.BACKGROUND_SUMMARY_ID)
+		FROM RG_BACKGROUND_SUMMARY rg
+		WHERE
+		rg.BACKGROUND_SUMMARY_ID = #id#
+	</select>
+
+	<!--generic query-->
+	<delete id="delete">
+		delete FROM RG_BACKGROUND_SUMMARY WHERE
+		BACKGROUND_SUMMARY_ID = #id#
+	</delete>
+
+	<!--generic query-->
+	<delete id="deleteIds" parameterClass="java.util.HashMap">
+		delete FROM RG_BACKGROUND_SUMMARY WHERE
+		BACKGROUND_SUMMARY_ID IN
+
+		<iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[]#
+	    </iterate>
+	</delete>
+
+
+	<select id="getSearchCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+
+		SELECT
+		count(*)
+		FROM RG_BACKGROUND_SUMMARY rbs,RG_SUBJECT
+		cms,CMS_CASECYCLE cmscase
+		WHERE cms.SUBJECT_ID=rbs.SUBJECT_ID ANd
+		rbs.PROCESSCYCLEID=cmscase.CASECYCLE_ID
+		ANd CASE_ID=#crn#
+		AND cms.ENTITY_TYPE_ID=#componentLevel#
+		AND
+		upper(IS_AUTO_SAVED)=upper('N')
+
+		<isNotNull property="subjectId">
+			<isNotEqual prepend="AND" property="subjectId"
+				compareValue="0">
+				rbs.SUBJECT_ID=#subjectId# 
+			</isNotEqual>
+		</isNotNull>
+
+		<isNotNull property="processCycleId">
+			<isNotEqual prepend="AND" property="processCycleId"
+				compareValue="0">
+				rbs.PROCESSCYCLEID=#processCycleId# 
+			</isNotEqual>
+		</isNotNull>
+
+	</select>
+
+	<select id="getHistoryCount" resultClass="java.lang.Integer">
+		SELECT count(*)
+		FROM
+		RG_BACKGROUND_SUMMARY_HST
+		rg where
+		rg.BACKGROUND_SUMMARY_ID=#recordId#
+
+
+	</select>
+
+	<select id="getById" resultMap="formResult">
+
+		SELECT
+		rbs.BACKGROUND_SUMMARY_ID,rbs.SUBJECT_ID,rbs.PROCESSCYCLEID,rbs.CASE_ID,
+		rbs.UPDATED_ON,rbs.UPDATED_BY, rbs.TITLE,rbs.TABLE_BOTTOM_NOTES,
+		cms.REPORT_SUBJECT_NAME SUBJECT_NAME,cmscase.DESCRIPTION
+
+		FROM
+		RG_BACKGROUND_SUMMARY
+		rbs,RG_SUBJECT cms,CMS_CASECYCLE cmscase
+		WHERE
+		cms.SUBJECT_ID=rbs.SUBJECT_ID ANd
+		rbs.PROCESSCYCLEID=cmscase.CASECYCLE_ID
+		AND rbs.BACKGROUND_SUMMARY_ID
+		=#id#
+
+	</select>
+
+
+	<!--generic query-->
+	<select id="getSubProcCycleList" resultMap="ReportSubjectVO.subProcCycleList">
+
+		select rbs.subject_id
+		subject_id,
+		rbs.processcycleid Process_Cycle_Id,cs.subject_name
+		subject_name,
+		ccl.DESCRIPTION Process_Cycle
+		from RG_BACKGROUND_SUMMARY
+		rbs,
+		RG_SUBJECT cs ,CMS_CASECYCLE ccl
+		where cs.CRN = rbs.case_id
+		and
+		ccl.CASECYCLE_ID= rbs.processcycleid
+		and cs.subject_id =rbs.subject_id
+		and rbs.case_id = #crn#
+		and upper(rbs.IS_AUTO_SAVED)=upper('N')
+		order by
+		cs.subject_id, rbs.processcycleid
+	</select>
+
+
+	<select id="getProcessCycleList" parameterClass="java.util.HashMap"
+		resultMap="ProcessCycleVO.processCycleList">
+		select rbs.processcycleid Process_Cycle_Id,cc.DESCRIPTION
+		Process_Cycle
+		from RG_BACKGROUND_SUMMARY rbs, cms_casecycle cc
+		where
+		rbs.subject_id=#subId# and rbs.case_id=#crn#
+		and cc.casecycle_id=
+		rbs.processcycleid
+		and upper(rbs.IS_AUTO_SAVED)=upper('N')
+		and
+		rbs.BACKGROUND_SUMMARY_ID != #recordId#
+</select>
+
+
+
+	<insert id="insertAutoSave"
+		parameterClass="com.worldcheck.juno.vo.component.BackgroundInformationVO">
+		<selectKey keyProperty="autoSaveId" resultClass="long">
+			SELECT
+			RG_BACKGROUND_SUMMARY_SEQ.NEXTVAL from dual
+		</selectKey>
+		INSERT INTO RG_BACKGROUND_SUMMARY
+		(BACKGROUND_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,TITLE,
+		UPDATED_ON,UPDATED_BY,TABLE_BOTTOM_NOTES,IS_AUTO_SAVED,PARENT_RECORD_ID)
+		VALUES
+		(#autoSaveId#,#subjectId#,#processCycleId#,#crn#,#title#,sysdate,#updateBy#,#tableBottomNotes#,'Y',#id#)
+
+
+	</insert>
+
+	<update id="insertDefaultEntries" parameterClass="java.util.HashMap">
+
+		declare
+		recordId number(10);
+		hstId number(10);
+		subList varray_varchar;
+		subId number;
+		crn VARCHAR2(200):=#crn#;
+		processCycle
+		number:=#processCycleId#;
+		userName VARCHAR2(200):=#userName#;
+
+
+		begin
+		subList:= varray_varchar
+		<iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[].subjectId#
+				 </iterate>
+		;
+		for elem in 1 .. subList.count
+		loop
+		subId:=subList(elem);
+		dbms_output.put_line(subId);
+
+		select RG_BACKGROUND_SUMMARY_SEQ.NEXTVAL
+		into recordId from dual;
+
+
+
+		INSERT INTO RG_BACKGROUND_SUMMARY
+		(BACKGROUND_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,
+		UPDATED_ON,UPDATED_BY,TITLE,TABLE_BOTTOM_NOTES)
+
+		values(recordId, subId
+		, processCycle , crn
+		,sysdate,userName,'Background Information',(select
+		DEFAULT_TEXT from rg_component_default_text where component_id=15));
+
+
+
+		end loop;
+
+		END;
+	</update>
+
+	<insert id="insertHistoryBeforeDeletion" parameterClass="java.util.HashMap">
+		insert into RG_BACKGROUND_SUMMARY_HST (
+		HISTORY_ID,
+		CASE_ID,
+		SUBJECT_ID,
+		PROCESSCYCLEID,
+		UPDATED_ON,
+		UPDATED_BY,BACKGROUND_SUMMARY_ID
+
+		)
+
+		SELECT
+		RG_BACKGROUND_SUMMARY_HST_SEQ.nextval,inner_view.*
+		FROM
+		<iterate property="recList" conjunction="UNION ALL" open="("
+			close=")">
+			(SELECT CASE_ID,SUBJECT_ID,PROCESSCYCLEID,sysdate,#userName#
+			UPDATED_BY
+			,#recList[]# BACKGROUND_SUMMARY_ID
+			from
+			RG_BACKGROUND_SUMMARY
+			where BACKGROUND_SUMMARY_ID=#recList[]#)
+
+		</iterate>
+		inner_view
+	</insert>
+
+	<select id="getHistoryCountForCRN" resultClass="java.lang.Long"
+		parameterClass="java.util.HashMap">
+		
+
+		select count(*) from (
+		select case_id from RG_BACKGROUND_SUMMARY rg
+		,RG_SUBJECT cs where case_id=#crn# and rg.subject_id=cs.subject_id and
+		cs.entity_type_id=#componentLevel#
+		union
+		select case_id from
+		RG_BACKGROUND_SUMMARY_HST rg,RG_SUBJECT cs where case_id=#crn# and
+		rg.subject_id=cs.subject_id and cs.entity_type_id=#componentLevel#
+
+		)
+  
+  </select>
+
+	<insert id="makeCopy" parameterClass="java.util.HashMap">
+
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_BACKGROUND_SUMMARY_SEQ.NEXTVAL from dual
+		</selectKey>
+
+		INSERT INTO RG_BACKGROUND_SUMMARY
+		(BACKGROUND_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,TITLE,
+		UPDATED_ON,UPDATED_BY,TABLE_BOTTOM_NOTES)
+
+		select
+		#id#,
+		SUBJECT_ID,#processCycleId#,CASE_ID,TITLE,
+		sysdate,#userName#,TABLE_BOTTOM_NOTES from RG_BACKGROUND_SUMMARY
+		where
+		BACKGROUND_SUMMARY_ID=#recordId#
+	</insert>
+
+	<select id="checkIfExist" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from RG_BACKGROUND_SUMMARY where
+		PROCESSCYCLEID=#processCycleId# and SUBJECT_ID = #subjectId# and
+		case_id=#crn#
+	</select>
+
+
+	<insert id="makeCopyHst" parameterClass="java.util.HashMap">
+
+		insert into
+		RG_BACKGROUND_SUMMARY_HST(HISTORY_ID ,
+		BACKGROUND_SUMMARY_ID
+		,SUBJECT_ID,
+		PROCESSCYCLEID ,
+		CASE_ID ,
+		TITLE ,
+		UPDATED_ON ,
+		UPDATED_BY ,
+		TABLE_BOTTOM_NOTES
+		)
+
+		select
+		RG_BACKGROUND_SUMMARY_HST_SEQ.nextval,#recordId#,
+		SUBJECT_ID,PROCESSCYCLEID,CASE_ID,TITLE,
+		sysdate,UPDATED_BY,TABLE_BOTTOM_NOTES from RG_BACKGROUND_SUMMARY
+		where
+		BACKGROUND_SUMMARY_ID=#recordId#
+	</insert>
+
+
+	<resultMap id="miniRecord"
+		class="com.worldcheck.juno.vo.component.BackgroundInformationVO"
+		groupBy="id">
+		<result property="id" column="BACKGROUND_SUMMARY_ID" />
+		<result property="updateOn" column="UPDATED_ON" />
+	</resultMap>
+
+	<select id="getUpdationTimeById" resultMap="miniRecord">
+		SELECT
+		rg.BACKGROUND_SUMMARY_ID,
+		rg.UPDATED_ON
+		FROM RG_BACKGROUND_SUMMARY rg
+		WHERE
+		rg.BACKGROUND_SUMMARY_ID = #id#
+	</select>
+
+	<select id="getArticleText" resultClass="java.lang.String">
+		select
+		NVL(TABLE_BOTTOM_NOTES,'') TABLE_BOTTOM_NOTES from
+		RG_BACKGROUND_SUMMARY_HST where
+		history_id=#recordId#
+	</select>
+
+</sqlMap>

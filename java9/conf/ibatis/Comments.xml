@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Comments">
+
+	<insert id="insertComments" parameterClass="com.worldcheck.atlas.vo.CommentDetails">
+	<selectKey resultClass="int" type="pre" keyProperty="commentId">
+		select CMS_COMMENT_SEQ.NEXTVAL AS VALUE FROM DUAL
+   </selectKey>
+	insert into CMS_COMMENT (
+		COMMENT_ID,
+		CRN,
+        USER_COMMENTS,
+		UPDATED_BY,
+		SENT_TO,
+		UPDATED_ON,
+		SENT_FROM
+	)values (
+		#commentId#,
+        #CRN#,
+		#comment#,
+        #updatedBy#,
+        #sentTo#,
+		sysdate,
+		(SELECT USER_FULL_NAME FROM CMS_USER_MASTER WHERE LOGIN_ID= #updatedBy#)
+	)
+</insert>
+
+<insert id="insertCommentsByBakup" parameterClass="com.worldcheck.atlas.vo.CommentDetails">
+	<selectKey resultClass="int" type="pre" keyProperty="commentId">
+		select CMS_COMMENT_SEQ.NEXTVAL AS VALUE FROM DUAL
+   </selectKey>
+	insert into CMS_COMMENT (
+		COMMENT_ID,
+		CRN,
+        USER_COMMENTS,
+		UPDATED_BY,
+		SENT_TO,
+		UPDATED_ON,
+		SENT_FROM
+	)values (
+		#commentId#,
+        #CRN#,
+		#comment#,
+        #updatedBy#,
+        #sentTo#,
+		sysdate,
+		#sentFrom#
+	)
+</insert>
+	<resultMap id="commentsResultMap"   class="com.worldcheck.atlas.vo.CommentDetails">
+		
+		<result property="commentId" column="COMMENT_ID"/>
+		<result property="CRN" column="CRN"/>
+
+		<result property="comment" column="USER_COMMENTS"/>
+		<result property="sentFrom" column="sentfrom"/>
+		<result property="updatedBy" column="UPDATED_BY"/>
+		<result property="sentTo" column="SENTTO"/>
+		<result property="sentDate" column="UPDATED_ON1"/>
+	</resultMap>
+
+	<select id="getComments" resultMap="commentsResultMap" parameterClass="java.util.HashMap">
+		SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (
+			select COMMENT_ID ,CRN,USER_COMMENTS,SENT_FROM as sentfrom,UPDATED_BY,SENT_TO as SENTTO,TO_CHAR(UPDATED_ON , 'DD-MM-YY HH24:MI:SS') as UPDATED_ON1
+		FROM CMS_COMMENT cc WHERE crn=#CRN#
+
+		<isEqual property="sort" compareValue="sentDate">
+				  order by cc.UPDATED_ON $dir$ 
+		</isEqual>  			
+		<isEqual property="sort" compareValue="sentTo">
+				 ORDER BY dbms_lob.substr($sort$,dbms_lob.getlength($sort$), 1) $dir$ 
+		</isEqual>
+		<isEqual property="sort" compareValue="comment">
+				 ORDER BY dbms_lob.substr(USER_COMMENTS,dbms_lob.getlength(USER_COMMENTS), 1) $dir$ 
+		</isEqual>
+		<isEqual property="sort" compareValue="sentFrom">
+		  	ORDER By upper($sort$) $dir$
+	  	</isEqual>
+
+		) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+	</select> 
+
+	<resultMap id="allCommentsResultMap"   class="com.worldcheck.atlas.vo.CommentDetails">
+		
+		<result property="commentId" column="COMMENT_ID"/>
+		<result property="CRN" column="CRN"/>
+
+		<result property="comment" column="USER_COMMENTS"/>
+		<result property="sentFrom" column="UPDATED_BY"/>
+		<result property="sentTo" column="SENT_TO"/>
+		<result property="sentDate" column="UPDATED_ON1"/>
+	</resultMap>
+
+	<select id="getAllCommentsForCRN" resultMap="allCommentsResultMap" parameterClass="java.lang.String">
+		SELECT COMMENT_ID ,CRN,USER_COMMENTS,UPDATED_BY,
+		TO_CHAR(UPDATED_ON, 'DD-MM-YY HH:MI:SS') AS UPDATED_ON1,SENT_TO
+		FROM CMS_COMMENT 
+		WHERE crn=#CRN# 
+		ORDER BY UPDATED_ON DESC
+	</select> 
+
+
+	<select id="getCommentsCount" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM CMS_COMMENT 
+		WHERE crn=#CRN# 
+		ORDER BY UPDATED_ON DESC
+	</select> 
+<delete id="deleteComments" parameterClass="java.util.List">
+			
+			DELETE FROM CMS_COMMENT WHERE COMMENT_ID in 
+			<iterate open="(" close=")" conjunction=",">
+			#commentIdList[]#
+			</iterate>
+		</delete> 
+		
+	<select id="getCommentsValueForId" resultClass="java.lang.String" parameterClass="java.util.List">
+		SELECT USER_COMMENTS USER_COMMENTS
+		FROM CMS_COMMENT WHERE COMMENT_ID in 
+			<iterate open="(" close=")" conjunction=",">
+				#commentIdList[]#
+			</iterate>		
+	</select> 
+	<select id="getCaseStatus" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+		  select case_status_id from cms_clientcase where crn=#CRN#    	
+	</select> 
+</sqlMap>

@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" 
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="VendorDetail">   
+     
+     <select id="searchVendorInformation" resultClass="com.worldcheck.atlas.vo.VendorDetailVO" parameterClass="java.util.HashMap"> 
+			 SELECT 
+			      CVM.VENDOR_MASTER_ID vendorId,			      
+			      CVM.VENDOR_CODE vendorCode,
+			      CVM.VENDOR_NAME vendorName,
+			      CVM.VENDOR_Type_ID vendorTypeId,
+			      CVT.VENDOR_TYPE vendorType,
+			      CVM.Comments vendorComments,
+			      CCM.COUNTRY_MASTER_ID countryId,
+				      CCM.COUNTRY country			      
+			FROM 	
+			      CMS_VENDOR_MASTER CVM,
+			      CMS_VENDOR_TYPE CVT,
+				      CMS_COUNTRY_MASTER CCM			      
+			WHERE      
+			                CVM.VENDOR_TYPE_ID = CVT.VENDOR_TYPE_ID
+			AND
+					CVM.PRINCIPLE_CNTRY_ID= CCM.COUNTRY_MASTER_ID
+			AND
+			                CVM.VENDOR_MASTER_ID= #vendorId#
+			      
+     </select>
+     
+     
+     <select id="getVendorNameList" resultClass="com.worldcheck.atlas.vo.VendorDetailVO" parameterClass="com.worldcheck.atlas.vo.VendorDetailVO">
+     	SELECT VENDOR_CODE vendorCode,VENDOR_NAME vendorName,VENDOR_MASTER_ID vendorId 
+			FROM 	
+     		CMS_VENDOR_MASTER 
+			WHERE      
+     		STATUS = 1 
+     		<isNotNull  property="visiableToAnalyst">
+		     	<isEqual prepend="AND" property="visiableToAnalyst" compareValue="y">
+						IS_VSBL_TO_ANLST = 1
+				</isEqual>
+		   </isNotNull>	 	
+     	order by UPPER(vendorName) 
+     </select>
+     
+     
+     
+     <insert id="insertVendorDetail" parameterClass="com.worldcheck.atlas.vo.VendorDetailVO">  
+		<selectKey resultClass="int" type="pre" keyProperty="vendorInvoiceId">
+			SELECT CMS_VENDORINVOICE_SEQ.NEXTVAL AS VALUE FROM DUAL
+	    </selectKey>
+	    Insert into CMS_VENDOR_INVOICE 
+	    (VENDOR_INVOICE_ID,VENDOR_ID,CRN,INVOICE_NO,CREATED_BY,VENDOR_MANAGER_MSG,IMMEDIATE_ATTN,VENDOR_TYPE_ID,MANAGER,STATUS_CODE,COST,
+	    JOB_REQ_SENT_DATE,VENDOR_DUE_DATE,SUBMISSION_DATE,COMMENTS,INVOICE_DATE,INVOICE_DUE_DATE,UPDATED_BY,UPDATED_ON,
+	    COMMISIONING_DATE,CURRENCY_CODE,COUNTRY_ID,CREATED_ON) 
+	    values 
+	    (#vendorInvoiceId#,#vendorId#,#crn#,#invoiceNumber#,#createdBy#,#vendorMgrMesToVendor#,#immediateAttention#,#vendorType#,
+	    #vendorManager#,#vendorStatus#,#cost#,to_date(#jobReqSentDate#,'RRRR MM DD'),to_date(#vendorDueDate#,'RRRR MM DD')
+	    ,to_date(#vendorSubDate#,'RRRR MM DD'),#vendorComments#,null,null,#updatedBy#,sysdate,
+	    to_date(#commissionDate#,'RRRR MM DD'),#currency#,#countryId#,sysdate)		
+	 </insert> 
+     
+     
+      <select id="getCountExistVendorDetail"  resultClass="java.lang.Integer" parameterClass = "java.util.HashMap">
+	   SELECT  
+		      COUNT(VENDOR_ID) 
+		FROM 
+		      CMS_VENDOR_INVOICE 
+		WHERE  
+		      CMS_VENDOR_INVOICE.VENDOR_ID = #vendorId#
+		AND
+		     CRN=#crn#  
+     </select>
+     
+     <select id="getVendorListGrid" resultClass="com.worldcheck.atlas.vo.VendorDetailVO" parameterClass="java.util.HashMap"> 
+			SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (
+				SELECT 
+						VENDOR_INVOICE_ID vendorInvoiceId,
+						VENDOR_CODE vendorId,
+                        CMS_Vendor_Master.VENDOR_NAME vendorName,
+						VENDOR_TYPE vendorType,
+						CMS_USER_MASTER.USER_FULL_NAME vendorManager,
+                        CMS_CURRENCY_MASTER.CURRENCY currency, 
+						CMS_VENDOR_INVOICE.MANAGER updatedBy,
+                        TO_CHAR(CMS_VENDOR_INVOICE.COST,'9,99,99,99,99,99,99,99,999.99') cost,
+						CASE 
+							WHEN STATUS_CODE <![CDATA[ = ]]> 1 THEN 'Awaiting vendor acceptance'
+							WHEN STATUS_CODE <![CDATA[ = ]]> 2 THEN 'Complication'
+							WHEN STATUS_CODE <![CDATA[ = ]]> 3 THEN 'Researching'
+							WHEN STATUS_CODE <![CDATA[ = ]]> 4 THEN 'Completed'							
+						END AS vendorStatus
+				FROM 
+						CMS_Vendor_Master,
+						CMS_VENDOR_INVOICE , 
+						CMS_VENDOR_TYPE,
+            CMS_CURRENCY_MASTER,
+            CMS_USER_MASTER
+				WHERE 
+						CMS_VENDOR_INVOICE.CRN = #crn#
+				AND		CMS_VENDOR_INVOICE.VENDOR_TYPE_ID = CMS_VENDOR_TYPE.VENDOR_TYPE_ID
+                AND     CMS_Vendor_Master.VENDOR_MASTER_ID = CMS_VENDOR_INVOICE.VENDOR_ID
+                AND 	CMS_CURRENCY_MASTER.CURRENCY_CODE = CMS_VENDOR_INVOICE.CURRENCY_CODE
+                AND     CMS_USER_MASTER.login_id= CMS_VENDOR_INVOICE.MANAGER
+               <isNotNull  property="visiableToAnalyst">
+		     	<isEqual prepend="AND" property="visiableToAnalyst" compareValue="y">
+						CMS_Vendor_Master.IS_VSBL_TO_ANLST =1
+				</isEqual>
+		   </isNotNull>	  
+		 	ORDER By upper($sortColumnName$) $sortType$	) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+     </select>
+     
+     <select id="getVendorListSize" resultClass="int" parameterClass="java.util.HashMap"> 			
+				SELECT 
+						COUNT(*)
+				FROM 
+						CMS_VENDOR_INVOICE , 
+						CMS_VENDOR_TYPE,
+						CMS_Vendor_Master 
+				WHERE 
+						CMS_VENDOR_INVOICE.CRN = #crn#
+				AND		CMS_VENDOR_INVOICE.VENDOR_TYPE_ID = CMS_VENDOR_TYPE.VENDOR_TYPE_ID	
+				AND 	CMS_Vendor_Master.VENDOR_MASTER_ID = CMS_VENDOR_INVOICE.VENDOR_ID
+				<isNotNull  property="visiableToAnalyst">
+			     	<isEqual prepend="AND" property="visiableToAnalyst" compareValue="y">
+							CMS_Vendor_Master.IS_VSBL_TO_ANLST =1
+					</isEqual>
+			   </isNotNull>	 	 	
+     </select>
+     
+     
+     <select id="getVendorInformation" resultClass="com.worldcheck.atlas.vo.VendorDetailVO" parameterClass="java.lang.String"> 			
+				SELECT VENDOR_INVOICE_ID reqForVendorInvoiceId ,
+				  CMS_VENDOR_INVOICE.VENDOR_ID vendorId         ,
+				  cms_vendor_master.Vendor_Name vendorName      ,
+						CRN crn,
+				  CMS_VENDOR_INVOICE.VENDOR_TYPE_ID vendorTypeId,
+				  CMS_VENDOR_TYPE.VENDOR_TYPE vendorTypeDisplay ,
+						STATUS_CODE vendorStatus,
+				  CASE
+				    WHEN STATUS_CODE=1
+				    THEN 'Awaiting vendor acceptance'
+				    WHEN STATUS_CODE=2
+				    THEN 'Complication'
+				    WHEN STATUS_CODE=3
+				    THEN 'Researching'
+				    WHEN STATUS_CODE=4
+				    THEN 'Completed'
+				  END vendorStatusDisplay                                                     ,
+						CMS_USER_MASTER.USER_FULL_NAME vendorManager,
+				  CMS_VENDOR_INVOICE.CURRENCY_CODE currency                                   ,
+				  CMS_CURRENCY_MASTER.CURRENCY currencyDisplay                                ,
+						VENDOR_MANAGER_MSG vendorMgrMesToVendor,
+						TO_CHAR(TO_DATE(JOB_REQ_SENT_DATE,'DD Mon RRRR'),'DD-MM-RRRR')jobReqSentDate,
+						TO_CHAR(TO_DATE(SUBMISSION_DATE,'DD Mon RRRR'),'DD-MM-RRRR')vendorSubDate,
+						TO_CHAR(TO_DATE(VENDOR_DUE_DATE,'DD Mon RRRR'),'DD-MM-RRRR')vendorDueDate,
+						INVOICE_NO invoiceNumber,
+						INVOICE_DUE_DATE invoiceDueDate,
+						INVOICE_DATE invoiceDate,
+						IMMEDIATE_ATTN immediateAttention,
+						COUNTRY_ID countryId,
+				  CMS_COUNTRY_MASTER.COUNTRY countryDispaly                                   ,
+				  TO_CHAR(CMS_VENDOR_INVOICE.COST,'9,99,99,99,99,99,99,99,999.99') cost ,
+				  CMS_VENDOR_INVOICE.COMMENTS vendorComments                                  ,
+						TO_CHAR(TO_DATE(COMMISIONING_DATE,'DD Mon RRRR'),'DD-MM-RRRR')commissionDate						
+				   FROM 
+          CMS_VENDOR_INVOICE ,
+				  cms_vendor_master        ,
+				  CMS_VENDOR_TYPE          ,
+				  CMS_COUNTRY_MASTER       ,
+				  CMS_CURRENCY_MASTER,
+          CMS_USER_MASTER
+				  WHERE CMS_VENDOR_INVOICE.CURRENCY_CODE = CMS_CURRENCY_MASTER.CURRENCY_CODE
+				AND CMS_VENDOR_INVOICE.COUNTRY_ID        = CMS_COUNTRY_MASTER.COUNTRY_MASTER_ID(+)
+				AND CMS_VENDOR_INVOICE.VENDOR_TYPE_ID    = CMS_VENDOR_TYPE.VENDOR_TYPE_ID
+				AND CMS_VENDOR_INVOICE.vendor_id         = cms_vendor_master.vendor_master_id
+        AND CMS_USER_MASTER.login_id= CMS_VENDOR_INVOICE.MANAGER
+				AND CMS_VENDOR_INVOICE.VENDOR_INVOICE_ID =#vendorInvoiceId# 	
+     </select>
+     
+     
+     <delete id="deAssociatedVendorDetail" parameterClass="java.lang.String">
+     		DELETE FROM CMS_VENDOR_INVOICE WHERE VENDOR_INVOICE_ID=#vendorInvoiceId#
+     </delete>
+     
+     <update id="updateVendorDetail" parameterClass="com.worldcheck.atlas.vo.VendorDetailVO">     
+		UPDATE
+			  CMS_VENDOR_INVOICE
+		SET
+			 CRN=#crn#,
+			 INVOICE_NO=#invoiceNumber#,
+			 VENDOR_MANAGER_MSG=#vendorMgrMesToVendor#,
+			 IMMEDIATE_ATTN=#immediateAttention#,
+			 STATUS_CODE=#vendorStatus#,
+			 COST=#cost#,
+	    	 JOB_REQ_SENT_DATE=to_date(#jobReqSentDate#,'RRRR MM DD'),
+	    	 VENDOR_DUE_DATE=to_date(#vendorDueDate#,'RRRR MM DD'),
+	    	 SUBMISSION_DATE=to_date(#vendorSubDate#,'RRRR MM DD'),
+	    	 COMMENTS=#vendorComments#,
+	    	 INVOICE_DATE=null,
+	    	 INVOICE_DUE_DATE=null,
+	    	 UPDATED_BY=#updatedBy#,
+	    	 UPDATED_ON=sysdate,
+	    	 COMMISIONING_DATE=to_date(#commissionDate#,'RRRR MM DD'),
+	    	 CURRENCY_CODE=#currency#,
+	    	 COUNTRY_ID=#countryId#
+			  
+		WHERE
+			  CMS_VENDOR_INVOICE.VENDOR_INVOICE_ID=#reqForVendorInvoiceId#
+	</update>
+	
+	<select id="getVendorEmailInformation" resultClass="com.worldcheck.atlas.vo.VendorDetailVO" parameterClass="java.lang.String"> 			
+			SELECT 
+					NVL(CMS_VENDOR_MASTER.EMAIL1,CMS_VENDOR_MASTER.EMAIL2) vendorEmail1,
+					CMS_USER_MASTER.USER_FULL_NAME vendorManager,
+					TO_CHAR(CMS_VENDOR_INVOICE.COST,'9,99,99,99,99,99,99,99,999.99') cost,
+					CMS_VENDOR_INVOICE.CURRENCY_CODE currency,
+					TO_CHAR(TO_DATE(CMS_VENDOR_INVOICE.VENDOR_DUE_DATE, 'DD-MM-RRRR'), 'DD Month yyyy') vendorDueDate,
+					CMS_VENDOR_INVOICE.VENDOR_MANAGER_MSG vendorMgrMesToVendor
+			From
+					CMS_VENDOR_MASTER,
+					CMS_VENDOR_INVOICE,
+				    CMS_USER_MASTER
+					
+			WHERE
+					CMS_VENDOR_MASTER.VENDOR_MASTER_ID = CMS_VENDOR_INVOICE.VENDOR_ID			
+			AND     CMS_USER_MASTER.login_id= CMS_VENDOR_INVOICE.MANAGER			
+			AND
+					CMS_VENDOR_INVOICE.VENDOR_INVOICE_ID = #vendorInvoiceId#		
+     </select>	
+
+	<select id="getVendor_SUbject_RE_Information" resultClass="com.worldcheck.atlas.vo.VendorDetailVO" parameterClass="java.util.HashMap">
+		select a.TEAM_ID TEAM_ID, a.CRN CRN,a.MANAGER_ID
+		MANAGER_ID,d.SUBJECT_ID,wm_concat(d.RE_ID)
+		reIds,c.USER_FULL_NAME,d.SUBJECT_NAME subjectName,d.IS_PRIMARY_SUB
+		isPrimary,d.COUNTRY country ,wm_concat(d.name) reNamesList
+		from ((select
+		ctd.TEAM_ID,ctd.CRN,ctd.MANAGER_ID
+		from CMS_TEAM_DETAILS ctd
+	      where ctd.CRN = #crn# and ctd.TEAM_TYPE_ID = 4 and ctd.MANAGER_ID=#manager# 
+		order by ctd.TEAM_TYPE_ID,ctd.TEAM_ID) a left join
+		(SELECT
+		CSTRM.CRN,CSTRM.SUBJECT_ID,CSTRM.TEAM_ID,CSTRM.RE_ID,cs.SUBJECT_NAME,cs.IS_PRIMARY_SUB,cs.COUNTRY_ID,
+		ccm.COUNTRY,crm.NAME
+		FROM CMS_SUB_TEAM_RE_MAP CSTRM,CMS_SUBJECT cs,CMS_COUNTRY_MASTER
+		ccm,CMS_RE_MASTER crm
+	      WHERE CSTRM.CRN = #crn# AND cstrm.CRN = cs.CRN and cs.subject_id =CSTRM.SUBJECT_ID 
+	      AND ccm.COUNTRY_MASTER_ID = cs.COUNTRY_ID and crm.RE_MASTER_ID = CSTRM.RE_ID and CSTRM.performer=#manager#)d
+		on a.TEAM_ID = d.TEAM_ID left join
+	      (select LOGIN_ID,USER_FULL_NAME from CMS_USER_MASTER )c on a.MANAGER_ID = c.LOGIN_ID)
+		group by
+		a.TEAM_ID,a.CRN,a.MANAGER_ID,d.SUBJECT_ID,c.USER_FULL_NAME,d.SUBJECT_NAME,d.IS_PRIMARY_SUB,d.COUNTRY							
+	</select>
+	 
+</sqlMap>

@@ -1,0 +1,381 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="RemarksFCPAVO">
+	<insert id="insert" parameterClass="com.worldcheck.juno.vo.component.RemarksFCPAVO">
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_CMPY_CORP_ANA_SUMRY_SEQ.NEXTVAL from dual
+		</selectKey>
+		insert into RG_CMPY_CORP_ANA_SUMRY (
+		CMPY_CORP_ANA_SUMRY_ID,
+		CASE_ID,
+		PROCESSCYCLEID,
+		TABLE_BOTTOM_NOTES,		
+		UPDATED_ON,UPDATED_BY,
+		SUBJECT_ID,
+		IS_AUTO_SAVED,
+		PARENT_RECORD_ID,
+		CMPY_CORP_TYPE,TEAM_ID
+		)values (
+		#id#,
+		#crn#,
+		#processCycleId#,
+		#remarks#,		
+		sysdate,
+		#updateBy#,
+		#subjectId#,
+		'N',
+		null,
+		#compType#,#teamTypeId#
+		)
+	</insert>
+	
+	<insert id="insertAutoSave" parameterClass="com.worldcheck.juno.vo.component.RemarksFCPAVO">
+		<selectKey keyProperty="autoSaveId" resultClass="long">
+			SELECT
+			RG_CMPY_CORP_ANA_SUMRY_SEQ.NEXTVAL from dual
+		</selectKey>
+		insert into RG_CMPY_CORP_ANA_SUMRY (
+		CMPY_CORP_ANA_SUMRY_ID,
+		CASE_ID,
+		PROCESSCYCLEID,
+		TABLE_BOTTOM_NOTES,		
+		UPDATED_ON,UPDATED_BY,
+		SUBJECT_ID,
+		IS_AUTO_SAVED,
+		PARENT_RECORD_ID,
+		CMPY_CORP_TYPE
+		)values (
+		#autoSaveId#,
+		#crn#,#processCycleId#,#remarks#,		
+		sysdate,#updateBy#,
+		#subjectId#,
+		'Y',
+		#id#,
+		#compType#
+		)
+	</insert>
+
+	<insert id="insertHistory" parameterClass="com.worldcheck.juno.vo.component.RemarksFCPAVO">
+		insert into
+		RG_CMPY_CORP_ANA_SUMRY_HST (
+		HISTORY_ID,
+		CMPY_CORP_ANA_SUMRY_ID,
+		CASE_ID,
+		PROCESSCYCLEID,
+		TABLE_BOTTOM_NOTES,		
+		UPDATED_ON,UPDATED_BY,
+		SUBJECT_ID)
+
+		(select
+		RG_CMPY_CORP_ANA_SUMRY_HST_SEQ.NEXTVAL,rg.CMPY_CORP_ANA_SUMRY_ID,rg.CASE_ID,rg.PROCESSCYCLEID,rg.TABLE_BOTTOM_NOTES,sysdate,rg.UPDATED_BY,
+		rg.SUBJECT_ID from RG_CMPY_CORP_ANA_SUMRY rg where rg.CMPY_CORP_ANA_SUMRY_ID=#id#
+		)
+
+	</insert>
+
+	<update id="update" parameterClass="com.worldcheck.juno.vo.component.RemarksFCPAVO">
+		update RG_CMPY_CORP_ANA_SUMRY
+		SET
+		PROCESSCYCLEID = #processCycleId#,
+		TABLE_BOTTOM_NOTES = #remarks#,
+		UPDATED_ON =
+		sysdate,
+		UPDATED_BY = #updateBy#,TEAM_ID=#teamTypeId#
+		WHERE CMPY_CORP_ANA_SUMRY_ID = #id#
+     </update>
+
+	<update id="updateAutoSave" parameterClass="com.worldcheck.juno.vo.component.RemarksFCPAVO">
+
+		update RG_CMPY_CORP_ANA_SUMRY set
+		TABLE_BOTTOM_NOTES = #remarks#,
+		PROCESSCYCLEID=#processCycleId# ,
+		UPDATED_ON=sysdate,UPDATED_BY=#updateBy#,
+		PARENT_RECORD_ID = #id#,
+		IS_AUTO_SAVED = 'Y'
+		where
+		CMPY_CORP_ANA_SUMRY_ID=#autoSaveId#
+	</update>
+
+	<resultMap id="resultVO"
+		class="com.worldcheck.juno.vo.component.RemarksFCPAVO">
+		<result property="id" column="CMPY_CORP_ANA_SUMRY_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="crn" column="CASE_ID" />
+		<result property="remarks" column="TABLE_BOTTOM_NOTES" />	
+		<result property="displayDate" column="displayDate" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="subjectName" column="SUBJECT_NAME" />
+		<result property="isAutoSave" column="IS_AUTO_SAVED" />	
+		<result property="updateOn" column="UPDATED_ON" />	
+	</resultMap>
+
+	<select id="getById" resultMap="resultVO" parameterClass="java.lang.Long">
+		SELECT
+		rg.CMPY_CORP_ANA_SUMRY_ID,
+		rg.CASE_ID,
+		rg.PROCESSCYCLEID,
+		cc.DESCRIPTION,
+		rg.TABLE_BOTTOM_NOTES,		
+		to_char(rg.UPDATED_ON, 'DD-Mon-YY HH24:MI:SS')
+		as displayDate,
+		rg.UPDATED_BY,
+		rg.SUBJECT_ID,
+		cs.SUBJECT_NAME,
+		rg.IS_AUTO_SAVED,rg.UPDATED_ON
+		FROM RG_CMPY_CORP_ANA_SUMRY rg
+		,CMS_CASECYCLE cc,
+		rg_subject cs
+		WHERE rg.PROCESSCYCLEID = cc.CASECYCLE_ID AND
+		rg.SUBJECT_ID =
+		cs.SUBJECT_ID AND
+		rg.CMPY_CORP_ANA_SUMRY_ID = #id#		
+	</select>
+
+	<resultMap id="resultHistory"
+		class="com.worldcheck.juno.vo.component.RemarksFCPAVO">
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="id" column="HISTORY_ID" />
+		<result property="remarks" column="TABLE_BOTTOM_NOTES" />
+	</resultMap>
+
+	<select id="getHistory" resultMap="resultHistory"
+		parameterClass="java.util.HashMap">
+
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (SELECT rg.UPDATED_ON,
+		rg.UPDATED_BY,
+		rg.PROCESSCYCLEID,
+		cc.DESCRIPTION,rg.HISTORY_ID,rg.TABLE_BOTTOM_NOTES
+		FROM RG_CMPY_CORP_ANA_SUMRY_HST
+		rg,CMS_CASECYCLE cc
+
+		WHERE rg.PROCESSCYCLEID = cc.CASECYCLE_ID
+		and
+		rg.CMPY_CORP_ANA_SUMRY_ID=#recordId#
+		order by rg.UPDATED_ON	desc
+
+		) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+
+	</select>
+
+	<select id="getArticleText" resultClass="java.lang.String">
+		select TABLE_BOTTOM_NOTES from
+		RG_CMPY_CORP_ANA_SUMRY_HST where history_id=#recordId#
+	</select>
+
+	<select id="getHistoryCount" resultClass="java.lang.Integer">
+		SELECT count(*)
+		FROM
+		RG_CMPY_CORP_ANA_SUMRY_HST
+		rg where
+		rg.CMPY_CORP_ANA_SUMRY_ID=#recordId#		
+	</select>
+
+	<delete id="delete">
+		delete FROM RG_CMPY_CORP_ANA_SUMRY WHERE
+		CMPY_CORP_ANA_SUMRY_ID = #id#
+	</delete>
+
+	<!--generic query-->
+	<delete id="deleteIds" parameterClass="java.util.HashMap">
+		delete FROM RG_CMPY_CORP_ANA_SUMRY WHERE
+		CMPY_CORP_ANA_SUMRY_ID IN
+
+		<iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[]#
+	    </iterate>
+	</delete>
+
+	<!--generic query-->	
+	<delete id="deleteNewAutoSave">
+		delete FROM RG_CMPY_CORP_ANA_SUMRY WHERE
+		CASE_ID=#crn#
+		AND
+		upper(IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID IS
+		NULL 
+		and CMPY_CORP_TYPE ='remarksFCPAForm'
+	</delete>
+	<!--generic query-->
+	<delete id="deleteAutoSave">
+		delete FROM RG_CMPY_CORP_ANA_SUMRY WHERE
+		CASE_ID=#crn#
+		AND
+		upper(IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID =
+		#parentId#
+	</delete>
+
+	<!--generic query-->
+	<select id="findById" resultClass="int">
+		select count(rg.CMPY_CORP_ANA_SUMRY_ID)
+		FROM RG_CMPY_CORP_ANA_SUMRY rg
+		WHERE
+		rg.CMPY_CORP_ANA_SUMRY_ID = #id#
+	</select>
+
+	<!--generic query-->
+	<select id="findAutoSave" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Long">
+		SELECT rg.CMPY_CORP_ANA_SUMRY_ID
+		FROM RG_CMPY_CORP_ANA_SUMRY rg
+		WHERE
+		rg.CASE_ID=#crn# AND
+		upper(rg.IS_AUTO_SAVED)=upper('Y') AND
+		rg.PARENT_RECORD_ID = #parentId#
+	</select>
+
+	<!--generic query-->
+	<select id="findNewAutoSave" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Long">
+		SELECT rg.CMPY_CORP_ANA_SUMRY_ID
+		FROM RG_CMPY_CORP_ANA_SUMRY rg
+		WHERE CASE_ID=#crn#
+		AND
+		upper(rg.IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID IS NULL
+	</select>
+
+	<select id="getProcessCycleList" parameterClass="java.util.HashMap"
+		resultMap="ProcessCycleVO.processCycleList">
+
+		select rem.processcycleid Process_Cycle_Id,cc.DESCRIPTION
+		Process_Cycle
+		from RG_CMPY_CORP_ANA_SUMRY rem, cms_casecycle cc
+		where
+		rem.subject_id=#subId# and rem.case_id=#crn#
+		and cc.casecycle_id=
+		rem.processcycleid
+		and upper(rem.IS_AUTO_SAVED)=upper('N')
+		and
+		rem.CMPY_CORP_TYPE =
+		#compType#
+		<isNotNull property="recordId">
+			<isNotEqual prepend="AND" property="recordId"
+				compareValue="0">
+				rem.CMPY_CORP_ANA_SUMRY_ID != #recordId#
+			</isNotEqual>
+		</isNotNull>
+	</select>
+
+	<select id="checkIfExist" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from RG_CMPY_CORP_ANA_SUMRY where
+		PROCESSCYCLEID=#processCycleId# and SUBJECT_ID = #subjectId# and
+		case_id=#crn# and upper(CMPY_CORP_TYPE)=upper(#compType#) and
+		upper(IS_AUTO_SAVED)=upper('N')
+	</select>
+
+	<!-- makeCopy Remarks Of Summary -->
+
+	<insert id="makeCopy" parameterClass="java.util.HashMap">
+
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_CMPY_CORP_ANA_SUMRY_SEQ.nextval from dual
+	  </selectKey>
+
+		insert into RG_CMPY_CORP_ANA_SUMRY (
+		CMPY_CORP_ANA_SUMRY_ID,
+		CASE_ID,
+		PROCESSCYCLEID,
+		TABLE_BOTTOM_NOTES,
+		UPDATED_ON,UPDATED_BY,
+		SUBJECT_ID,
+		IS_AUTO_SAVED,
+		CMPY_CORP_TYPE
+		)
+		select #id#,
+		CASE_ID,
+		#processCycleId#,
+		TABLE_BOTTOM_NOTES,		
+		sysdate,UPDATED_BY,
+		SUBJECT_ID,
+		IS_AUTO_SAVED,
+		CMPY_CORP_TYPE
+		from
+		RG_CMPY_CORP_ANA_SUMRY
+		where
+		CMPY_CORP_ANA_SUMRY_ID =#recordId#
+	</insert>
+	<!-- history of makeCopyManagement  Summary -->
+	<insert id="makeCopyHst" parameterClass="java.util.HashMap">
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_CMPY_CORP_ANA_SUMRY_HST_SEQ.nextval from dual
+	  </selectKey>
+		insert into
+		RG_CMPY_CORP_ANA_SUMRY_HST (
+		HISTORY_ID,
+		CMPY_CORP_ANA_SUMRY_ID,
+		CASE_ID,
+		PROCESSCYCLEID,
+		TABLE_BOTTOM_NOTES,
+		
+		UPDATED_ON,UPDATED_BY,
+		SUBJECT_ID)
+
+		select
+		#id#,#genSumryId#, CASE_ID,
+		PROCESSCYCLEID,
+		TABLE_BOTTOM_NOTES,
+		
+		sysdate,UPDATED_BY,
+		SUBJECT_ID from
+		RG_CMPY_CORP_ANA_SUMRY
+		where CMPY_CORP_ANA_SUMRY_ID
+		= #genSumryId#
+	</insert>
+
+
+	<insert id="insertHistoryBeforeDeletion" parameterClass="java.util.HashMap">
+		insert into RG_CMPY_CORP_ANA_SUMRY_HST (
+		HISTORY_ID,
+		CASE_ID,
+		SUBJECT_ID,
+		PROCESSCYCLEID,
+		UPDATED_ON,
+		UPDATED_BY,CMPY_CORP_ANA_SUMRY_ID,TABLE_BOTTOM_NOTES
+		)
+
+		SELECT
+		RG_CMPY_CORP_ANA_SUMRY_HST_SEQ.NEXTVAL,inner_view.*
+		FROM
+		<iterate property="recList" conjunction="UNION ALL" open="("
+			close=")">
+			(SELECT CASE_ID,SUBJECT_ID,PROCESSCYCLEID,sysdate,#userName# UPDATED_BY
+			,#recList[]# CMPY_CORP_ANA_SUMRY_ID,TABLE_BOTTOM_NOTES
+			from RG_CMPY_CORP_ANA_SUMRY
+			where REMARKS_ID=#recList[]#)
+			
+		</iterate>
+		inner_view
+	</insert>
+	
+	
+	<resultMap id="miniRecord"
+		class="com.worldcheck.juno.vo.component.CompanyCorporateAnalysisSummaryVO"
+		groupBy="id">
+		<result property="id" column="CMPY_CORP_ANA_SUMRY_ID" />
+		<result property="updateOn" column="UPDATED_ON" />
+	</resultMap>
+	<!--generic query-->
+	<select id="getUpdationTimeById" resultMap="miniRecord">
+		SELECT
+		rg.CMPY_CORP_ANA_SUMRY_ID,
+		rg.UPDATED_ON
+		FROM RG_CMPY_CORP_ANA_SUMRY rg
+		WHERE
+		rg.CMPY_CORP_ANA_SUMRY_ID = #id#
+	</select>
+
+</sqlMap>

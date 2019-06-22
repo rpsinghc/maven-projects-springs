@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE SwimLaneThemes SYSTEM "Designer.dtd" >
+
+<!-- List of available swim lane themes -->
+<SwimLaneThemes>
+  <SwimLaneTheme name="colorful" default="true">
+    <SwimLane color="red"/>
+    <SwimLane color="yellow"/>
+    <SwimLane color="lime"/>
+    <SwimLane color="blue"/>
+  </SwimLaneTheme>
+  <SwimLaneTheme name="gray">
+    <SwimLane color="gray"/>
+    <SwimLane color="black"/>
+  </SwimLaneTheme>
+  <SwimLaneTheme name="red">
+    <SwimLane color="red"/>
+    <SwimLane color="maroon"/>
+  </SwimLaneTheme>
+  <SwimLaneTheme name="yellow">
+    <SwimLane color="yellow"/>
+    <SwimLane color="olive"/>
+  </SwimLaneTheme>
+  <SwimLaneTheme name="green">
+    <SwimLane color="lime"/>
+    <SwimLane color="green"/>
+  </SwimLaneTheme>
+  <SwimLaneTheme name="blue">
+    <SwimLane color="blue"/>
+    <SwimLane color="navy"/>
+  </SwimLaneTheme>
+</SwimLaneThemes>

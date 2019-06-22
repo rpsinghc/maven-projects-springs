@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" 
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PublicHoliday_Master">
+
+	<resultMap id="resultGrid"
+		class="com.worldcheck.atlas.vo.masters.PublicHolidayMasterVO">
+		<result property="officeId" column="OFFICE_ID" />
+		<result property="holidayMasterId" column="HOLIDAY_MASTER_ID" />
+		<result property="office" column="office" />
+		<result property="holiday" column="holiday" />
+		<result property="holidayDate" column="holidayDate" />
+	</resultMap>
+
+
+	<select id="getPublicHolidayGridList" resultMap="resultGrid"
+		parameterClass="com.worldcheck.atlas.vo.masters.PublicHolidayMasterVO">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (
+		SELECT
+		CMS_HOLIDAY_MASTER.OFFICE_ID,
+		CMS_HOLIDAY_MASTER.HOLIDAY_MASTER_ID,
+		CMS_OFFICE_MASTER.OFFICE office,
+		CMS_HOLIDAY_MASTER.HOLIDAY_DESC holiday,
+		TO_CHAR(TO_DATE(CMS_HOLIDAY_MASTER.DATED_ON,'DD Mon, RRRR'),'DD Mon, RRRR') as holidayDate
+		FROM
+		CMS_HOLIDAY_MASTER,
+		CMS_OFFICE_MASTER
+
+		WHERE
+		CMS_HOLIDAY_MASTER.OFFICE_ID = CMS_OFFICE_MASTER.OFFICE_MASTER_ID
+		AND
+		EXTRACT(YEAR FROM CMS_HOLIDAY_MASTER.DATED_ON) = #holidayYear#
+		<isNotNull property="office">
+			<isNotEmpty prepend="AND" property="office">
+				CMS_HOLIDAY_MASTER.OFFICE_ID=#office#
+			    </isNotEmpty>
+		</isNotNull>		
+		
+		<isEqual property="sortColumnName" compareValue="holidayDate">
+				  ORDER By   to_Date(holidayDate) $sortType$	
+		</isEqual>  
+		 <isNotEqual property="sortColumnName" compareValue="holidayDate">
+				  ORDER By upper($sortColumnName$) $sortType$
+		</isNotEqual>  
+		, TO_DATE(holidayDate)
+		) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+
+	</select>
+
+
+	<select id="getPublicHolidayGridListCount" resultClass="int"
+		parameterClass="com.worldcheck.atlas.vo.masters.PublicHolidayMasterVO">
+		SELECT
+		COUNT(*)
+		FROM
+		CMS_HOLIDAY_MASTER,
+		CMS_OFFICE_MASTER
+
+		WHERE
+		CMS_HOLIDAY_MASTER.OFFICE_ID = CMS_OFFICE_MASTER.OFFICE_MASTER_ID
+		AND
+		EXTRACT(YEAR FROM CMS_HOLIDAY_MASTER.DATED_ON) = #holidayYear#
+		<isNotNull property="office">
+			<isNotEmpty prepend="AND" property="office">
+				CMS_HOLIDAY_MASTER.OFFICE_ID=#office#
+			    </isNotEmpty>
+		</isNotNull>
+	</select>
+
+  <!--Added By Juheen.For CR-2(query to ExportToExcel in Master.) -->
+
+    <select id="exportTo_XLS" resultMap="resultGrid" parameterClass="java.util.Map">
+		
+		SELECT
+		CMS_HOLIDAY_MASTER.OFFICE_ID,
+		CMS_HOLIDAY_MASTER.HOLIDAY_MASTER_ID,
+		CMS_OFFICE_MASTER.OFFICE office,
+		CMS_HOLIDAY_MASTER.HOLIDAY_DESC holiday,
+		TO_CHAR(TO_DATE(CMS_HOLIDAY_MASTER.DATED_ON,'DD Mon, RRRR'),'dd-mm-yyyy') as holidayDate
+		FROM
+		CMS_HOLIDAY_MASTER,
+		CMS_OFFICE_MASTER
+                WHERE
+		CMS_HOLIDAY_MASTER.OFFICE_ID = CMS_OFFICE_MASTER.OFFICE_MASTER_ID
+		AND EXTRACT(YEAR FROM CMS_HOLIDAY_MASTER.DATED_ON) = #holidayYear#
+		 <isNotNull property="office">
+			<isNotEmpty prepend="AND" property="office">
+				CMS_HOLIDAY_MASTER.OFFICE_ID=#office#
+			</isNotEmpty>
+		</isNotNull>
+		
+	</select>
+
+	<select id="getPublicHolidayInfo"
+		resultClass="com.worldcheck.atlas.vo.masters.PublicHolidayMasterVO"
+		parameterClass="java.lang.String">
+		SELECT
+		CMS_HOLIDAY_MASTER.HOLIDAY_MASTER_ID holidayMasterId,
+		CMS_OFFICE_MASTER.OFFICE_MASTER_ID office,
+		CMS_HOLIDAY_MASTER.HOLIDAY_DESC holiday,
+		TO_CHAR(TO_DATE(CMS_HOLIDAY_MASTER.DATED_ON,'DD Mon, RRRR'),'DD Mon, RRRR') as holidayDate
+		FROM
+		CMS_HOLIDAY_MASTER,
+		CMS_OFFICE_MASTER
+
+		WHERE
+		CMS_HOLIDAY_MASTER.OFFICE_ID = CMS_OFFICE_MASTER.OFFICE_MASTER_ID
+		AND
+		CMS_HOLIDAY_MASTER.HOLIDAY_MASTER_ID=#publicHolidayId#
+    
+   </select>
+
+	<update id="updatePublicHoliday"
+		parameterClass="com.worldcheck.atlas.vo.masters.PublicHolidayMasterVO">
+		UPDATE
+		CMS_HOLIDAY_MASTER
+		SET
+		OFFICE_ID=#officeId#,
+		DATED_ON=#holidayDate#,
+		HOLIDAY_DESC=#holiday#,
+		UPDATED_BY=#updatedBy#,
+		UPDATED_ON=sysdate
+		WHERE
+		CMS_HOLIDAY_MASTER.HOLIDAY_MASTER_ID=#holidayMasterId#
+	</update>
+
+	<delete id="deletePublicHoliday" parameterClass="java.util.List">
+		DELETE FROM CMS_HOLIDAY_MASTER WHERE
+		CMS_HOLIDAY_MASTER.HOLIDAY_MASTER_ID IN
+		<iterate open="(" close=")" conjunction=",">
+			#holidayIdList[]#
+			</iterate>
+	</delete>
+
+	<insert id="addPublicHoliday"
+		parameterClass="com.worldcheck.atlas.vo.masters.PublicHolidayMasterVO">
+		<selectKey resultClass="int" type="pre" keyProperty="holidayMasterId">
+			SELECT CMS_HOLIDAYMASTER_SEQ.NEXTVAL AS VALUE FROM DUAL
+  		</selectKey>
+		INSERT INTO CMS_HOLIDAY_MASTER (
+		HOLIDAY_MASTER_ID,
+		OFFICE_ID,
+		DATED_ON,
+		HOLIDAY_DESC,
+		UPDATED_BY,
+		UPDATED_ON)
+		VALUES
+		(CMS_HOLIDAYMASTER_SEQ.NEXTVAL,
+		#officeId#,
+		TO_DATE(#holidayDate#, 'DD-Mon-RR'),
+		#holiday#,
+		#updatedBy#,
+		sysdate)
+	</insert>
+	
+	<select id="isExistPublicHolidayInfo" resultClass="com.worldcheck.atlas.vo.masters.PublicHolidayMasterVO"
+		parameterClass="com.worldcheck.atlas.vo.masters.PublicHolidayMasterVO">
+		SELECT
+			CMS_HOLIDAY_MASTER.HOLIDAY_MASTER_ID holidayMasterId,
+			CMS_OFFICE_MASTER.OFFICE office,
+			CMS_HOLIDAY_MASTER.HOLIDAY_DESC holiday,
+			TO_CHAR(TO_DATE(CMS_HOLIDAY_MASTER.DATED_ON,'DD Mon, RRRR'),'DD Mon, RRRR') as holidayDate
+		FROM
+			CMS_HOLIDAY_MASTER,
+			CMS_OFFICE_MASTER
+		WHERE
+        	CMS_HOLIDAY_MASTER.OFFICE_ID = CMS_OFFICE_MASTER.OFFICE_MASTER_ID
+        AND
+			CMS_HOLIDAY_MASTER.OFFICE_ID = #officeId#
+		AND
+			CMS_HOLIDAY_MASTER.DATED_ON= To_date(#holidayDate#,'RRRR-MM-DD')    
+   </select>
+</sqlMap>

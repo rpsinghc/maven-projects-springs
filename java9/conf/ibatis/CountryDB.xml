@@ -1,0 +1,417 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CountryDB">
+
+	<insert id="insertInMaster" parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO" >
+			<selectKey resultClass="int" type="pre" keyProperty="countryDBMasterId">
+					SELECT CMS_CNTRY_DB_MASTER_SEQ.nextval AS VALUE FROM DUAL
+		    </selectKey>
+			INSERT INTO CMS_CNTRY_DB_MASTER (COUNTRYDB_MASTER_ID,COUNTRY_ID,CATEGORY_ID,LINK,DB_NAME,TYPE_ID,SEARCH_METHOD,DESCRIPTION,LANGUAGE,REMARKS,UPDATED_BY,UPDATED_ON) 
+			VALUES(#countryDBMasterId#,#country#,#category#,#link#,#nameOfDatabase#,#type#,#searchMethodology#,#description#,#language#,#remarks#,#updatedBy#,SYSDATE)
+	</insert>
+	
+	<insert id="insertInOptions" parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO" >		    
+			INSERT INTO CMS_CNTRYDB_OPTIONS (CNTRYDB_OPTIONS_ID,CNTRYDB_ID,LLM_COVERED,ROC_INCORPORATION,ROC_MANAGEMENT,ROC_OWNERSHIP,ROC_FINANCIAL,LITI_CIVIL,
+			LITI_CRIMINAL,LITI_LITIGATION,BR_COVERED,LE_COVERED,REG_STOCK_EXC,REG_SECURITIES,REG_CENTRAL_BANK,REG_OTHER_CHECKS,DIR_COVERED,UPDATED_BY,UPDATED_ON) 
+			VALUES(CMS_CNTRYDB_OPTIONS_SEQ.nextval,#countryDBMasterId#,#localLanguageMedia#,#incorporationDetail#,#managementDetails#,#ownership#,
+			#financialInformation#,#civilLitigation#,#criminalLitigation#,#litigation#,#bankRInsolvencyCovered#,#lawEnforcementCovered#,#stockExchanges#,
+			#securities#,#centralBank#,#othersChecks#,#directorship#,#updatedBy#,SYSDATE)
+	</insert>
+	
+	<insert id="insertInLBR" parameterClass="java.util.Map" >		    
+			INSERT INTO CMS_CNTRYDB_LBRTABLE_MAP (CNTRYDB_LBRTABLE_ID,CNTRYDB_ID,COUNTRY_ID,LBR_ID,DB_NAME,POSITION,DESCRIPTION,UPDATED_BY,UPDATED_ON) 
+			VALUES(CMS_CNTRYDB_LBR_MAP_SEQ.nextval,#countryDBMasterId#,#country#,#lbrType#,#lbrDBName#,#position#,#lbrDescription#,#updatedBy#,SYSDATE)
+	</insert>
+
+	<update id="updateInMaster"
+		parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO">
+		UPDATE CMS_CNTRY_DB_MASTER
+		SET CATEGORY_ID = #category#,
+			LINK = #link#,
+			TYPE_ID = #type#,
+			SEARCH_METHOD = #searchMethodology#,
+			DESCRIPTION = #description#,
+			LANGUAGE = #language#,
+			REMARKS = #remarks#,
+			UPDATED_BY=#updatedBy#,
+			UPDATED_ON = SYSDATE
+		WHERE COUNTRY_ID = #country#
+			AND DB_NAME =#nameOfDatabase# 
+			AND COUNTRYDB_MASTER_ID = #countryDBMasterId#
+	</update>
+	
+	<update id="updateInOptions"
+		parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO">
+		UPDATE CMS_CNTRYDB_OPTIONS 
+		SET LLM_COVERED = #localLanguageMedia#,
+			ROC_INCORPORATION = #incorporationDetail#,
+			ROC_MANAGEMENT = #managementDetails#,
+			ROC_OWNERSHIP = #ownership#,
+			ROC_FINANCIAL = #financialInformation#,
+			LITI_CIVIL = #civilLitigation#,
+			LITI_CRIMINAL = #criminalLitigation#,
+			LITI_LITIGATION = #litigation#,
+			BR_COVERED = #bankRInsolvencyCovered#,
+			LE_COVERED = #lawEnforcementCovered#,
+			REG_STOCK_EXC = #stockExchanges#,
+			REG_SECURITIES = #securities#,
+			REG_CENTRAL_BANK = #centralBank#,
+			REG_OTHER_CHECKS = #othersChecks#,
+			DIR_COVERED = #directorship#,
+			UPDATED_BY=#updatedBy#,
+			UPDATED_ON = SYSDATE
+		WHERE CNTRYDB_ID = #countryDBMasterId#
+	</update>
+
+	<delete id="deleteFromLBR"
+		parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO">
+		DELETE FROM CMS_CNTRYDB_LBRTABLE_MAP
+		WHERE CNTRYDB_ID = #countryDBMasterId#
+	</delete>
+	
+	<delete id="deleteCountryDatabase"
+		parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO">
+		DELETE FROM CMS_CNTRY_DB_MASTER
+		WHERE COUNTRYDB_MASTER_ID = #countryDBMasterId#
+	</delete>
+
+	<select id="searchCDBCountryDatabase"
+		parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO"
+		resultClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO">
+		SELECT * FROM (SELECT  searchResult.*, ROWNUM rn FROM ( SELECT CCM.COUNTRY, CCDCM.NAME category, CCDM.LINK,
+			CCDM.DB_NAME nameOfDatabase, CCDTM.NAME type, CCDM.DESCRIPTION 
+		FROM CMS_COUNTRY_MASTER CCM,CMS_CNTRY_DB_MASTER	CCDM,CMS_CNTRY_DB_CATEG_MASTER CCDCM,
+			CMS_CNTRY_DB_TYPE_MASTER CCDTM
+		WHERE CCDCM.CNTRY_DB_CATEG_ID = CCDM.CATEGORY_ID AND CCM.COUNTRY_MASTER_ID = CCDM.COUNTRY_ID
+			AND CCDTM.CNTRY_DB_TYPE_ID = CCDM.TYPE_ID 
+			AND CCDCM.NAME not in ('Litigation', 'Bankruptcy/Insolvency/Credit Check', 
+                      'Regulatory Authorities', 'Law Enforcement Authorities')
+		<isNotNull prepend="AND" property="country">
+	 		 <isNotEmpty property="country">
+			 	CCDM.COUNTRY_ID = #country#
+			 </isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="nameOfDatabase">
+	 			<isNotEmpty property="nameOfDatabase">
+					UPPER(CCDM.DB_NAME)  LIKE '%'|| UPPER(#nameOfDatabase#) || '%'
+				</isNotEmpty>
+			</isNotNull>
+		<isNotNull prepend="AND" property="link">
+	 			<isNotEmpty property="link">
+		 			UPPER(CCDM.LINK) LIKE '%'|| UPPER(#link#) || '%'
+				</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="updateStartDate">
+ 			<isNotEmpty property="updateStartDate">
+		  		trunc(CCDM.UPDATED_ON) <![CDATA[ >= ]]> TO_DATE(#updateStartDate#,'yyyy-mm-dd HH24:MI:SS')
+		  	</isNotEmpty>
+		</isNotNull>
+	  <isNotNull prepend="AND" property="updateEndDate">
+ 			<isNotEmpty property="updateEndDate"> 
+		  		trunc(CCDM.UPDATED_ON) <![CDATA[ <= ]]> TO_DATE(#updateEndDate#,'yyyy-mm-dd HH24:MI:SS')
+		  	</isNotEmpty>
+		</isNotNull>
+		ORDER BY upper($sortColumnName$) $sortType$, CCDCM.NAME, CCDM.DB_NAME)searchResult WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+	</select>
+	
+	<select id="searchCDBCountryDatabaseCount"
+		parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO"
+		resultClass="java.lang.Integer">
+		SELECT COUNT(*) 
+		FROM CMS_COUNTRY_MASTER CCM,CMS_CNTRY_DB_MASTER	CCDM,CMS_CNTRY_DB_CATEG_MASTER CCDCM,
+			CMS_CNTRY_DB_TYPE_MASTER CCDTM
+		WHERE CCDCM.CNTRY_DB_CATEG_ID = CCDM.CATEGORY_ID AND CCM.COUNTRY_MASTER_ID = CCDM.COUNTRY_ID
+			AND CCDTM.CNTRY_DB_TYPE_ID = CCDM.TYPE_ID 
+			AND CCDCM.NAME not in ('Litigation', 'Bankruptcy/Insolvency/Credit Check', 
+                      'Regulatory Authorities', 'Law Enforcement Authorities')
+		<isNotNull prepend="AND" property="country">
+	 			<isNotEmpty property="country">
+			 CCDM.COUNTRY_ID = #country#
+			 	</isNotEmpty>
+			 </isNotNull>
+		<isNotNull prepend="AND" property="nameOfDatabase">
+	 			<isNotEmpty property="nameOfDatabase">
+		UPPER(CCDM.DB_NAME)  LIKE '%'|| UPPER(#nameOfDatabase#) || '%'
+				</isNotEmpty>
+			</isNotNull>
+		<isNotNull prepend="AND" property="link">
+	 			<isNotEmpty property="link">
+		 UPPER(CCDM.LINK) LIKE '%'|| UPPER(#link#) || '%'
+				</isNotEmpty>
+			</isNotNull>
+		<isNotNull prepend="AND" property="updateStartDate">
+	 			<isNotEmpty property="updateStartDate">
+			  		trunc(CCDM.UPDATED_ON) <![CDATA[ >= ]]> TO_DATE(#updateStartDate#,'yyyy-mm-dd HH24:MI:SS')
+			  	</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="updateEndDate">
+	 			<isNotEmpty property="updateEndDate"> 
+			  		trunc(CCDM.UPDATED_ON) <![CDATA[ <= ]]> TO_DATE(#updateEndDate#,'yyyy-mm-dd HH24:MI:SS')
+			  	</isNotEmpty>
+		</isNotNull>
+	</select>
+
+	<select id="searchLBRCountryDatabase"
+		parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO"
+		resultClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO">
+		SELECT * FROM (SELECT  searchResult.*, ROWNUM rn FROM (SELECT CCM.COUNTRY country,CCDCM.NAME category,CCLTM.DB_NAME lbrDBName,
+			CCDLM.NAME lBRTable,CCLTM.DESCRIPTION lbrDescription, CCLTM.POSITION
+		FROM CMS_COUNTRY_MASTER CCM,CMS_CNTRY_DB_MASTER CCDM,CMS_CNTRY_DB_CATEG_MASTER CCDCM,
+			CMS_CNTRY_DB_LBR_MASTER CCDLM, CMS_CNTRYDB_LBRTABLE_MAP CCLTM
+		WHERE CCM.COUNTRY_MASTER_ID = CCDM.COUNTRY_ID
+		  AND CCDCM.CNTRY_DB_CATEG_ID= CCDM.CATEGORY_ID
+	      AND CCDLM.CNTRY_DB_LBR_ID = CCLTM.LBR_ID
+	      AND CCLTM.CNTRYDB_ID = CCDM.COUNTRYDB_MASTER_ID 
+          AND CCDM.COUNTRY_ID = CCLTM.COUNTRY_ID
+			<isNotNull prepend="AND" property="country">
+		 		<isNotEmpty property="country">
+			 		CCLTM.COUNTRY_ID = #country#
+			 	</isNotEmpty>
+			</isNotNull>
+            <isNotNull prepend="AND" property="nameOfDatabase">
+	 			<isNotEmpty property="nameOfDatabase">
+                    UPPER(CCDM.DB_NAME)  LIKE '%'|| UPPER(#nameOfDatabase#) || '%'
+                </isNotEmpty>
+            </isNotNull>
+            <isNotNull prepend="AND" property="link">
+                <isNotEmpty property="link">
+                     UPPER(CCDM.LINK) LIKE '%'|| UPPER(#link#) || '%'
+            	</isNotEmpty>
+            </isNotNull>
+			<isNotNull prepend="AND" property="lbrDBName">
+		 			<isNotEmpty property="lbrDBName">
+			 			UPPER(CCLTM.DB_NAME)  LIKE '%'|| UPPER(#lbrDBName#) || '%'
+			 	</isNotEmpty>
+			 </isNotNull>
+			<isNotNull prepend="AND" property="updateStartDate">
+		 			<isNotEmpty property="updateStartDate">
+			  			trunc(CCDM.UPDATED_ON) <![CDATA[ >= ]]> TO_DATE(#updateStartDate#,'yyyy-mm-dd HH24:MI:SS')
+		  		</isNotEmpty>
+		  	</isNotNull>
+			  <isNotNull prepend="AND" property="updateEndDate">
+		 			<isNotEmpty property="updateEndDate"> 
+			  			trunc(CCDM.UPDATED_ON) <![CDATA[ <= ]]> TO_DATE(#updateEndDate#,'yyyy-mm-dd HH24:MI:SS')
+			  	</isNotEmpty>
+			</isNotNull>
+			ORDER BY upper($sortColumnName$) $sortType$ , CCDM.CATEGORY_ID, CCLTM.LBR_ID,CCLTM.DB_NAME )searchResult WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+	</select>
+	
+	<select id="searchLBRCountryDatabaseCount"
+		parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO"
+		resultClass="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM CMS_COUNTRY_MASTER CCM,CMS_CNTRY_DB_MASTER CCDM,CMS_CNTRY_DB_CATEG_MASTER CCDCM,
+			CMS_CNTRY_DB_LBR_MASTER CCDLM, CMS_CNTRYDB_LBRTABLE_MAP CCLTM
+		WHERE CCM.COUNTRY_MASTER_ID = CCDM.COUNTRY_ID
+		  AND CCDCM.CNTRY_DB_CATEG_ID= CCDM.CATEGORY_ID
+	      AND CCDLM.CNTRY_DB_LBR_ID = CCLTM.LBR_ID
+	      AND CCLTM.CNTRYDB_ID = CCDM.COUNTRYDB_MASTER_ID 
+          AND CCDM.COUNTRY_ID = CCLTM.COUNTRY_ID
+			<isNotNull prepend="AND" property="country">
+		 		<isNotEmpty property="country">
+			 		CCLTM.COUNTRY_ID = #country#
+			 	</isNotEmpty>
+			</isNotNull>
+            <isNotNull prepend="AND" property="nameOfDatabase">
+	 			<isNotEmpty property="nameOfDatabase">
+                    UPPER(CCDM.DB_NAME)  LIKE '%'|| UPPER(#nameOfDatabase#) || '%'
+                </isNotEmpty>
+            </isNotNull>
+            <isNotNull prepend="AND" property="link">
+                <isNotEmpty property="link">
+                    UPPER(CCDM.LINK) LIKE '%'|| UPPER(#link#) || '%'
+            	</isNotEmpty>
+            </isNotNull>
+			<isNotNull prepend="AND" property="lbrDBName">
+		 		<isNotEmpty property="lbrDBName">
+					UPPER(CCLTM.DB_NAME)  LIKE '%'|| UPPER(#lbrDBName#) || '%'
+			 	</isNotEmpty>
+			 </isNotNull>
+			<isNotNull prepend="AND" property="updateStartDate">
+		 			<isNotEmpty property="updateStartDate">
+			  			trunc(CCDM.UPDATED_ON) <![CDATA[ >= ]]> TO_DATE(#updateStartDate#,'yyyy-mm-dd HH24:MI:SS')
+		  		</isNotEmpty>
+		  	</isNotNull>
+			  <isNotNull prepend="AND" property="updateEndDate">
+		 			<isNotEmpty property="updateEndDate"> 
+			  			trunc(CCDM.UPDATED_ON) <![CDATA[ <= ]]> TO_DATE(#updateEndDate#,'yyyy-mm-dd HH24:MI:SS')
+			  	</isNotEmpty>
+			</isNotNull>
+	</select>
+	
+	
+	<select id="exportToExcelCDB"
+		parameterClass = "java.util.Map" resultClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO">
+		SELECT CCM.COUNTRY, CCDCM.NAME category, CCDM.LINK,CCDM.DB_NAME nameOfDatabase, CCDTM.NAME type, CCDM.SEARCH_METHOD searchMethodology,
+	      CCDM.LANGUAGE ,CCDM.REMARKS ,CCDM.DESCRIPTION, CCO.BR_COVERED bankRInsolvencyCovered, CCO.LLM_COVERED localLanguageMedia, CCO.DIR_COVERED directorship,
+	      CCO.LE_COVERED lawEnforcementCovered, CCO.LITI_CIVIL civilLitigation, CCO.LITI_CRIMINAL criminalLitigation, CCO.LITI_LITIGATION litigation,
+	      CCO.REG_CENTRAL_BANK centralBank, CCO.REG_OTHER_CHECKS othersChecks, CCO.REG_SECURITIES securities, CCO.REG_STOCK_EXC stockExchanges, 
+	      CCO.ROC_FINANCIAL financialInformation, CCO.ROC_INCORPORATION incorporationDetail, CCO.ROC_MANAGEMENT managementDetails, CCO.ROC_OWNERSHIP ownership 
+		FROM CMS_COUNTRY_MASTER CCM,CMS_CNTRY_DB_MASTER	CCDM,CMS_CNTRY_DB_CATEG_MASTER CCDCM,
+			CMS_CNTRY_DB_TYPE_MASTER CCDTM, CMS_CNTRYDB_OPTIONS CCO
+		WHERE CCDCM.CNTRY_DB_CATEG_ID = CCDM.CATEGORY_ID AND CCM.COUNTRY_MASTER_ID = CCDM.COUNTRY_ID
+			AND CCDTM.CNTRY_DB_TYPE_ID = CCDM.TYPE_ID
+            AND CCDM.COUNTRYDB_MASTER_ID = CCO.CNTRYDB_ID 
+            AND CCDCM.NAME not in ('Litigation', 'Bankruptcy/Insolvency/Credit Check', 
+                      'Regulatory Authorities', 'Law Enforcement Authorities')
+		<isNotNull prepend="AND" property="country">
+	 		<isNotEmpty property="country">
+				CCDM.COUNTRY_ID = #country#
+		 	</isNotEmpty>
+		 </isNotNull>
+		 <isNotNull prepend="AND" property="nameOfDatabase">
+		 	<isNotEmpty property="nameOfDatabase">
+				UPPER(CCDM.DB_NAME)  LIKE '%'|| UPPER(#nameOfDatabase#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="link">
+			<isNotEmpty property="link">
+		 		UPPER(CCDM.LINK) LIKE '%'|| UPPER(#link#) || '%'
+		 	</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="updateStartDate">
+	 		<isNotEmpty property="updateStartDate">
+				trunc(CCDM.UPDATED_ON) <![CDATA[ >= ]]> TO_DATE(#updateStartDate#,'dd-mm-yy')
+		  	</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="updateEndDate">
+	 		<isNotEmpty property="updateEndDate"> 
+				trunc(CCDM.UPDATED_ON) <![CDATA[ <= ]]> TO_DATE(#updateEndDate#,'dd-mm-yy')
+		  	</isNotEmpty>
+		</isNotNull>
+			ORDER BY CCM.COUNTRY, CCDCM.NAME, CCDM.DB_NAME
+	</select>
+	
+	
+	<select id="exportToExcelLBR"
+		parameterClass = "java.util.Map" resultClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO">
+		SELECT CCM.COUNTRY,CCDCM.NAME category,CCLTM.DB_NAME lbrDBName,CCDLM.NAME lBRTable,CCLTM.DESCRIPTION lbrDescription, CCLTM.POSITION
+		FROM CMS_COUNTRY_MASTER CCM,CMS_CNTRY_DB_MASTER CCDM,CMS_CNTRY_DB_CATEG_MASTER CCDCM,
+			CMS_CNTRY_DB_LBR_MASTER CCDLM, CMS_CNTRYDB_LBRTABLE_MAP CCLTM
+		WHERE CCM.COUNTRY_MASTER_ID = CCDM.COUNTRY_ID
+		AND CCDCM.CNTRY_DB_CATEG_ID= CCDM.CATEGORY_ID
+	      AND CCDLM.CNTRY_DB_LBR_ID = CCLTM.LBR_ID
+	      AND CCLTM.CNTRYDB_ID = CCDM.COUNTRYDB_MASTER_ID 
+          AND CCDM.COUNTRY_ID = CCLTM.COUNTRY_ID
+			<isNotNull prepend="AND" property="country">
+		 		<isNotEmpty property="country">
+			 		CCLTM.COUNTRY_ID = #country#
+			 	</isNotEmpty>
+			</isNotNull>
+            <isNotNull prepend="AND" property="nameOfDatabase">
+	 			<isNotEmpty property="nameOfDatabase">
+                    UPPER(CCDM.DB_NAME)  LIKE '%'|| UPPER(#nameOfDatabase#) || '%'
+                </isNotEmpty>
+            </isNotNull>
+            <isNotNull prepend="AND" property="link">
+                <isNotEmpty property="link">
+                    UPPER(CCDM.LINK) LIKE '%'|| UPPER(#link#) || '%'
+            	</isNotEmpty>
+            </isNotNull>
+			<isNotNull prepend="AND" property="lbrDBName">
+		 		<isNotEmpty property="lbrDBName">
+			 		UPPER(CCLTM.DB_NAME)  LIKE '%'|| UPPER(#lbrDBName#) || '%'
+			 	</isNotEmpty>
+			 </isNotNull>
+			<isNotNull prepend="AND" property="updateStartDate">
+		 		<isNotEmpty property="updateStartDate">
+			  		trunc(CCDM.UPDATED_ON) <![CDATA[ >= ]]> TO_DATE(#updateStartDate#,'dd-mm-yy')
+		  		</isNotEmpty>
+		  	</isNotNull>
+			<isNotNull prepend="AND" property="updateEndDate">
+		 		<isNotEmpty property="updateEndDate"> 
+			  		trunc(CCDM.UPDATED_ON) <![CDATA[ <= ]]> TO_DATE(#updateEndDate#,'dd-mm-yy')
+			  	</isNotEmpty>
+			</isNotNull>
+			ORDER BY CCM.COUNTRY, CCDM.CATEGORY_ID, CCLTM.LBR_ID,CCLTM.DB_NAME
+	</select>
+
+	<select id="sourceAvailability"
+		resultClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO">
+		SELECT CCM.COUNTRY, CCDM.DB_NAME nameOfDatabase, CCO.BR_COVERED bankRInsolvencyCovered, CCO.LLM_COVERED localLanguageMedia, 
+		  CCO.LE_COVERED lawEnforcementCovered, CCO.REG_SECURITIES securities, CCO.REG_STOCK_EXC stockExchanges,
+		  CCO.REG_CENTRAL_BANK centralBank, CCO.REG_OTHER_CHECKS othersChecks, CCO.DIR_COVERED directorship,
+		  decode(CCO.LITI_CIVIL,'Partial','Yes',CCO.LITI_CIVIL) civilLitigation, 
+		  decode(CCO.LITI_CRIMINAL,'Partial','Yes',CCO.LITI_CRIMINAL) criminalLitigation, 
+		  decode(CCO.LITI_LITIGATION,'Partial','Yes',CCO.LITI_LITIGATION) litigation,
+		  decode(CCO.ROC_FINANCIAL,'Partial','Yes',CCO.ROC_FINANCIAL) financialInformation,
+		  decode(CCO.ROC_INCORPORATION,'Partial','Yes',CCO.ROC_INCORPORATION) incorporationDetail, 
+		  decode(CCO.ROC_MANAGEMENT,'Partial','Yes',CCO.ROC_MANAGEMENT) managementDetails, 
+		  decode(CCO.ROC_OWNERSHIP,'Partial','Yes',CCO.ROC_OWNERSHIP) ownership 
+		FROM CMS_COUNTRY_MASTER CCM,CMS_CNTRY_DB_MASTER	CCDM, CMS_CNTRYDB_OPTIONS CCO
+		WHERE CCM.COUNTRY_MASTER_ID = CCDM.COUNTRY_ID  AND CCDM.COUNTRYDB_MASTER_ID = CCO.CNTRYDB_ID 
+		ORDER BY CCM.COUNTRY,CCDM.DB_NAME
+	</select>
+	
+	<select id="getCDBCountryDB"
+		parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO"
+		resultClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO">
+		SELECT CCDM.COUNTRYDB_MASTER_ID countryDBMasterId,CCDM.COUNTRY_ID country, CCDM.CATEGORY_ID category, CCDM.LINK,CCDM.DB_NAME nameOfDatabase, CCDM.TYPE_ID type, CCDM.SEARCH_METHOD searchMethodology,
+		  CCDM.LANGUAGE ,CCDM.REMARKS ,CCDM.DESCRIPTION, CCO.BR_COVERED bankRInsolvencyCovered, CCO.LLM_COVERED localLanguageMedia, CCO.DIR_COVERED directorship,
+		  CCO.LE_COVERED lawEnforcementCovered, CCO.LITI_CIVIL civilLitigation, CCO.LITI_CRIMINAL criminalLitigation, CCO.LITI_LITIGATION litigation,
+		  CCO.REG_CENTRAL_BANK centralBank, CCO.REG_OTHER_CHECKS othersChecks, CCO.REG_SECURITIES securities, CCO.REG_STOCK_EXC stockExchanges, 
+		  CCO.ROC_FINANCIAL financialInformation, CCO.ROC_INCORPORATION incorporationDetail, CCO.ROC_MANAGEMENT managementDetails, CCO.ROC_OWNERSHIP ownership 
+		FROM CMS_COUNTRY_MASTER CCM,CMS_CNTRY_DB_MASTER	CCDM,CMS_CNTRY_DB_CATEG_MASTER CCDCM,
+		        CMS_CNTRY_DB_TYPE_MASTER CCDTM, CMS_CNTRYDB_OPTIONS CCO
+		WHERE CCDCM.CNTRY_DB_CATEG_ID = CCDM.CATEGORY_ID AND CCM.COUNTRY_MASTER_ID = CCDM.COUNTRY_ID
+		    AND CCDTM.CNTRY_DB_TYPE_ID = CCDM.TYPE_ID
+		    AND CCDM.COUNTRYDB_MASTER_ID = CCO.CNTRYDB_ID
+		    AND CCM.COUNTRY = #country# AND UPPER(CCDM.DB_NAME) = UPPER(#nameOfDatabase#) AND CCDCM.NAME = #category#
+	</select>
+	
+	
+	<select id="getLBRCountryDB"
+		parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO"
+		resultClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO">
+		SELECT CCDM.COUNTRYDB_MASTER_ID countryDBMasterId,CCDM.COUNTRY_ID country, CCDM.CATEGORY_ID category, CCDM.LINK,CCDM.DB_NAME nameOfDatabase, 
+		    CCDM.TYPE_ID type, CCDM.SEARCH_METHOD searchMethodology,CCDM.LANGUAGE ,CCDM.REMARKS ,CCDM.DESCRIPTION,CCLTM.DB_NAME lbrDBName,
+		    CCLTM.DESCRIPTION lbrDescription, CCLTM.POSITION, CCO.BR_COVERED bankRInsolvencyCovered, CCO.LLM_COVERED localLanguageMedia, 
+		    CCO.DIR_COVERED directorship,CCO.LE_COVERED lawEnforcementCovered, CCO.LITI_CIVIL civilLitigation, CCO.LITI_CRIMINAL criminalLitigation, 
+		    CCO.LITI_LITIGATION litigation,CCO.REG_CENTRAL_BANK centralBank, CCO.REG_OTHER_CHECKS othersChecks, CCO.REG_SECURITIES securities, 
+		    CCO.REG_STOCK_EXC stockExchanges, CCO.ROC_FINANCIAL financialInformation, CCO.ROC_INCORPORATION incorporationDetail, 
+		    CCO.ROC_MANAGEMENT managementDetails, CCO.ROC_OWNERSHIP ownership 
+		FROM CMS_COUNTRY_MASTER CCM,CMS_CNTRY_DB_MASTER CCDM,CMS_CNTRY_DB_CATEG_MASTER CCDCM,
+		     CMS_CNTRY_DB_LBR_MASTER CCDLM, CMS_CNTRYDB_LBRTABLE_MAP CCLTM,
+		     CMS_CNTRY_DB_TYPE_MASTER CCDTM, CMS_CNTRYDB_OPTIONS CCO
+		WHERE CCM.COUNTRY_MASTER_ID = CCDM.COUNTRY_ID
+			AND CCDCM.CNTRY_DB_CATEG_ID= CCDM.CATEGORY_ID
+	      	AND CCDLM.CNTRY_DB_LBR_ID = CCLTM.LBR_ID
+	      	AND CCLTM.CNTRYDB_ID = CCDM.COUNTRYDB_MASTER_ID 
+          	AND CCDM.COUNTRY_ID = CCLTM.COUNTRY_ID  AND CCDTM.CNTRY_DB_TYPE_ID = CCDM.TYPE_ID
+		    AND CCDM.COUNTRYDB_MASTER_ID = CCO.CNTRYDB_ID
+          	AND CCM.COUNTRY = #country# AND UPPER(CCLTM.DB_NAME) = UPPER(#lbrDBName#) AND CCDLM.NAME = #lbrTable#
+	</select>
+	
+	 <select id="isCountryDBUnique"  resultClass="java.lang.Integer" parameterClass = "java.util.Map">
+	   SELECT  COUNT(DB_NAME) 
+	   FROM CMS_CNTRY_DB_MASTER 
+	   WHERE COUNTRY_ID = #country# AND UPPER(DB_NAME) = UPPER(#dbName#) 
+     </select>  
+     
+     
+     <select id="getLBRDatabases"
+		parameterClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO"
+		resultClass="com.worldcheck.atlas.vo.masters.CountryDatabaseMasterVO">
+		 SELECT CCDM.COUNTRYDB_MASTER_ID countryDBMasterId,CCM.COUNTRY,CCDCM.NAME category,CCLTM.DB_NAME lbrDBName,
+		 		CCDLM.NAME lBRTable,CCLTM.DESCRIPTION lbrDescription, CCLTM.POSITION
+		FROM CMS_COUNTRY_MASTER CCM,CMS_CNTRY_DB_MASTER CCDM,CMS_CNTRY_DB_CATEG_MASTER CCDCM,
+			CMS_CNTRY_DB_LBR_MASTER CCDLM, CMS_CNTRYDB_LBRTABLE_MAP CCLTM
+		WHERE CCM.COUNTRY_MASTER_ID = CCDM.COUNTRY_ID
+		AND CCDCM.CNTRY_DB_CATEG_ID= CCDM.CATEGORY_ID
+	      AND CCDLM.CNTRY_DB_LBR_ID = CCLTM.LBR_ID
+	      AND CCLTM.CNTRYDB_ID = CCDM.COUNTRYDB_MASTER_ID 
+          AND CCDM.COUNTRY_ID = CCLTM.COUNTRY_ID 
+          AND CCLTM.COUNTRY_ID = #country# AND CCLTM.LBR_ID = #lbrTable# AND CCLTM.CNTRYDB_ID = #countryDBMasterId# 
+          ORDER BY CCLTM.POSITION
+	</select>
+	
+	 <select id="isCountryLBRDBUnique"  resultClass="java.lang.Integer" parameterClass = "java.util.Map">
+	    SELECT  COUNT(DB_NAME) 
+	   	FROM CMS_CNTRYDB_LBRTABLE_MAP 
+	   	WHERE COUNTRY_ID = #country# AND UPPER(DB_NAME) = UPPER(#lbrDBName#) AND LBR_ID in ($lbrGroup$)
+     </select>  
+
+</sqlMap>

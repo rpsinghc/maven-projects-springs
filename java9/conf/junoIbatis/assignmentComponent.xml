@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="AssignmentVO">
+
+	<resultMap id="result" class="com.worldcheck.juno.vo.component.AssignmentVO">
+		<result property="id" column="ASSIGNMENT_ID" />
+		<result property="assignmentNote" column="ASSIGNMENT_NOTES" />
+		<result property="crn" column="CASE_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="userName" column="UPDATED_BY" />
+		<result property="updateOn" column="UPDATED_ON" />
+	</resultMap>
+
+	<resultMap id="resultHistory" class="com.worldcheck.juno.vo.component.AssignmentVO">
+		<result property="id" column="HISTORY_ID" />
+		<result property="assignmentNote" column="ASSIGNMENT_NOTES" />
+		<result property="displayDate" column="displayDate" />
+		<result property="userName" column="UPDATED_BY" />
+
+	</resultMap>
+
+	<!-- Insert example, using the Account parameter class -->
+
+	<select id="getHistoryCount" resultClass="java.lang.Integer"
+		parameterClass="java.util.HashMap">
+		SELECT count(*)
+		FROM
+		RG_ASSIGNMENT_HST
+		rg where
+		rg.CASE_ID
+		= #crn# AND PROCESSCYCLEID=#processCycleId# 
+	</select>
+
+	<insert id="insert" parameterClass="map">
+
+
+		insert into RG_ASSIGNMENT (
+		CASE_ID,
+		ASSIGNMENT_NOTES,UPDATED_ON,UPDATED_BY,ASSIGNMENT_ID,IS_AUTO_SAVED,PROCESSCYCLEID
+		)values (
+		#vo.crn#,#vo.assignmentNote#,sysdate,#vo.userName#,RG_ASSIGNMENT_SEQ.NEXTVAL,#vo.isAutoSave#,#vo.processCycleId#
+		)        
+	</insert>
+	  
+	  
+	<select id="canMarkDone" resultClass="java.lang.Boolean">
+		select case when count(*) > 0 then 'true' else 'false' END
+		from RG_ASSIGNMENT where case_id = #crn# and processcycleid = #processCycleId# and nvl(is_auto_saved,'N') != 'Y'
+	</select>
+
+	<select id="getAssignmentforCRN" resultMap="result" parameterClass="java.util.HashMap">
+		SELECT
+		ASSIGNMENT_ID,ASSIGNMENT_NOTES,CASE_ID,UPDATED_BY,UPDATED_ON ,PROCESSCYCLEID 
+		FROM
+		RG_ASSIGNMENT WHERE
+		CASE_ID=#crn# AND PROCESSCYCLEID=#processCycleId# 
+		AND upper(IS_AUTO_SAVED)=upper('N')
+
+	</select>
+	
+	<select id="getByCrn" resultMap="result" parameterClass="map">
+		SELECT
+		ASSIGNMENT_ID,ASSIGNMENT_NOTES,CASE_ID,UPDATED_BY,UPDATED_ON ,PROCESSCYCLEID
+		FROM
+		RG_ASSIGNMENT WHERE
+		CASE_ID=#crn# AND PROCESSCYCLEID=#processCycleId#  
+		AND upper(IS_AUTO_SAVED)=upper('N')
+
+	</select>
+
+	<update id="update" parameterClass="map">
+		update RG_ASSIGNMENT set
+		ASSIGNMENT_NOTES = #vo.assignmentNote#,
+		UPDATED_ON=sysdate,UPDATED_BY = #vo.userName#
+		where
+		CASE_ID =
+		#vo.crn# AND PROCESSCYCLEID=#vo.processCycleId# 
+	  </update>
+
+	<insert id="insertHistory" parameterClass="map">
+
+
+		insert into
+		RG_ASSIGNMENT_HST (
+		HISTORY_ID,CASE_ID,
+		ASSIGNMENT_NOTES,UPDATED_ON,UPDATED_BY,ASSIGNMENT_ID,PROCESSCYCLEID
+		)values (
+		RG_ASSIGNMENT_HST_SEQ.NEXTVAL,#vo.crn#,#vo.assignmentNote#,sysdate,#vo.userName#,#vo.id#,#vo.processCycleId#
+		)        
+	  </insert>
+
+	<select id="getArticleText" resultClass="java.lang.String">
+		select
+		rg.ASSIGNMENT_NOTES
+		from
+		RG_ASSIGNMENT_HST rg where
+		rg.history_id=#recordId#
+	</select>
+	<select id="getById">
+		SELECT
+		ASSIGNMENT_ID,ASSIGNMENT_NOTES,CASE_ID,UPDATED_ON,UPDATED_BY FROM
+		RG_ASSIGNMENT WHERE ASSIGNMENT_ID = #id#
+	</select>
+	<select id="getHistory" resultMap="resultHistory"
+		parameterClass="java.util.HashMap">
+		SELECT HISTORY_ID, ASSIGNMENT_NOTES, displayDate, UPDATED_BY FROM
+		(SELECT a.*, ROWNUM rn FROM (
+		SELECT
+		rg.History_id,rg.ASSIGNMENT_NOTES,to_char(rg.UPDATED_ON, 'DD-Mon-YY
+		HH24:MI:SS') as displayDate,
+		rg.UPDATED_BY
+		FROM
+		RG_ASSIGNMENT_HST rg
+
+		WHERE rg.CASE_ID = #crn# AND PROCESSCYCLEID=#processCycleId#
+		order by rg.UPDATED_ON DESC
+		) a
+		WHERE
+		ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+
+
+	</select>
+
+
+	<select id="getAutoSave" resultMap="result" parameterClass="java.util.HashMap">
+		SELECT ASSIGNMENT_ID,ASSIGNMENT_NOTES,UPDATED_BY,CASE_ID,UPDATED_ON ,PROCESSCYCLEID
+		FROM RG_ASSIGNMENT WHERE
+		CASE_ID=#crn#
+		AND PROCESSCYCLEID=#processCycleId#
+		 AND upper(IS_AUTO_SAVED)=upper('Y')
+
+	</select>
+
+	<insert id="insertAutoSave" parameterClass="java.util.HashMap">
+		<selectKey keyProperty="autoSaveId" resultClass="long">
+			SELECT
+			RG_ASSIGNMENT_SEQ.NEXTVAL from dual
+	  </selectKey>
+		insert into RG_ASSIGNMENT (
+		CASE_ID,
+		ASSIGNMENT_NOTES,UPDATED_ON,UPDATED_BY,ASSIGNMENT_ID,IS_AUTO_SAVED,PROCESSCYCLEID
+		)values (
+		#vo.crn#,#vo.assignmentNote#,sysdate,#vo.userName#,#autoSaveId#,#vo.isAutoSave#,#vo.processCycleId# 
+		)
+	</insert>
+
+	<select id="findAutoSave" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Long">
+		SELECT ASSIGNMENT_ID
+		FROM RG_ASSIGNMENT
+		WHERE
+		upper(IS_AUTO_SAVED)=upper('Y') AND CASE_ID=#crn#
+		AND PROCESSCYCLEID=#processCycleId# 
+		
+	</select>
+	<update id="updateAutoSave" parameterClass="java.util.HashMap">
+
+		update RG_ASSIGNMENT
+		set
+		ASSIGNMENT_NOTES = #vo.assignmentNote#
+		where
+		CASE_ID =
+		#vo.crn# AND PROCESSCYCLEID=#vo.processCycleId# 
+		AND
+		upper(IS_AUTO_SAVED)=upper('Y')
+	</update>
+
+	<delete id="delete">
+		delete FROM RG_ASSIGNMENT WHERE
+		ASSIGNMENT_ID=#id#
+
+	</delete>
+	<delete id="deleteNewAutoSave" parameterClass="map">
+		delete FROM
+		RG_ASSIGNMENT WHERE
+		CASE_ID=#crn# AND PROCESSCYCLEID=#processCycleId# 
+		AND upper(IS_AUTO_SAVED)=upper('Y')
+	</delete>
+
+	<delete id="deleteAutoSave" parameterClass="map">
+		delete FROM
+		RG_ASSIGNMENT WHERE
+		CASE_ID=#crn# AND PROCESSCYCLEID=#processCycleId# 
+		AND upper(IS_AUTO_SAVED)=upper('Y')
+	</delete>
+
+	<select id="findById" resultClass="java.lang.Integer">
+		select count(ASSIGNMENT_ID)
+		from RG_ASSIGNMENT WHERE ASSIGNMENT_ID=#id#
+	</select>
+	<resultMap id="miniAssignmentRecord" 
+				 class="com.worldcheck.juno.vo.component.AssignmentVO" groupBy="id">
+		<result property="id" column="ASSIGNMENT_ID" />
+		<result property="updateOn" column="UPDATED_ON" />
+	</resultMap>
+	
+	<select id="getUpdationTimeById" resultMap="miniAssignmentRecord" parameterClass="map">
+		SELECT rg.ASSIGNMENT_ID,
+		rg.UPDATED_ON
+		FROM RG_ASSIGNMENT rg
+		WHERE
+		rg.CASE_ID=#crn# AND rg.PROCESSCYCLEID=#processCycleId# and rg.IS_AUTO_SAVED = 'N'
+	</select>
+	
+		<select id="getPastData" resultClass="java.lang.String" parameterClass="map">
+		select
+		rg.ASSIGNMENT_NOTES
+		from
+		RG_ASSIGNMENT rg where
+		rg.CASE_ID=#crn# AND rg.PROCESSCYCLEID=#processCycleId# AND upper(IS_AUTO_SAVED)=upper('N')
+	</select>
+	
+		
+	<select id="getMaxTime" parameterClass="java.util.HashMap"
+		resultClass="java.util.Date">
+		select nvl(max(UPDATED_ON),sysdate) from RG_ASSIGNMENT rg where
+		rg.case_id=#crn#
+		and rg.IS_AUTO_SAVED = 'N'AND rg.PROCESSCYCLEID=#processCycleId#
+	</select>
+
+</sqlMap>

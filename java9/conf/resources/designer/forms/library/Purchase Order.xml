@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form SYSTEM "form.dtd" >
+<Form version="6.5">
+  <DataSources>
+    <DataSource name="system">
+      <DataField name="ALLDATASLOTS" type="OBJECT"/>
+      <DataField name="CREATOR" type="STRING"/>
+      <DataField name="PRIORITY" type="STRING"/>
+      <DataField name="PROCESSNAME" type="STRING"/>
+      <DataField name="STARTTIME" type="LONG"/>
+      <DataField name="WORKSTEPNAME" type="STRING"/>
+    </DataSource>
+    <DataSource name="user"/>
+  </DataSources>
+  <head>
+    <link rel="stylesheet" type="bizsolo"/>
+    <link rel="stylesheet" type="text/css" href="@SBM_ROOT/bpmportal/css/formtheme01/purchase_order.css"/>
+  </head>
+  <body class="pobody">
+    <table width="100%" class="table100">
+      <tr>
+        <td width="1%">
+          <br clear="all"/>
+<control id="image3" type="img" source="" name="" width="38" height="38" url="@SBM_ROOT/bpmportal/css/formtheme01/images/your_logo.gif"/>
+          <br clear="all"/>
+</td>
+        <td width="60%" class="companyname">
+          <font size="4">Your Company Name</font>
+          <br clear="all"/>
+<font size="2" color="#99ccff">
+            <b>Your Company Slogan</b>
+          </font>
+        </td>
+        <td width="39%" class="title1">
+          <div align="right">
+            <font size="5">
+              <b>PURCHASE ORDER</b>
+            </font>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <br clear="all"/>
+<table width="100%" class="septable">
+      <tr>
+        <td width="100%"/>
+      </tr>
+    </table>
+    <br clear="all"/>
+<table width="796" align="left" class="table100">
+      <tr>
+        <td width="796" class="horizontalline"/>
+      </tr>
+      <tr>
+        <td width="796">
+          <b>Address:</b>
+          <br clear="all"/>
+street, City, State, Zip&nbsp;<br clear="all"/>
+Phone: 000.000.0000 &nbsp;Fax: 000.000.0000</td>
+      </tr>
+      <tr>
+        <td width="796" class="smalltexttd">
+          <font size="2" color="#666699">
+            <b>The following Number Must appear on all related correspondance, shipping papers, and invoices</b>
+          </font>
+        </td>
+      </tr>
+      <tr>
+        <td width="796">
+          <font size="2">
+            <b>P. O. NUMBER: 100</b>
+          </font>
+        </td>
+      </tr>
+      <tr>
+        <td width="796" class="horizontalline"/>
+      </tr>
+    </table>
+    <br clear="all"/>
+    <br clear="all"/>
+<table width="100%">
+      <tr>
+        <td width="100%"/>
+      </tr>
+    </table>
+    <br clear="all"/>
+<table width="100%" class="table100">
+      <tr>
+        <td width="50%" class="totd">
+          <b>To:</b>
+        </td>
+        <td width="50%" class="fromtd">
+          <b>Ship To:</b>
+        </td>
+      </tr>
+      <tr>
+        <td width="50%" class="totdcontent">
+          <div align="center">
+            <table width="291" align="left">
+              <tr>
+                <td width="58">
+                  <b>Name:</b>
+                </td>
+                <td width="233">
+                  <control id="textField25" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>Company:</b>
+                </td>
+                <td width="233">
+                  <control id="textField26" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>Address:</b>
+                </td>
+                <td width="233">
+                  <control id="textField27" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>City:</b>
+                </td>
+                <td width="233">
+                  <control id="textField28" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>State:</b>
+                </td>
+                <td width="233">
+                  <control id="textField29" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>Zip:</b>
+                </td>
+                <td width="233">
+                  <control id="textField30" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>Phone:</b>
+                </td>
+                <td width="233">
+                  <control id="textField31" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>Fax:</b>
+                </td>
+                <td width="233">
+                  <control id="textField32" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+            </table>
+            <br clear="all"/>
+          </div>
+        </td>
+        <td width="50%" class="fromtdcontent">
+          <div align="center">
+            <table width="291" align="left">
+              <tr>
+                <td width="58">
+                  <b>Name:</b>
+                </td>
+                <td width="233">
+                  <control id="textField20" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>Company:</b>
+                </td>
+                <td width="233">
+                  <control id="textField21" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>Address:</b>
+                </td>
+                <td width="233">
+                  <control id="textField22" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>City:</b>
+                </td>
+                <td width="233">
+                  <control id="textField23" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>State:</b>
+                </td>
+                <td width="233">
+                  <control id="textField24" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>Zip:</b>
+                </td>
+                <td width="233">
+                  <control id="textField41" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>Phone:</b>
+                </td>
+                <td width="233">
+                  <control id="textField42" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+              <tr>
+                <td width="58">
+                  <b>Fax:</b>
+                </td>
+                <td width="233">
+                  <control id="textField43" type="text" source="" name="" width="233" height="34" editable="true" required="false" format=""/>
+                </td>
+              </tr>
+            </table>
+            <br clear="all"/>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <br clear="all"/>
+<table width="100%" class="septable">
+      <tr>
+        <td width="100%"/>
+      </tr>
+    </table>
+    <br clear="all"/>
+<table width="100%" class="table100">
+      <tr>
+        <td width="20%" class="columnhead">P.O. DATE</td>
+        <td width="20%" class="columnhead">REQUISITIONER</td>
+        <td width="20%" class="columnhead">SHIPPED VIA</td>
+        <td width="20%" class="columnhead">F.O.D. Point</td>
+        <td width="20%" class="columnhead">TERMS</td>
+      </tr>
+      <tr>
+        <td width="20%" class="columnheadcontent">
+          <control id="textField6" type="text" source="" name="" width="156" height="34" editable="true" required="false" format=""/>
+          <br clear="all"/>
+</td>
+        <td width="20%" class="columnheadcontent">
+          <control id="textField2" type="text" source="" name="" width="157" height="34" editable="true" required="false" format=""/>
+          <br clear="all"/>
+</td>
+        <td width="20%" class="columnheadcontent">
+          <control id="textField4" type="text" source="" name="" width="157" height="34" editable="true" required="false" format=""/>
+          <br clear="all"/>
+</td>
+        <td width="20%" class="columnheadcontent">
+          <control id="textField5" type="text" source="" name="" width="157" height="34" editable="true" required="false" format=""/>
+          <br clear="all"/>
+</td>
+        <td width="20%" class="columnheadcontent">
+          <control id="textArea1" type="textarea" source="" name="" width="157" height="82" editable="true" required="false" format="String"/>
+        </td>
+      </tr>
+    </table>
+    <br clear="all"/>
+<table width="100%">
+      <tr>
+        <td width="100%"/>
+      </tr>
+    </table>
+    <br clear="all"/>
+<table width="775" align="left" class="bigtable100">
+      <tr>
+        <td width="81" class="bigtable100head">QUANTITY</td>
+        <td width="98" class="bigtable100head">UNIT</td>
+        <td width="322" class="bigtable100head">DESCRIPTION</td>
+        <td width="119" class="bigtable100head">UNIT PRICE</td>
+        <td width="155" class="bigtable100head">TOTAL</td>
+      </tr>
+      <tr>
+        <td width="81">
+          <control id="textField1" type="text" source="" name="" width="80" height="34" editable="true" required="false" format=""/>
+          <div align="center"/>
+        </td>
+        <td width="98">
+          <control id="textField3" type="text" source="" name="" width="98" height="34" editable="true" required="false" format=""/>
+          <br clear="all"/>
+</td>
+        <td width="322">
+          <control id="textArea2" type="textarea" source="" name="" width="238" height="82" editable="true" required="false" format="String"/>
+        </td>
+        <td width="119">
+          <control id="textField8" type="text" source="" name="" width="94" height="34" editable="true" required="false" format=""/>
+          <br clear="all"/>
+</td>
+        <td width="155">
+          <control id="textField9" type="text" source="" name="" width="155" height="34" editable="true" required="false" format=""/>
+          <br clear="all"/>
+</td>
+      </tr>
+      <tr>
+        <td width="81">
+          <control id="textField7" type="text" source="" name="" width="80" height="34" editable="true" required="false" format=""/>
+        </td>
+        <td width="98">
+          <control id="textField10" type="text" source="" name="" width="98" height="34" editable="true" required="false" format=""/>
+        </td>
+        <td width="322">
+          <control id="textArea3" type="textarea" source="" name="" width="238" height="82" editable="true" required="false" format="String"/>
+        </td>
+        <td width="119">
+          <control id="textField11" type="text" source="" name="" width="94" height="34" editable="true" required="false" format=""/>
+        </td>
+        <td width="155">
+          <control id="textField12" type="text" source="" name="" width="155" height="34" editable="true" required="false" format=""/>
+        </td>
+      </tr>
+    </table>
+    <br clear="all"/>
+    <br clear="all"/>
+<table width="100%" class="totaltable">
+      <tr>
+        <td width="50%"/>
+        <td width="50%">
+          <div align="right">SUBTOTAL:</div>
+        </td>
+        <td width="33%">
+          <control id="textField13" type="text" source="" name="" width="238" height="34" editable="true" required="false" format=""/>
+        </td>
+      </tr>
+      <tr>
+        <td width="50%"/>
+        <td width="50%">
+          <div align="right">TAX RATE:</div>
+        </td>
+        <td width="33%">
+          <control id="textField14" type="text" source="" name="" width="238" height="34" editable="true" required="false" format=""/>
+        </td>
+      </tr>
+      <tr>
+        <td width="50%"/>
+        <td width="50%">
+          <div align="right">SALES TAX:</div>
+        </td>
+        <td width="33%">
+          <control id="textField15" type="text" source="" name="" width="238" height="34" editable="true" required="false" format=""/>
+        </td>
+      </tr>
+      <tr>
+        <td width="50%"/>
+        <td width="50%">
+          <div align="right">SHIPPING &amp; HANDLING:</div>
+        </td>
+        <td width="33%">
+          <control id="textField16" type="text" source="" name="" width="238" height="34" editable="true" required="false" format=""/>
+        </td>
+      </tr>
+      <tr>
+        <td width="50%"/>
+        <td width="50%">
+          <div align="right">OTHER:</div>
+        </td>
+        <td width="33%">
+          <control id="textField17" type="text" source="" name="" width="238" height="34" editable="true" required="false" format=""/>
+          <br clear="all"/>
+</td>
+      </tr>
+      <tr>
+        <td width="50%"/>
+        <td width="50%">
+          <div align="right">
+            <b>TOTAL:</b>
+          </div>
+        </td>
+        <td width="33%">
+          <control id="textField18" type="text" source="" name="" width="238" height="34" editable="false" required="false" format=""/>
+          <br clear="all"/>
+</td>
+      </tr>
+    </table>
+    <br clear="all"/>
+<table width="100%" class="septable">
+      <tr>
+        <td width="100%"/>
+      </tr>
+    </table>
+    <br clear="all"/>
+<table width="100%" class="table100">
+      <tr>
+        <td width="50%" class="totd">
+          <b>INSTRUCTIONS:</b>
+        </td>
+        <td width="50%" class="fromtd">
+          <b>AUTHORIZATION:</b>
+        </td>
+      </tr>
+      <tr>
+        <td width="50%" class="totdcontent">1. Please send two copies of your invoice.<br clear="all"/>
+2. Enter this order in accordance with the prices, terms, delivery method, and specifications listed.<br clear="all"/>
+3. Please notify us immediately if you are unable to ship as specified.<br clear="all"/>
+4. Send all correspondence to:<br clear="all"/>
+<br clear="all"/>
+<b>Name:</b>&nbsp;XXXX<br clear="all"/>
+<b>Email:</b>&nbsp;
+          <font color="#0000ff">
+            <u>
+              <a href="mailto:xxxx@xxx.com" title="mailto" target="">xxxx@xxx.com</a>
+            </u>
+          </font>
+          <br clear="all"/>
+<b>Address:</b>&nbsp;XXXX<br clear="all"/>
+<b>Phone:</b>&nbsp;0000<br clear="all"/>
+<b>Fax:</b>&nbsp;0000</td>
+        <td width="50%" class="fromtdcontent">
+          <b>Authorized by:&nbsp;</b>
+          <br clear="all"/>
+<control id="textField19" type="text" source="" name="" width="238" height="34" editable="true" required="false" format=""/>
+          <br clear="all"/>
+<br clear="all"/>
+<br clear="all"/>
+<br clear="all"/>
+<b>Date:</b>
+          <br clear="all"/>
+<control id="dateTime1" type="datetime" source="" name="" width="97" height="41" editable="false" required="false"/>
+          <br clear="all"/>
+</td>
+      </tr>
+    </table>
+    <br clear="all"/>
+</body>
+</Form>

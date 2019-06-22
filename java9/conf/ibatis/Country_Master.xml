@@ -1,0 +1,290 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" 
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Country_Master">   
+
+    <resultMap id="resultGrid"   class="com.worldcheck.atlas.vo.masters.CountryMasterVO">
+		<result property="countryMasterId" column="COUNTRY_MASTER_ID"/>
+		<result property="countryCode" column="countryCode"/>
+		<result property="country" column="COUNTRY"/>
+		<result property="englishCountry" column="englishCountry"/>
+		<result property="riskLevel" column="riskLevel"/>
+		<result property="region" column="REGION"/>			
+   </resultMap>
+
+   <resultMap id="resultGridExcel"   class="com.worldcheck.atlas.vo.masters.CountryMasterVO">
+		<result property="countryMasterId" column="COUNTRY_MASTER_ID"/>
+		<result property="countryCode" column="countryCode"/>
+		<result property="country" column="COUNTRY"/>
+		<result property="status" column="status"/>
+		<result property="englishCountry" column="englishCountry"/>
+		<result property="riskLevel" column="riskLevel"/>
+		<result property="region" column="REGION"/>			
+   </resultMap>
+
+   <select id="getGridList" resultMap="resultGrid" parameterClass="com.worldcheck.atlas.vo.masters.CountryMasterVO"> 
+    SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (SELECT 
+	      cntry.COUNTRY_MASTER_ID,
+	      cntry.CODE countryCode,
+	      cntry.COUNTRY,
+	      cntry.IS_ENG_COUNTRY englishCountry,
+	      risk.NAME riskLevel,
+	      region.REGION 
+	FROM 
+	      CMS_COUNTRY_MASTER cntry,
+	      CMS_RISK_LEVEL risk,
+	      CMS_REGION_MASTER region
+	WHERE
+		cntry.RISK_LEVEL_ID = risk.RISK_LEVEL_ID
+	     AND
+	    cntry.REGION_ID = region.REGION_MASTER_ID
+	    AND
+	    cntry.status=#countryStatus#
+
+		 <isNotNull property="country">
+				<isNotEmpty prepend="AND" property="country">
+					 upper(cntry.COUNTRY)Like UPPER(TRIM('%'||#country#||'%'))
+			    </isNotEmpty>
+		 </isNotNull>		
+		<isNotNull property="region">
+				<isNotEmpty prepend="AND" property="region">
+					 cntry.region_id=#region#
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="riskLevel">
+				<isNotEmpty prepend="AND" property="riskLevel">
+					 cntry.RISK_LEVEL_ID=#riskLevel#
+			    </isNotEmpty>
+		 </isNotNull>
+
+		 ORDER By upper($sortColumnName$) $sortType$	) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#	 
+   </select>  
+
+   <select id="getGridListCount" resultClass="int" parameterClass="com.worldcheck.atlas.vo.masters.CountryMasterVO"> 
+    SELECT count(*)
+	FROM 
+	      CMS_COUNTRY_MASTER cntry,
+	      CMS_RISK_LEVEL risk,
+	      CMS_REGION_MASTER region
+	WHERE
+		cntry.RISK_LEVEL_ID = risk.RISK_LEVEL_ID
+	     AND
+	    cntry.REGION_ID = region.REGION_MASTER_ID
+	    AND
+	     cntry.status=#countryStatus#
+
+		 <isNotNull property="country">
+				<isNotEmpty prepend="AND" property="country">
+					 upper(cntry.COUNTRY)=UPPER(TRIM(#country#))
+			    </isNotEmpty>
+		 </isNotNull>		
+		<isNotNull property="region">
+				<isNotEmpty prepend="AND" property="region">
+					 cntry.region_id=#region#
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="riskLevel">
+				<isNotEmpty prepend="AND" property="riskLevel">
+					 cntry.RISK_LEVEL_ID=#riskLevel#
+			    </isNotEmpty>
+		 </isNotNull>			 
+   </select> 
+   
+   <!--Added By Juheen.For CR-2(query to ExportToExcel in Country Master.) -->
+    <select id="export_XLS" resultMap="resultGridExcel" parameterClass="java.util.Map"> 
+    SELECT cntry.COUNTRY_MASTER_ID,
+	      cntry.CODE countryCode,
+	      cntry.COUNTRY,
+	      CASE
+           WHEN cntry.IS_ENG_COUNTRY=1
+           THEN 'Yes'
+           ELSE 'No'
+          END AS englishCountry,
+	      risk.NAME riskLevel,
+		  CASE WHEN cntry.STATUS=1
+          THEN 'Active'
+          ELSE 'Deactive'
+          END status,
+		  region.REGION
+   
+	FROM 
+	      CMS_COUNTRY_MASTER cntry,
+	      CMS_RISK_LEVEL risk,
+	      CMS_REGION_MASTER region
+	WHERE
+		cntry.RISK_LEVEL_ID = risk.RISK_LEVEL_ID
+	     AND
+	    cntry.REGION_ID = region.REGION_MASTER_ID
+	    AND
+	    cntry.status=#countryStatus#
+
+		 <isNotNull property="country">
+				<isNotEmpty prepend="AND" property="country">
+					 upper(cntry.COUNTRY)Like UPPER(TRIM('%'||#country#||'%'))
+			    </isNotEmpty>
+		 </isNotNull>		
+		<isNotNull property="region">
+				<isNotEmpty prepend="AND" property="region">
+					 cntry.region_id=#region#
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="riskLevel">
+				<isNotEmpty prepend="AND" property="riskLevel">
+					 cntry.RISK_LEVEL_ID=#riskLevel#
+			    </isNotEmpty>
+		 </isNotNull>
+
+   </select>  
+    
+   <update id="deActivate" parameterClass="java.util.Map">
+		UPDATE
+			  CMS_COUNTRY_MASTER
+		SET
+			  CMS_COUNTRY_MASTER.STATUS = 			  
+			  <isEqual property="countryStatus" compareValue="0">
+			  	1
+			 </isEqual>
+			<isEqual property="countryStatus" compareValue="1">
+				0
+			</isEqual>,
+			CMS_COUNTRY_MASTER.UPDATED_BY=#updatedBy#,
+			CMS_COUNTRY_MASTER.UPDATED_ON=sysdate
+		WHERE
+			  CMS_COUNTRY_MASTER.COUNTRY_MASTER_ID=#countryId#
+	</update>
+	
+	
+	<select id="getCountryInfo"  resultClass="com.worldcheck.atlas.vo.masters.CountryMasterVO" parameterClass = "int">
+	   SELECT 
+			  cntry.COUNTRY_MASTER_ID countryMasterId,
+			  cntry.CODE countryCode,
+			  cntry.COUNTRY country,
+			  cntry.IS_ENG_COUNTRY englishCountry,
+			  cntry.Risk_Level_Id riskLevel,
+			  cntry.Region_id region,
+			  cntry.STATUS "countryStatus"
+		FROM 
+			  CMS_COUNTRY_MASTER cntry,
+			  CMS_RISK_LEVEL risk,
+			  CMS_REGION_MASTER region
+		WHERE
+			cntry.RISK_LEVEL_ID = risk.RISK_LEVEL_ID
+		AND
+			cntry.REGION_ID = region.REGION_MASTER_ID
+		AND
+			cntry.COUNTRY_MASTER_ID=#countryId#                  
+     </select>
+	
+	
+<!--
+	 <select id="getCountryInfo"  resultClass="com.worldcheck.atlas.vo.masters.CountryMasterVO" parameterClass = "java.lang.String">
+	   SELECT 
+			  cntry.COUNTRY_MASTER_ID countryMasterId,
+			  cntry.CODE countryCode,
+			  cntry.COUNTRY country,
+			  cntry.IS_ENG_COUNTRY englishCountry,
+			  risk.NAME riskLevel,
+			  region.REGION region,
+			  cntry.STATUS "countryStatus"
+		FROM 
+			  CMS_COUNTRY_MASTER cntry,
+			  CMS_RISK_LEVEL risk,
+			  CMS_REGION_MASTER region
+		WHERE
+			cntry.RISK_LEVEL_ID = risk.RISK_LEVEL_ID
+		AND
+			cntry.REGION_ID = region.REGION_MASTER_ID
+		AND
+			cntry.COUNTRY_MASTER_ID=#countryId#                  
+     </select>
+	 -->
+
+	<update id="updateCountry" parameterClass="com.worldcheck.atlas.vo.masters.CountryMasterVO">     
+		UPDATE
+			  CMS_COUNTRY_MASTER
+		SET
+			  COUNTRY = #country#,
+			  REGION_ID=#region#,
+			  IS_ENG_COUNTRY=#englishCountry#,
+			  RISK_LEVEL_ID=#riskLevel#,
+			  STATUS=#countryStatus#,
+			  CMS_COUNTRY_MASTER.UPDATED_BY=#updatedBy#,
+			CMS_COUNTRY_MASTER.UPDATED_ON=sysdate
+			  
+		WHERE
+			  CMS_COUNTRY_MASTER.COUNTRY_MASTER_ID=#countryMasterId#
+	</update>
+	
+	<insert id="addCountry" parameterClass="com.worldcheck.atlas.vo.masters.CountryMasterVO">  
+		 <selectKey resultClass="int" type="pre" keyProperty="countryMasterId">
+   				SELECT CMS_COUNTRYMASTER_SEQ.nextval AS VALUE FROM DUAL
+  		</selectKey>
+		
+		INSERT INTO 
+				CMS_COUNTRY_MASTER 
+				(
+					CMS_COUNTRY_MASTER.COUNTRY_MASTER_ID, 
+					CMS_COUNTRY_MASTER.COUNTRY,
+					CMS_COUNTRY_MASTER.CODE,
+					CMS_COUNTRY_MASTER.REGION_ID,
+					CMS_COUNTRY_MASTER.IS_ENG_COUNTRY,
+					CMS_COUNTRY_MASTER.RISK_LEVEL_ID,
+					CMS_COUNTRY_MASTER.STATUS,
+					CMS_COUNTRY_MASTER.UPDATED_BY,
+					CMS_COUNTRY_MASTER.UPDATED_ON
+				)
+		VALUES
+				(	
+					#countryMasterId#,
+					#country#,
+					#countryCode#,	
+					#region#,
+					#englishCountry#,
+					#riskLevel#,
+					#countryStatus#,
+					#updatedBy#,
+					sysdate				
+				)
+	 </insert> 
+	 
+	
+	   <select id="searchExistCountryCode"  resultClass="java.lang.Integer" parameterClass = "java.lang.String">
+	   SELECT  
+	   			COUNT(CMS_COUNTRY_MASTER.CODE) 
+	   FROM 
+	   			CMS_COUNTRY_MASTER 
+	   WHERE  
+	   			UPPER(CMS_COUNTRY_MASTER.CODE) LIKE  UPPER(TRIM(#countryCode#))  
+     </select> 
+     
+     <select id="searchExistCountry"  resultClass="java.lang.Integer" parameterClass = "java.lang.String">
+	   SELECT  
+	   			COUNT(CMS_COUNTRY_MASTER.CODE) 
+	   FROM 
+	   			CMS_COUNTRY_MASTER 
+	   WHERE  
+	   			UPPER(CMS_COUNTRY_MASTER.COUNTRY) LIKE  UPPER(TRIM(#country#))  
+     </select>  
+     
+     <select id="checkAssociatedMaster"  resultClass="com.worldcheck.atlas.vo.masters.CountryMasterVO" parameterClass = "int">
+     SELECT * FROM
+     (SELECT COUNT(CC.CRN) totalCRN FROM CMS_CLIENTCASE CC,CMS_SUBJECT cs WHERE CC.CRN = cs.CRN AND CC.CASE_STATUS_ID IN (1, 2, 3)AND cs.Country_Id = #countryMasterId#),
+     (SELECT COUNT(USER_MASTER_ID) totalUser FROM CMS_USER_MASTER CUM,CMS_USER_CNTRY_PROFILE CUCP WHERE CUM.USER_MASTER_ID= CUCP.user_ID AND CUCP.COUNTRY_ID=#countryMasterId#),
+     (SELECT COUNT(COUNTRY_MASTER_ID) cntryClientCount FROM CMS_CLIENT_MASTER WHERE COUNTRY_MASTER_ID=#countryMasterId#),    
+     
+     (SELECT COUNT(PRINCIPLE_CNTRY_ID)vendorPrincipleCntry FROM CMS_VENDOR_MASTER WHERE PRINCIPLE_CNTRY_ID=#countryMasterId#),
+     (SELECT COUNT(COUNTRY_ID)vendorCntryMap FROM CMS_VENDOR_CNTRY_MAP WHERE COUNTRY_ID=#countryMasterId#),
+     
+     (SELECT COUNT(COUNTRY_ID)cntryDBMap FROM CMS_CNTRY_DB_MASTER WHERE COUNTRY_ID=#countryMasterId#),
+     (SELECT COUNT(COUNTRY_ID)cntryLbrMap FROM CMS_CNTRYDB_LBRTABLE_MAP WHERE COUNTRY_ID=#countryMasterId#),
+     
+     (SELECT COUNT(COUNTRY_ID)nonCRNExpenCount FROM CMS_NONCRN_EXPENDITURE WHERE COUNTRY_ID=#countryMasterId#),
+     (SELECT COUNT(COUNTRY_ID)nonCRNVendorCntry FROM CMS_NONCRNVENDOR_CNTRY_MAP WHERE COUNTRY_ID=#countryMasterId#),    
+    
+     (SELECT COUNT(COUNTRY_ID)userProfileCount FROM CMS_USER_CNTRY_PROFILE WHERE COUNTRY_ID=#countryMasterId#),
+     (SELECT COUNT(COUNTRY_ID)subjectCount FROM CMS_SUBJECT WHERE COUNTRY_ID=#countryMasterId#) 
+     
+     </select>
+        
+     
+</sqlMap>

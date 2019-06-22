@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE SBMResource SYSTEM "SBMResource.dtd">
+
+<SBMResource>
+<Component name="BizLogic">
+  <ResourceType name="ProcessTemplate">
+    <Action>Any</Action>
+    <Action>View</Action>
+    <Action>Update</Action>
+  </ResourceType>
+
+  <ResourceType name="ProcessInstance">
+    <Action>Any</Action>
+    <Action>View</Action>
+    <Action>Update</Action>
+    <Action>Remove</Action>
+    <Action>Suspend</Action>
+    <Action>Resume</Action>
+  </ResourceType>
+
+  <ResourceType name="DataSlot">
+    <Action>Any</Action>
+    <Action>View</Action>
+    <Action>Update</Action>
+  </ResourceType>
+</Component>
+
+
+<Component name="BizPulse">
+  <ResourceType name="Infopad">
+    <Action>Any</Action>
+    <Action>View</Action>
+    <Action>Update</Action>
+  </ResourceType>
+</Component>
+
+<Component name="Management">
+  <!-- Business Expert Resource List Starts -->
+  <ResourceType name="Analysis">
+    <Action>Execute</Action>
+    <Instance id="0" name="Any" />
+    <Instance id="1" name="Common" />
+    <Instance id="4" name="Out-of-the-Box" />
+    </ResourceType>
+    <ResourceType name="CreateAnalysis">
+    <Action>Any</Action>
+    <Instance id="0" name="Any" />
+    <Instance id="1" name="Common" />
+    <Instance id="4" name="Out-of-the-Box" />
+    </ResourceType>
+    <ResourceType name="Metric">
+    <Action>View</Action>
+    <Action>Evaluate</Action>
+    <Instance id="0" name="Any" />
+    </ResourceType>
+    <ResourceType name="CreateMetric">
+    <Action>Any</Action>
+    <Instance id="0" name="Any" />
+  </ResourceType>
+  <!-- Business Expert Resource List Ends -->
+  <ResourceType name="BizSQLReport">
+    <Action>Execute</Action>
+  </ResourceType>
+
+  <ResourceType name="ReportBuilder">
+    <Action>Any</Action>
+    <Action>Update</Action>
+    <Action>Create</Action>
+    <Action>Remove</Action>
+    <Instance id="0" name="Any" />
+    <Instance id="1" name="SBM" />
+    <Instance id="2" name="External" />
+  </ResourceType>
+
+  <ResourceType name="Report">
+    <Action>Execute</Action>
+    <Instance id="0" name="Any" />
+    <Instance id="1" name="Common" />
+    <Instance id="2" name="External" />
+    <!--<Instance id="3" name="BalancedScoreCard Designer" />-->
+    <Instance id="4" name="Out-of-the-Box" />
+  </ResourceType>
+
+</Component>
+
+<Component name="Administration">
+  <ResourceType name="Server">
+    <Instance id="0" name="Any">
+        <Action>Any</Action>
+        <Action>ViewStatus</Action>
+        <Action>Start</Action>
+        <Action>Stop</Action>
+    </Instance>
+        <Instance id="1" name="BizLogic">
+        <Action>Any</Action>
+        <Action>ViewStatus</Action>
+        <Action>Start</Action>
+        <Action>Stop</Action>
+        <Action>Suspend</Action>
+        <Action>Resume</Action>
+    </Instance>
+    <Instance id="2" name="BizPulse">
+        <Action>Any</Action>
+        <Action>ViewStatus</Action>
+        <Action>Start</Action>
+        <Action>Stop</Action>
+        <Action>Suspend</Action>
+        <Action>Resume</Action>
+    </Instance>
+    <Instance id="3" name="EventPublisher">
+        <Action>Any</Action>
+        <Action>ViewStatus</Action>
+        <Action>Start</Action>
+        <Action>Stop</Action>
+    </Instance>
+    <!--<Instance id="4" name="Archiver">
+        <Action>Any</Action>
+        <Action>ViewStatus</Action>
+        <Action>Start</Action>
+        <Action>Stop</Action>
+    </Instance>-->
+
+    <!-- BUSINESS EXPERT INTEGRATION -->
+    <Instance id="5" name="BEServer">
+    <Action>Any</Action>
+    <Action>ViewStatus</Action>
+    <Action>Start</Action>
+    <Action>Stop</Action>
+    </Instance>
+    <!-- BUSINESS EXPERT INTEGRATION -->
+  </ResourceType>
+
+  <ResourceType name="Configuration">
+    <Action>Any</Action>
+    <Action>View</Action>
+    <Action>Update</Action>
+    <Instance id="0" name="Any" />
+    <Instance id="1" name="SBM" />
+    <Instance id="2" name="BizLogic" />
+    <Instance id="3" name="BizPulse" />
+    <Instance id="4" name="Portal" />
+    <Instance id="5" name="BizSolo" />
+    <Instance id="6" name="Email" />
+    <Instance id="7" name="Log" />
+    <Instance id="8" name="BizStore" />
+    <Instance id="9" name="EventPublisher" />
+    <!-- BUSINESS EXPERT INTEGRATION -->
+    <Instance id="10" name="BEServer" />
+
+  </ResourceType>
+
+  <ResourceType name="Log">
+    <Action>Any</Action>
+    <Action>View</Action>
+    <Instance id="0" name="Any" />
+    <Instance id="1" name="BizLogic" />
+    <Instance id="2" name="BizPulse" />
+    <Instance id="3" name="BizStore" />
+    <Instance id="4" name="Portal" />
+    <Instance id="5" name="BizSolo" />
+    <Instance id="6" name="SBM" />
+    <Instance id="7" name="Archiver" />
+    <Instance id="8" name="EventPublisher" />
+    <Instance id="9" name="BRMSPortal" />
+    <Instance id="10" name="BizRules" />
+    <!-- BUSINESS EXPERT INTEGRATION -->
+    <Instance id="11" name="BEServer" />
+  </ResourceType>
+
+  <ResourceType name="User">
+    <Action>Any</Action>
+    <Action>View</Action>
+    <Action>Update</Action>
+    <Action>Create</Action>
+    <Action>Remove</Action>
+    <Action>Delegate</Action>
+  </ResourceType>
+
+  <ResourceType name="Group">
+    <Action>Any</Action>
+    <Action>View</Action>
+    <Action>Update</Action>
+    <Action>Create</Action>
+    <Action>Remove</Action>
+    <Action>AddMember</Action>
+    <Action>RemoveMember</Action>
+    <Action>ChangeRole</Action>
+  </ResourceType>
+
+  <ResourceType name="Queue">
+    <Action>Any</Action>
+    <Action>View</Action>
+    <Action>Update</Action>
+    <Action>Create</Action>
+    <Action>Remove</Action>
+    <Action>AddMember</Action>
+    <Action>RemoveMember</Action>
+  </ResourceType>
+
+  <ResourceType name="Permission">
+    <Action>Any</Action>
+    <Action>View</Action>
+    <Action>Create</Action>
+    <Action>Remove</Action>
+    <Instance id="0" name="Any" />
+  </ResourceType>
+
+  <ResourceType name="Application">
+    <Instance id="0" name="Any">
+        <Action>Any</Action>
+        <Action>Install</Action>
+        <Action>Uninstall</Action>
+        <Action>Publish</Action>
+        <Action>Unpublish</Action>
+    </Instance>
+    <Instance id="1" name="SBM">
+        <Action>Any</Action>
+        <Action>Install</Action>
+        <Action>Uninstall</Action>
+        <Action>Suspend</Action>
+        <Action>Resume</Action>
+        <Action>Publish</Action>
+        <Action>Unpublish</Action>
+        
+        <Action>Refresh</Action>
+    </Instance>
+    <Instance id="2" name="BizSolo">
+        <Action>Any</Action>
+        <Action>Install</Action>
+        <Action>Uninstall</Action>
+        <Action>Publish</Action>
+        <Action>Unpublish</Action>
+        <Action>Execute</Action>
+    </Instance>
+  </ResourceType>
+
+  <ResourceType name="Modeler">
+    <Action>Any</Action>
+    <Action>View</Action>
+    <Action>Update</Action>
+    <Action>Create</Action>
+    <Action>Remove</Action>
+  </ResourceType>
+
+  <ResourceType name="Reusables">
+
+    <Action>Any</Action>
+
+    <Action>Import</Action>
+
+    <Action>Export</Action>
+    
+    <Action>Delete</Action>
+
+  </ResourceType>
+
+</Component>
+
+<Component name="Dashboard">
+  <ResourceType name="Component">
+    <Action>View</Action>
+  </ResourceType>
+</Component>
+</SBMResource>
+

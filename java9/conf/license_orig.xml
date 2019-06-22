@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<savvion-licenses>
+    <product-group name="Business Manager" version="7.6">
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="VEU3RCW00JJ71001300000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="BizLogic" os-code="All" session-limit="Unlimited" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="VPVWZEW00JD91001X00000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="BizStore" os-code="All" session-limit="Unlimited" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="V7WMTZW00J4E2001600000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="BizPulse" os-code="All" session-limit="Unlimited" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="W0YUTTW00J78E001600000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="ArchiveReplicator" os-code="All"
+            session-limit="Unlimited" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="WQ2MU8W00JAS7001C00000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="BizSite" os-code="All" session-limit="15" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="WNHT6ZW00JTYC001U00000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="SBMAdmin" os-code="All" session-limit="15" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="W7A804W00J2DA001L00000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="BizManage" os-code="All" session-limit="15" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="WHKC8MW00JF5D001X00000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="BizManage_BSC" os-code="All" session-limit="15" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="WK45WUW00JVZ8001F00000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="BizSolo" os-code="All" session-limit="15" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="WXVD2NW00JOZG001O00000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="BizRules" os-code="All" session-limit="15" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="XQ1BSFW00JSFI001900000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="SAPAdapter" os-code="All" session-limit="15" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="W3W9O6W00JM1H001300000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="BMDocumentum" os-code="All" session-limit="15" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="XJ4UU2W00JDMJ001C00000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="BMAlfresco" os-code="All" session-limit="15" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="W3TU01W00J3SG001L00000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="Modeler" os-code="All" session-limit="15" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="SBM0-0000-76178"
+            expiration-date="06-18-2011" ip-address="Any"
+            key="WZM227W00J6AD001600000" license-type="Evaluation"
+            licensee="Evaluation Customer" memory-limit="0"
+            name="Designer" os-code="All" session-limit="15" session-operand="reset"/>
+    </product-group>
+</savvion-licenses>

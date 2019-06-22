@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<xss-config>
+    <xss-rules name="xss-default-html4">
+        <import file="resources/conf/bmwebsecurity/xss-html4-standard-rules.xml" name="html4"/>
+
+        <reject-common-attr name="code"/>
+        <reject-common-attr name="action"/>
+        <reject-common-attr name="background"/>
+        <reject-common-attr name="cite"/>
+        <reject-common-attr name="classid"/>
+        <reject-common-attr name="codebase"/>
+        <reject-common-attr name="data"/>
+        <reject-common-attr name="href"/>
+        <reject-common-attr name="longdesc"/>
+        <reject-common-attr name="onblur"/>
+        <reject-common-attr name="onchange"/>
+        <reject-common-attr name="onclick"/>
+        <reject-common-attr name="ondblclick"/>
+        <reject-common-attr name="onfocus"/>
+        <reject-common-attr name="onkeydown"/>
+        <reject-common-attr name="onkeypress"/>
+        <reject-common-attr name="onkeyup"/>
+        <reject-common-attr name="onload"/>
+        <reject-common-attr name="onmousedown"/>
+        <reject-common-attr name="onmousemove"/>
+        <reject-common-attr name="onmouseout"/>
+        <reject-common-attr name="onmouseover"/>
+        <reject-common-attr name="onmouseup"/>
+        <reject-common-attr name="onreset"/>
+        <reject-common-attr name="onselect"/>
+        <reject-common-attr name="onsubmit"/>
+        <reject-common-attr name="onunload"/>
+        <reject-common-attr name="profile"/>
+        <reject-common-attr name="src"/>
+        <reject-common-attr name="style"/>
+        <reject-common-attr name="usemap"/>
+
+        <reject-tag name="SCRIPT"/>
+        <reject-tag name="NOSCRIPT"/>
+        <reject-tag name="IFRAME"/>
+        <reject-tag name="FRAMESET"/>
+        <reject-tag name="IMG"/>
+        <reject-tag name="META"/>
+        <reject-tag name="EMBED"/>
+        <reject-tag name="OBJECT"/>
+        <reject-tag name="HEAD"/>
+        <reject-tag name="LINK"/>
+    </xss-rules>
+</xss-config>

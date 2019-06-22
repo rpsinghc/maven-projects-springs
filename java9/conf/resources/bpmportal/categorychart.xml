@@ -1,0 +1,31 @@
+<chart bgColor='FFFFFF' legendPosition='BOTTOM' labelDisplay='Stagger'>
+
+   <categories>
+    #category_labels#
+   </categories>
+
+    #category_dataset#
+       
+   <trendlines>
+      <line startValue='26000' color='91C728' displayValue='Target' showOnTop='1'/>
+   </trendlines>
+
+   <styles>
+
+      <definition>
+         <style name='CanvasAnim' type='animation' param='_xScale' start='0' duration='1' />
+        <style type='font' name='CaptionFont' size='10' color='666666' />
+        <style type='font' name='SubCaptionFont' bold='0'/>
+        <style name='myHTMLFont' type='font' isHTML='1' />
+      </definition>
+
+      <application>
+         <apply toObject='Canvas' styles='CanvasAnim' />
+        <apply toObject='caption' styles='CaptionFont'/>
+        <apply toObject='SubCaption' styles='SubCaptionFont'/>
+        <apply toObject='TOOLTIP' styles='myHTMLFont' />
+        </application>   
+
+   </styles>
+
+</chart>

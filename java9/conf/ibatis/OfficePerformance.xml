@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OfficePerformance">
+
+	<resultMap id="fullRevenueResultMap"
+		class="com.worldcheck.atlas.vo.report.OfficePerformanceVO" groupBy="office">
+		<result property="office" column="PRIMARY_TEAM_OFFICE" />
+		<result property="officePerformanceVOList" resultMap="OfficePerformance.list" />
+	</resultMap>
+
+	<resultMap id="list"
+		class="com.worldcheck.atlas.vo.report.OfficePerformanceVO">
+		<result property="office" column="PRIMARY_TEAM_OFFICE" />
+		<result property="revenue" column="REVENUE_OFFICE" />
+		<result property="month" column="FINAL_SENT_MONTH" />
+		<result property="revenueByAnalyst" column="revenueByAnalyst" />
+	</resultMap>
+
+<!-- Start  Point by Officee -->
+	<resultMap id="PointByOffice"
+		class="com.worldcheck.atlas.vo.report.OfficePerformanceVO" groupBy="office">
+		<result property="office" column="office" />
+		<result property="officePerformanceVOList" resultMap="OfficePerformance.PointGroupByOffice" />
+	</resultMap>
+	<resultMap id="PointGroupByOffice"	class="com.worldcheck.atlas.vo.report.OfficePerformanceVO">
+		<result property="office" column="office" />
+		<result property="productivityPoints" column="productivityPoints" />
+		<result property="month" column="month" />		
+	</resultMap>
+<!-- End  Point by Officee -->
+
+<!-- Point Analyst by Office -->
+	<resultMap id="PointAnalystByOffice"
+		class="com.worldcheck.atlas.vo.report.OfficePerformanceVO" groupBy="office">
+		<result property="office" column="office" />
+		<result property="officePerformanceVOList" resultMap="OfficePerformance.PointAnalystGroupByOffice" />
+	</resultMap>
+
+	<resultMap id="PointAnalystGroupByOffice"	class="com.worldcheck.atlas.vo.report.OfficePerformanceVO">
+		<result property="office" column="office" />
+		<result property="productivitypointsByAnalyst" column="productivitypointsByAnalyst" />
+		<result property="month" column="month" />		
+	</resultMap>
+<!-- End  Point Analyst by Officee -->
+
+
+
+<!-- Completed cases per office -->
+	<resultMap id="caseByOfficeMap"
+		class="com.worldcheck.atlas.vo.report.OfficePerformanceVO" groupBy="office">
+		<result property="office" column="office" />
+		<result property="officePerformanceVOList" resultMap="OfficePerformance.caseGroupByOffice" />
+	</resultMap>
+	<resultMap id="caseGroupByOffice"	class="com.worldcheck.atlas.vo.report.OfficePerformanceVO">
+		<result property="office" column="office" />
+		<result property="completedCases" column="completedCases" />
+		<result property="month" column="month" />		
+	</resultMap>
+<!-- End  Completed cases per office -->
+
+
+<!-- Case Analyst by Office -->
+	<resultMap id="casePerAnalystByOfficeMap"
+		class="com.worldcheck.atlas.vo.report.OfficePerformanceVO" groupBy="office">
+		<result property="office" column="office" />
+		<result property="officePerformanceVOList" resultMap="OfficePerformance.caseAnalystGroupByOffice" />
+	</resultMap>
+
+	<resultMap id="caseAnalystGroupByOffice"	class="com.worldcheck.atlas.vo.report.OfficePerformanceVO">
+		<result property="office" column="office" />
+		<result property="completedCasesByAnalyst" column="completedCasesByAnalyst" />
+		<result property="month" column="month" />		
+	</resultMap>
+<!-- End Case Analyst by Office -->
+
+
+	<select id="Revenue" parameterClass="java.lang.String"
+		resultMap="fullRevenueResultMap">
+
+		SELECT NVL(REVENUE_OFFICE,0) REVENUE_OFFICE,NVL(ROUND(REVENUE_OFFICE/ANALYST_COUNT,2),0)revenueByAnalyst, PRIMARY_TEAM_OFFICE ,FINAL_SENT_MONTH
+		FROM DW_OFC_PERFORMANCE
+		WHERE FINAL_SENT_YEAR = #year# 
+		ORDER BY PRIMARY_TEAM_OFFICE,FINAL_SENT_MONTH
+
+</select>
+
+	<select id="Point" parameterClass="java.lang.String"
+		resultMap="PointByOffice">
+		SELECT JLP_OFFICE productivityPoints, TEAM_OFFICE office ,FINAL_SENT_MONTH month
+		FROM DW_OFC_PERFORMANCE_JLP
+		WHERE FINAL_SENT_YEAR = #year# 
+		ORDER BY TEAM_OFFICE,FINAL_SENT_MONTH
+	</select>
+
+	<select id="PointAnalyst" parameterClass="java.lang.String"
+		resultMap="PointAnalystByOffice">
+		SELECT NVL(ROUND(JLP_OFFICE/ANALYST_COUNT,2),0) productivitypointsByAnalyst, TEAM_OFFICE office ,FINAL_SENT_MONTH month
+		FROM DW_OFC_PERFORMANCE_JLP
+		WHERE FINAL_SENT_YEAR = #year# 
+		ORDER BY TEAM_OFFICE,FINAL_SENT_MONTH
+	</select>
+
+	<select id="case" parameterClass="java.lang.String"
+		resultMap="caseByOfficeMap">
+		SELECT CASE_COUNT_OFFICE completedCases, PRIMARY_TEAM_OFFICE office ,FINAL_SENT_MONTH month
+		FROM DW_OFC_PERFORMANCE
+		WHERE FINAL_SENT_YEAR = #year# 
+		ORDER BY PRIMARY_TEAM_OFFICE,FINAL_SENT_MONTH
+	</select>
+
+	<select id="caseAnalyst" parameterClass="java.lang.String"
+		resultMap="casePerAnalystByOfficeMap">
+		SELECT NVL(ROUND(CASE_COUNT_OFFICE/ANALYST_COUNT,2),0) completedCasesByAnalyst, PRIMARY_TEAM_OFFICE office ,FINAL_SENT_MONTH month
+		FROM DW_OFC_PERFORMANCE
+		WHERE FINAL_SENT_YEAR = #year# 
+		ORDER BY PRIMARY_TEAM_OFFICE,FINAL_SENT_MONTH
+	</select>
+	<!-- <select id="revenueAndAnalystByOffice" parameterClass="java.lang.String"
+		resultMap="full">
+
+		SELECT ANALYST_COUNT, OFFICE ,FINAL_SENT_MONTH
+		FROM OFC_PERFORMANCE
+		WHERE FINAL_SENT_YEAR = #year#
+		ORDER BY OFFICE,FINAL_SENT_MONTH
+
+	</select>
+ -->
+
+</sqlMap>
+
+
+
+
+                

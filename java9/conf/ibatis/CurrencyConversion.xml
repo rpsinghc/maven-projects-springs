@@ -1,0 +1,317 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CurrencyConversionMaster">
+
+<resultMap id ="full" class="com.worldcheck.atlas.vo.masters.CurrencyMasterVO" groupBy="startDate">
+	<result property="startDate" column="startDate"/>
+    <result property="currencyConversionList" resultMap="CurrencyConversionMaster.list"/>
+</resultMap>
+
+<resultMap id ="list" class="com.worldcheck.atlas.vo.masters.CurrencyMasterVO"  >
+	<result property="startDate" column="startDate"/>
+	
+	<result property="exchangeRate" column="exchangeRate"/>
+	<result property="currencyCode" column="currencyCode"/>
+	<result property="updateBy" column="updateBy"/>
+	<result property="updatedOn" column="updatedOn"/>
+</resultMap>
+
+<insert id="newRate" parameterClass="com.worldcheck.atlas.vo.masters.CurrencyMasterVO">
+	<selectKey keyProperty="currencyRateId" resultClass="int"
+		type="pre">
+		SELECT CMS_CURRENCYRATEMASTER_SEQ.NEXTVAL AS VALUE FROM DUAL
+	</selectKey>
+	INSERT INTO CMS_CURRENCYRATE_MASTER
+	VALUES
+	(#currencyRateId#,
+	#currencyCode#,
+	#exchangeRate#,
+	to_date(#startDate#,'DD-Mon-YYYY HH24:MI:SS'),
+	#updateBy#,
+	SYSDATE)
+</insert>
+
+<update id="updateRate" parameterClass="com.worldcheck.atlas.vo.masters.CurrencyMasterVO">
+		UPDATE
+		CMS_CURRENCYRATE_MASTER
+		SET EXCHANGE_RATE = #exchangeRate#,
+		UPDATED_BY = #updateBy#,
+		UPDATED_ON = SYSDATE		
+		WHERE
+		EFFECTIVE_DATE = TO_DATE(#startDate#,'DD-Mon-YYYY HH24:MI:SS')
+		AND CURRENCY_CODE = #currencyCode#  
+</update>
+
+
+<!-- ==============================================	previous backup SQL===============================================================
+
+<select id ="selectAll" resultMap="full">
+SELECT 
+CCM.CURRENCY_CODE currencyCode,
+DECODE(TO_CHAR(CCRM.EXCHANGE_RATE,999.9999),NULL,'NA',TO_CHAR(CCRM.EXCHANGE_RATE,999.9999)) exchangeRate,
+DECODE(TO_CHAR(CCRM.EFFECTIVE_DATE,'DD-Mon-YYYY'),NULL,'NA',TO_CHAR(CCRM.EFFECTIVE_DATE,'DD-Mon-YYYY')) startDate,
+DECODE(CCRM.UPDATED_BY,NULL,'NA',CCRM.UPDATED_BY) updateBy,
+DECODE(TO_CHAR(CCRM.UPDATED_ON,'DD-Mon-YYYY'),NULL,'NA',TO_CHAR(CCRM.UPDATED_ON,'DD-Mon-YYYY')) updatedOn
+FROM 
+CMS_CURRENCYRATE_MASTER CCRM,CMS_CURRENCY_MASTER CCM
+WHERE 
+CCM.CURRENCY_CODE = CCRM.CURRENCY_CODE(+)
+AND CCM.STATUS = 1
+
+order by CCRM.EFFECTIVE_DATE,CCM.CURRENCY_CODE 
+
+</select>
+
+ ===========================================================end of previous backup SQL ============================================= -->
+
+<select id ="selectAll" resultMap="full" parameterClass = "java.util.HashMap">
+
+SELECT * FROM(SELECT * FROM (SELECT currencyCode, 
+TO_CHAR(a.startDate,'DD-Mon-YYYY')startDate,exchangeRate,updateBy,updatedOn , ROWNUM rn FROM (
+SELECT currencyCode,startDate,exchangeRate,updateBy,updatedOn from
+(select distinct A.currency_code currencyCode,
+A.effective_date startDate,
+DECODE(crm_1.exchange_rate,NULL,'NA',TO_CHAR(crm_1.exchange_rate,999999.9999))exchangeRate, 
+DECODE(crm_1.UPDATED_BY,NULL,'NA',crm_1.UPDATED_BY) updateBy,
+DECODE(TO_CHAR(crm_1.UPDATED_ON,'dd-MM-yy hh:mi:ss'),NULL,'NA',TO_CHAR(crm_1.UPDATED_ON,'dd-MM-yy hh:mi:ss')) updatedOn
+from CMS_CURRENCYRATE_MASTER crm_1,
+(select max(distinct(crm_1.effective_date)) effective_date, A.currency_code from CMS_CURRENCYRATE_MASTER crm_1,
+(select currency_code from CMS_CURRENCY_MASTER WHERE STATUS = 1)A
+group by A.currency_code,trunc(crm_1.effective_date) )A
+where crm_1.currency_code(+)= A.currency_code
+and crm_1.effective_date(+) =A.effective_date
+order by A.effective_date,A.currency_code)ORDER BY $sort$ $dir$
+) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#) 
+
+</select>
+
+
+
+<select id ="selectAllCount" resultClass="int">
+
+SELECT count(currencyCode) from
+(select distinct A.currency_code currencyCode,
+A.effective_date startDate,
+DECODE(crm_1.exchange_rate,NULL,'NA',TO_CHAR(crm_1.exchange_rate,999999.9999))exchangeRate, 
+DECODE(crm_1.UPDATED_BY,NULL,'NA',crm_1.UPDATED_BY) updateBy,
+DECODE(TO_CHAR(crm_1.UPDATED_ON,'dd-MM-yy hh:mi:ss'),NULL,'NA',TO_CHAR(crm_1.UPDATED_ON,'dd-MM-yy hh:mi:ss')) updatedOn
+from CMS_CURRENCYRATE_MASTER crm_1,
+(select max(distinct(crm_1.effective_date)) effective_date, A.currency_code from CMS_CURRENCYRATE_MASTER crm_1,
+(select currency_code from CMS_CURRENCY_MASTER WHERE STATUS = 1)A
+group by A.currency_code,trunc(crm_1.effective_date) )A
+where crm_1.currency_code(+)= A.currency_code
+and crm_1.effective_date(+) =A.effective_date
+order by A.effective_date,A.currency_code)
+
+</select>
+
+
+<select id = "ActiveCurrencyCount" resultClass="int">
+
+select count(currency_code) from CMS_CURRENCY_MASTER WHERE STATUS = 1
+
+</select>
+
+
+<select id = "AllCurrencyCount" resultClass="int">
+
+select count(currency_code) from CMS_CURRENCY_MASTER 
+
+</select>
+
+<select id="AllCurrency" resultClass="com.worldcheck.atlas.vo.masters.CurrencyMasterVO">
+          SELECT CURRENCY_CODE currencyCode ,CURRENCY currency 
+          FROM CMS_CURRENCY_MASTER 
+          order by CURRENCY
+</select>
+
+<select id="AllActiveCurrency" resultClass="com.worldcheck.atlas.vo.masters.CurrencyMasterVO">
+          SELECT CURRENCY_CODE currencyCode ,CURRENCY currency 
+          FROM CMS_CURRENCY_MASTER WHERE STATUS = 1
+          order by CURRENCY
+</select>
+
+
+<!-- ===========================================BACKUP OF PREVIOUS SQL==========================================================
+
+<select id="viewHistory" parameterClass="com.worldcheck.atlas.vo.masters.CurrencyMasterVO"
+	resultMap="full">
+	 SELECT    
+	 CCM.CURRENCY_CODE currencyCode,
+			DECODE(TO_CHAR(CCMOUT.EXCHANGE_RATE,999.9999),NULL,'NA',TO_CHAR(CCMOUT.EXCHANGE_RATE,999.9999)) exchangeRate,
+     		 DECODE(TO_CHAR(CCMOUT.EFFECTIVE_DATE,'DD-MON-RR'),NULL,'NA',TO_CHAR(CCMOUT.EFFECTIVE_DATE,'DD-MON-RR'))  startDate,
+			DECODE(CCMOUT.UPDATED_BY,NULL,'NA',CCMOUT.UPDATED_BY) updateBy,
+			DECODE(TO_CHAR(CCMOUT.UPDATED_ON,'DD-MON-RR'),NULL,'NA',TO_CHAR(CCMOUT.UPDATED_ON,'DD-MON-RR'))
+			 updatedOn
+	FROM CMS_CURRENCYRATE_MASTER CCMOUT,CMS_CURRENCY_MASTER CCM
+	WHERE CCM.CURRENCY_CODE = CCMOUT.CURRENCY_CODE(+)
+	AND CCM.STATUS = 1
+		<isNotNull property="startDate" prepend="AND">
+			<isNotEmpty property="startDate">				
+					<isEmpty property="endDate">
+						TO_DATE(EFFECTIVE_DATE,'DD-MON-RR') >=
+														TO_DATE(#startDate#,'DD-MON-RR')
+					</isEmpty>				
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull property="endDate" prepend="AND">
+			<isNotEmpty property="endDate">
+					<isNotNull property="startDate">
+							<isNotEmpty property="startDate">
+								CCMOUT.EFFECTIVE_DATE  >= TO_DATE(#startDate#,'DD-MON-RR') AND
+		         				 CCMOUT.EFFECTIVE_DATE &lt;
+								          				(SELECT MAX(EFFECTIVE_DATE)MAXDATE FROM
+														CMS_CURRENCYRATE_MASTER WHERE
+														CURRENCY_CODE =  CCMOUT.CURRENCY_CODE AND
+														TO_DATE(EFFECTIVE_DATE,'DD-MON-RR') BETWEEN TO_DATE(#startDate#,'DD-MON-RR') AND 
+														TO_DATE(#endDate#,'DD-MON-RR'))          
+							</isNotEmpty>
+						</isNotNull>
+					<isEmpty property="startDate">
+				 				CCMOUT.EFFECTIVE_DATE  &lt;
+							          			(SELECT MAX(EFFECTIVE_DATE)MAXDATE FROM 
+												CMS_CURRENCYRATE_MASTER WHERE
+												CURRENCY_CODE =  CCMOUT.CURRENCY_CODE AND
+												TO_DATE(EFFECTIVE_DATE,'DD-MON-RR') BETWEEN TO_DATE('01-JAN-01','DD-MON-RR') 
+												AND	TO_DATE(#endDate#,'DD-MON-RR'))  
+					</isEmpty>
+			</isNotEmpty>
+		</isNotNull>
+		
+		order by CCMOUT.EFFECTIVE_DATE,CCM.CURRENCY_CODE 
+			
+	
+</select>
+
+ ======================================================END OF BACKUP SQL ====================================================== -->
+
+
+
+
+<select id="viewHistory" parameterClass="com.worldcheck.atlas.vo.masters.CurrencyMasterVO"
+	resultMap="full">
+	SELECT * FROM (SELECT  currencyCode,TO_CHAR(startDate,'DD-Mon-YYYY HH24:MI:SS')startDate,exchangeRate,updateBy,updatedOn, ROWNUM rn FROM (
+	 SELECT currencyCode,startDate,exchangeRate,updateBy,updatedOn from
+	(select distinct A.currency_code currencyCode,
+		A.effective_date startDate,
+		DECODE(crm_1.exchange_rate,NULL,'NA',TO_CHAR(crm_1.exchange_rate,999999.9999))exchangeRate, 
+		DECODE(crm_1.UPDATED_BY,NULL,'NA',crm_1.UPDATED_BY) updateBy,
+		DECODE(TO_CHAR(crm_1.UPDATED_ON,'DD-Mon-YYYY HH24:MI:SS'),NULL,'NA',TO_CHAR(crm_1.UPDATED_ON,'DD-Mon-YYYY HH24:MI:SS')) updatedOn
+		from CMS_CURRENCYRATE_MASTER crm_1,
+		(select distinct crm_1.effective_date,A.currency_code from CMS_CURRENCYRATE_MASTER crm_1,
+		(select currency_code from CMS_CURRENCY_MASTER)A)A
+		where crm_1.currency_code(+)= A.currency_code
+		and crm_1.effective_date(+) =A.effective_date
+		<isNotNull property="startDate" prepend="AND">
+			<isNotEmpty property="startDate">				
+					<isEmpty property="endDate">
+						A.effective_date >=	TO_DATE(#startDate#,'DD-MON-RR')
+					</isEmpty>				
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull property="endDate" prepend="AND">
+			<isNotEmpty property="endDate">
+					<isNotNull property="startDate">
+							<isNotEmpty property="startDate">
+								A.effective_date  >= TO_DATE(#startDate#,'DD-MON-RR') AND
+		         				 A.effective_date <![CDATA[ <= ]]>
+								          				(SELECT MAX(EFFECTIVE_DATE)MAXDATE FROM
+														CMS_CURRENCYRATE_MASTER WHERE														
+														EFFECTIVE_DATE BETWEEN TO_DATE(#startDate#,'DD-MON-RR') AND 
+														TO_DATE(#endDate# || ' 23:59:59', 'DD-MON-RR HH24:MI:SS'))          
+							</isNotEmpty>
+						</isNotNull>
+					<isEmpty property="startDate">
+				 				A.effective_date  <![CDATA[ <= ]]>
+							          			(SELECT MAX(EFFECTIVE_DATE)MAXDATE FROM 
+												CMS_CURRENCYRATE_MASTER WHERE
+												EFFECTIVE_DATE BETWEEN TO_DATE('01-JAN-01','DD-MON-RR') 
+												AND	TO_DATE(#endDate#|| ' 23:59:59', 'DD-MON-RR HH24:MI:SS'))  
+					</isEmpty>
+			</isNotEmpty>
+		</isNotNull>
+		
+		order by A.effective_date,A.currency_code)ORDER BY $sortColumnName$ $sortType$) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+			
+	
+</select>
+
+<select id="viewHistoryCount" parameterClass="com.worldcheck.atlas.vo.masters.CurrencyMasterVO"
+	resultClass = "int">
+	 SELECT count(currencyCode)from
+	(select distinct A.currency_code currencyCode,
+		A.effective_date startDate,
+		DECODE(crm_1.exchange_rate,NULL,'NA',TO_CHAR(crm_1.exchange_rate,999999.9999))exchangeRate, 
+		DECODE(crm_1.UPDATED_BY,NULL,'NA',crm_1.UPDATED_BY) updateBy,
+		DECODE(TO_CHAR(crm_1.UPDATED_ON,'dd-MM-yy hh:mi:ss'),NULL,'NA',TO_CHAR(crm_1.UPDATED_ON,'dd-MM-yy hh:mi:ss')) updatedOn
+		from CMS_CURRENCYRATE_MASTER crm_1,
+		(select distinct crm_1.effective_date,A.currency_code from CMS_CURRENCYRATE_MASTER crm_1,
+		(select currency_code from CMS_CURRENCY_MASTER)A)A
+		where crm_1.currency_code(+)= A.currency_code
+		and crm_1.effective_date(+) =A.effective_date
+		<isNotNull property="startDate" prepend="AND">
+			<isNotEmpty property="startDate">				
+					<isEmpty property="endDate">
+						A.effective_date >=
+														TO_DATE(#startDate#,'DD-MON-RR')
+					</isEmpty>				
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull property="endDate" prepend="AND">
+			<isNotEmpty property="endDate">
+					<isNotNull property="startDate">
+							<isNotEmpty property="startDate">
+								A.effective_date  >= TO_DATE(#startDate#,'DD-MON-RR') AND
+		         				 A.effective_date <![CDATA[ <= ]]>
+								          				(SELECT MAX(EFFECTIVE_DATE)MAXDATE FROM
+														CMS_CURRENCYRATE_MASTER WHERE														
+														EFFECTIVE_DATE BETWEEN TO_DATE(#startDate#,'DD-MON-RR') AND 
+														TO_DATE(#endDate# || ' 23:59:59', 'DD-MON-RR HH24:MI:SS'))         
+							</isNotEmpty>
+						</isNotNull>
+					<isEmpty property="startDate">
+				 				A.effective_date  <![CDATA[ <= ]]>
+							          			(SELECT MAX(EFFECTIVE_DATE)MAXDATE FROM 
+												CMS_CURRENCYRATE_MASTER WHERE
+												
+												EFFECTIVE_DATE BETWEEN TO_DATE('01-JAN-01','DD-MON-RR') AND
+												TO_DATE(#endDate# || ' 23:59:59', 'DD-MON-RR HH24:MI:SS')) 
+					</isEmpty>
+			</isNotEmpty>
+		</isNotNull>
+		
+		order by A.effective_date,A.currency_code)
+			
+	
+</select>
+
+
+<select id = "currencyExistForEffectiveDate"  resultClass = "java.lang.Integer" parameterClass = "com.worldcheck.atlas.vo.masters.CurrencyMasterVO">
+SELECT COUNT(*) FROM CMS_CURRENCYRATE_MASTER
+WHERE CURRENCY_CODE = #currencyCode#
+AND EFFECTIVE_DATE = TO_DATE(#startDate#,'DD-Mon-YYYY HH24:MI:SS')
+
+</select>
+
+<select id = "getLocalCurrencyValue" resultClass = "java.lang.String"  parameterClass = "java.util.HashMap">
+	select to_char(exchange_rate) rate
+	from cms_currencyrate_master
+	where currency_code = #currencyCode#
+	AND EFFECTIVE_DATE = 
+		(SELECT MAX(EFFECTIVE_DATE)
+ 			FROM CMS_CURRENCYRATE_MASTER
+ 			WHERE EFFECTIVE_DATE <![CDATA[ <= ]]> TO_DATE(#effectiveDate# || ' 23:59:59','DD-Mon-YYYY HH24:MI:SS'))
+
+</select>
+
+
+
+
+</sqlMap>
+

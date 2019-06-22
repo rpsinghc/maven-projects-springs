@@ -1,0 +1,648 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="MessageSearch">
+
+	<select id="getUserMessageList" resultClass="com.worldcheck.atlas.vo.search.MessageSearchVO"
+		parameterClass="com.worldcheck.atlas.bl.search.SearchCriteria">
+		SELECT t1.*,
+     (select tab_to_clob(CAST(COLLECT(cum.USER_FULL_NAME) AS t_varchar2_tab)) AS othersubjects
+     from (SELECT DISTINCT crn,
+               alert_name,
+               user_id,
+               acknowledge_date
+             FROM cms_notification_crn_map)
+          cncm ,cms_user_master cum
+		where t1.name = cncm.ALERT_NAME
+     and cum.LOGIN_ID(+) = cncm.user_id
+     <isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					CNCM.ACKNOWLEDGE_DATE is null
+				</isEqual>
+				<isEqual property="acknowledge" compareValue="Yes">
+					CNCM.ACKNOWLEDGE_DATE is not null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+		and t1.sender <![CDATA[ <> ]]> cncm.user_id
+     group by cncm.ALERT_NAME) recipientFullName,
+      (SELECT tab_to_clob(CAST(collect(decode(acknowledge_date, null , 'No','Yes')) AS
+   t_varchar2_tab)) AS othersubjects
+     from (SELECT DISTINCT crn,
+               alert_name,
+               user_id,
+               acknowledge_date
+             FROM cms_notification_crn_map)
+          cncm,cms_user_master cum
+		where t1.name = cncm.ALERT_NAME
+     and cum.LOGIN_ID(+) = cncm.user_id
+     <isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					CNCM.ACKNOWLEDGE_DATE is null
+				</isEqual>
+				<isEqual property="acknowledge" compareValue="Yes">
+					CNCM.ACKNOWLEDGE_DATE is not null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+		and t1.sender <![CDATA[ <> ]]> cncm.user_id
+     group by cncm.ALERT_NAME) ackDate
+		FROM (SELECT a.*, ROWNUM rn FROM (SELECT id,
+       name,
+       message,
+       recvtime,
+       description,
+       sender,
+       senderfullname,
+       crnno
+     FROM(
+      (SELECT a.*
+      FROM
+        (SELECT ralert_id id,    a.name name,    ra.message message,    to_char((to_timestamp('1-Jan-1970   05:30:00',    'dd-Mon-yyyy hh24:mi:ss') + numtodsinterval(ra.received_time /(1000),    'SECOND')),    'dd-Mon-yyyy   hh24:mi:ss') recvtime,    description,    ad.recipient sender,    decode(cum.user_full_name,null,ad.recipient,cum.user_full_name) senderfullname,    cncm.crn crnno
+         FROM runtime_alert ra,    alert a,    alert_delivery ad,    (SELECT DISTINCT crn,
+               alert_name,
+               user_id,
+               acknowledge_date
+             FROM cms_notification_crn_map)
+          cncm,    cms_user_master cum,cms_clientcase ccm
+           WHERE a.name = ra.name
+           AND a.alert_id = ad.alert_id
+           AND cncm.alert_name = ra.name
+           AND ra.recipient = cncm.user_id
+           AND ad.recipient = ra.recipient
+           AND cum.login_id(+) = ad.recipient
+           and ccm.crn = cncm.crn
+           <isNotNull prepend="AND" property="messageType">
+				<isNotEmpty property="messageType">
+					<isEqual property="messageType" compareValue="0">
+							ad.recipient NOT IN (#sysUserName#)
+					</isEqual>
+					<isEqual property="messageType" compareValue="1">
+							ad.recipient = #sysUserName#
+					</isEqual>
+		   		</isNotEmpty>
+			</isNotNull>		   		           			
+           <isNotNull prepend="AND" property="sender">
+			<isNotEmpty property="sender">
+				ad.recipient = #sender#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="crnNumbers">
+			<isNotEmpty property="crnNumbers">
+				<iterate property="crnNumbers" conjunction="OR" open="("
+					close=")">
+					upper(cncm.CRN) LIKE '%' || trim(upper(#crnNumbers[]#)) ||
+					'%'
+        		</iterate>
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="messageText">
+			<isNotEmpty property="messageText">
+				upper(DBMS_LOB.SUBSTR(DESCRIPTION,1500)) LIKE '%' ||
+				trim(upper(#messageText#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="caseStatus">
+			<isNotEmpty property="caseStatus">
+				ccm.case_status_id = #caseStatus#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="userName">
+			<isNotEmpty property="userName">
+				ra.RECIPIENT = #userName#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					CNCM.ACKNOWLEDGE_DATE is null
+				</isEqual>
+				<isEqual property="acknowledge" compareValue="Yes">
+					CNCM.ACKNOWLEDGE_DATE is not null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="startCaseRecvDate">
+			<isNotEmpty property="startCaseRecvDate">
+				to_timestamp('1-Jan-1970 05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+				+ numtodsinterval(ra.received_time /(1000), 'SECOND')  <![CDATA[ >= ]]>
+				to_timestamp(#startCaseRecvDate#,'dd-Mon-yyyy hh24:mi:ss')
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="endCaseRecvDate">
+			<isNotEmpty property="endCaseRecvDate">
+			to_timestamp('1-Jan-1970 05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+				+ numtodsinterval(ra.received_time /(1000), 'SECOND')  <![CDATA[ <= ]]>
+				to_timestamp(#endCaseRecvDate#,'dd-Mon-yyyy hh24:mi:ss')+1
+			</isNotEmpty>
+		</isNotNull>
+		) a JOIN
+          (SELECT distinct(alert_name) name
+           FROM (SELECT DISTINCT crn,
+               alert_name,
+               user_id,
+               acknowledge_date
+             FROM cms_notification_crn_map)
+          cncm,
+             cms_user_master cum
+           WHERE user_id NOT IN(#sysUserName#)
+           AND cum.login_id(+) = cncm.user_id
+           and (cum.REPORTS_TO = #loginUser# or cncm.user_id = #loginUser#)
+           <isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					CNCM.ACKNOWLEDGE_DATE is null
+				</isEqual>
+				<isEqual property="acknowledge" compareValue="Yes">
+					CNCM.ACKNOWLEDGE_DATE is not null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="recipient">
+			<isNotEmpty property="recipient">
+				cncm.user_id = #recipient#
+			</isNotEmpty>
+		</isNotNull>
+           ORDER BY alert_name,
+             user_id)
+        b ON a.name = b.name)
+      )
+    y
+     
+			 <isEqual property="sortColumnName" compareValue="description">
+		 	 ORDER BY dbms_lob.substr($sortColumnName$,4000, 1) $sortType$
+		 </isEqual>
+		 <isNotEqual property="sortColumnName" compareValue="description">
+		 	ORDER BY $sortColumnName$ $sortType$
+		 </isNotEqual>
+		 )
+  a WHERE ROWNUM <![CDATA[ <= ]]>
+		#maxRecord#)t1
+		WHERE rn <![CDATA[ >= ]]>#minRecord#
+		order by t1.crnno
+	</select>
+
+
+	<select id="getUserMessageCount" resultClass="java.lang.Integer"
+		parameterClass="com.worldcheck.atlas.bl.search.SearchCriteria">
+		select count(*) from (SELECT id,
+       name,
+       message,
+       recvtime,
+       description,
+       sender,
+       senderfullname,
+       crnno
+     FROM(
+      (SELECT a.*
+      FROM
+        (SELECT ralert_id id,    a.name name,    ra.message message,    to_char((to_timestamp('1-Jan-1970   05:30:00',    'dd-Mon-yyyy hh24:mi:ss') + numtodsinterval(ra.received_time /(1000),    'SECOND')),    'dd-Mon-yyyy   hh24:mi:ss') recvtime,    description,    ad.recipient sender,    cum.user_full_name senderfullname,    cncm.crn crnno
+         FROM runtime_alert ra,    alert a,    alert_delivery ad,    (SELECT DISTINCT crn,
+               alert_name,
+               user_id,
+               acknowledge_date
+             FROM cms_notification_crn_map)
+          cncm,    cms_user_master cum,cms_clientcase ccm
+           WHERE a.name = ra.name
+           AND a.alert_id = ad.alert_id
+           AND cncm.alert_name = ra.name
+           AND ra.recipient = cncm.user_id
+           AND ad.recipient = ra.recipient
+           AND cum.login_id(+) = ad.recipient
+           and ccm.crn = cncm.crn
+           <isNotNull prepend="AND" property="messageType">
+				<isNotEmpty property="messageType">
+					<isEqual property="messageType" compareValue="0">
+							ad.recipient NOT IN (#sysUserName#)
+					</isEqual>
+					<isEqual property="messageType" compareValue="1">
+							ad.recipient = #sysUserName#
+					</isEqual>
+		   		</isNotEmpty>
+			</isNotNull>	
+            <isNotNull prepend="AND" property="sender">
+			<isNotEmpty property="sender">
+				ad.recipient = #sender#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="crnNumbers">
+			<isNotEmpty property="crnNumbers">
+				<iterate property="crnNumbers" conjunction="OR" open="("
+					close=")">
+					upper(cncm.CRN) LIKE '%' || trim(upper(#crnNumbers[]#)) ||
+					'%'
+        		</iterate>
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="messageText">
+			<isNotEmpty property="messageText">
+				upper(DBMS_LOB.SUBSTR(DESCRIPTION,1500)) LIKE '%' ||
+				trim(upper(#messageText#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="caseStatus">
+			<isNotEmpty property="caseStatus">
+				ccm.case_status_id = #caseStatus#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="userName">
+			<isNotEmpty property="userName">
+				ra.RECIPIENT = #userName#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					CNCM.ACKNOWLEDGE_DATE is null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="startCaseRecvDate">
+			<isNotEmpty property="startCaseRecvDate">
+				to_timestamp('1-Jan-1970 05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+				+ numtodsinterval(ra.received_time /(1000), 'SECOND')  <![CDATA[ >= ]]>
+				to_timestamp(#startCaseRecvDate#,'dd-Mon-yyyy hh24:mi:ss')
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="endCaseRecvDate">
+			<isNotEmpty property="endCaseRecvDate">
+					to_timestamp('1-Jan-1970 05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+				+ numtodsinterval(ra.received_time /(1000), 'SECOND')  <![CDATA[ <= ]]>
+				to_timestamp(#endCaseRecvDate#,'dd-Mon-yyyy hh24:mi:ss')+1
+			</isNotEmpty>
+		</isNotNull>
+		) a JOIN
+          (SELECT distinct(alert_name) name
+           FROM (SELECT DISTINCT crn,
+               alert_name,
+               user_id,
+               acknowledge_date
+             FROM cms_notification_crn_map)
+          cncm,
+             cms_user_master cum
+           WHERE user_id NOT IN (#sysUserName#)
+           AND cum.login_id(+) = cncm.user_id
+           and (cum.REPORTS_TO = #loginUser# or cncm.user_id = #loginUser#)
+           <isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					CNCM.ACKNOWLEDGE_DATE is null
+				</isEqual>
+				<isEqual property="acknowledge" compareValue="Yes">
+					CNCM.ACKNOWLEDGE_DATE is not null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="recipient">
+			<isNotEmpty property="recipient">
+				cncm.user_id = #recipient#
+			</isNotEmpty>
+		</isNotNull>
+           ORDER BY alert_name,
+             user_id)
+        b ON a.name = b.name)
+      )
+    y
+     )
+	</select>
+	
+	
+		<select id="getExportUserMessage" resultClass="com.worldcheck.atlas.vo.search.MessageSearchVO"
+		parameterClass="java.util.Map">
+		SELECT id,
+       name,
+       message,
+       recvtime,
+       description,
+       sender,
+       senderfullname,
+       crnno,
+     (select tab_to_clob(CAST(COLLECT(cum.USER_FULL_NAME) AS t_varchar2_tab)) AS othersubjects
+     from (SELECT DISTINCT crn,
+               alert_name,
+               user_id,
+               acknowledge_date
+             FROM cms_notification_crn_map)
+          cncm,cms_user_master cum
+     where y.name = cncm.ALERT_NAME
+     and cum.LOGIN_ID(+) = cncm.user_id
+     <isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					CNCM.ACKNOWLEDGE_DATE is null
+				</isEqual>
+				<isEqual property="acknowledge" compareValue="Yes">
+					CNCM.ACKNOWLEDGE_DATE is not null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+     and sender <![CDATA[ <> ]]> cncm.user_id
+     group by cncm.ALERT_NAME) recipientFullName,
+      (SELECT tab_to_clob(CAST(collect(decode(acknowledge_date, null , 'No','Yes')) AS
+   t_varchar2_tab)) AS othersubjects
+     from (SELECT DISTINCT crn,
+               alert_name,
+               user_id,
+               acknowledge_date
+             FROM cms_notification_crn_map)
+          cncm,cms_user_master cum
+     where y.name = cncm.ALERT_NAME
+     and cum.LOGIN_ID(+) = cncm.user_id
+     <isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					CNCM.ACKNOWLEDGE_DATE is null
+				</isEqual>
+				<isEqual property="acknowledge" compareValue="Yes">
+					CNCM.ACKNOWLEDGE_DATE is not null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+     and sender <![CDATA[ <> ]]> cncm.user_id
+     group by cncm.ALERT_NAME) ackDate
+     FROM(
+      (SELECT a.*
+       FROM
+        (SELECT ralert_id id,    a.name name,    ra.message message,    to_char((to_timestamp('1-Jan-1970   05:30:00',    'dd-Mon-yyyy hh24:mi:ss') + numtodsinterval(ra.received_time /(1000),    'SECOND')),    'dd-Mon-yyyy   hh24:mi:ss') recvtime,    description,    ad.recipient sender,    decode(cum.user_full_name,null,ad.recipient,cum.user_full_name) senderfullname,    cncm.crn crnno
+         FROM runtime_alert ra,    alert a,    alert_delivery ad,   (SELECT DISTINCT crn,
+               alert_name,
+               user_id,
+               acknowledge_date
+             FROM cms_notification_crn_map)
+          cncm,    cms_user_master cum,cms_clientcase ccm
+           WHERE a.name = ra.name
+           AND a.alert_id = ad.alert_id
+           AND cncm.alert_name = ra.name
+           AND ra.recipient = cncm.user_id
+           AND ad.recipient = ra.recipient
+           AND cum.login_id(+) = ad.recipient
+           and ccm.crn = cncm.crn
+           <isNotNull prepend="AND" property="messageType">
+				<isNotEmpty property="messageType">
+					<isEqual property="messageType" compareValue="0">
+							ad.recipient NOT IN (#sysUserName#)
+					</isEqual>
+					<isEqual property="messageType" compareValue="1">
+							ad.recipient = #sysUserName#
+					</isEqual>
+		   		</isNotEmpty>
+			</isNotNull>		   		           			
+           <isNotNull prepend="AND" property="sender">
+			<isNotEmpty property="sender">
+				ad.recipient = #sender#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="crnNumbers">
+			<isNotEmpty property="crnNumbers">
+				<iterate property="crnNumbers" conjunction="OR" open="("
+					close=")">
+					upper(cncm.CRN) LIKE '%' || trim(upper(#crnNumbers[]#)) ||
+					'%'
+        		</iterate>
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="messageText">
+			<isNotEmpty property="messageText">
+				upper(DBMS_LOB.SUBSTR(DESCRIPTION,1500)) LIKE '%' ||
+				trim(upper(#messageText#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="caseStatus">
+			<isNotEmpty property="caseStatus">
+				ccm.case_status_id = #caseStatus#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="userName">
+			<isNotEmpty property="userName">
+				ra.RECIPIENT = #userName#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					CNCM.ACKNOWLEDGE_DATE is null
+				</isEqual>
+				<isEqual property="acknowledge" compareValue="Yes">
+					CNCM.ACKNOWLEDGE_DATE is not null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="startCaseRecvDate">
+			<isNotEmpty property="startCaseRecvDate">
+				to_timestamp('1-Jan-1970 05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+				+ numtodsinterval(ra.received_time /(1000), 'SECOND')  <![CDATA[ >= ]]>
+				to_timestamp(#startCaseRecvDate#,'dd-Mon-yyyy hh24:mi:ss')
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="endCaseRecvDate">
+			<isNotEmpty property="endCaseRecvDate">
+					to_timestamp('1-Jan-1970 05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+				+ numtodsinterval(ra.received_time /(1000), 'SECOND')  <![CDATA[ <= ]]>
+				to_timestamp(#endCaseRecvDate#,'dd-Mon-yyyy hh24:mi:ss')+1
+			</isNotEmpty>
+		</isNotNull>
+		) a JOIN
+          (SELECT distinct(alert_name) name
+           FROM (SELECT DISTINCT crn,
+               alert_name,
+               user_id,
+               acknowledge_date
+             FROM cms_notification_crn_map)
+          cncm,
+             cms_user_master cum
+           WHERE user_id NOT IN (#sysUserName#)
+           AND cum.login_id(+) = cncm.user_id
+           and (cum.REPORTS_TO = #loginUser# or cncm.user_id = #loginUser#)
+           <isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					CNCM.ACKNOWLEDGE_DATE is null
+				</isEqual>
+				<isEqual property="acknowledge" compareValue="Yes">
+					CNCM.ACKNOWLEDGE_DATE is not null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="recipient">
+			<isNotEmpty property="recipient">
+				cncm.user_id = #recipient#
+			</isNotEmpty>
+		</isNotNull>
+           ORDER BY name)
+        b ON a.name = b.name)
+      )
+    y
+	</select>
+	<select id="getRecMessageList" resultClass="com.worldcheck.atlas.vo.search.MessageSearchVO"
+		parameterClass="com.worldcheck.atlas.bl.search.SearchCriteria">
+		SELECT * FROM (SELECT A.*, ROWNUM RN FROM (SELECT REC_CASE_SCH_ID recCaseSchedulerId,
+		  REC_CLIENT_CASE_ID recClientCaseId,
+		  CRC.CLIENT_CODE clientCode,
+		  CRTM.REPORT_TYPE reportType,
+		  CRC.LAST_RECURR_NUM lastRecurrenceNumber,
+		  CRCS.DESCRIPTION description,
+		  CRC.CASE_MGR_ID recipient,
+		   CUM.USER_FULL_NAME recipientFullName,
+		   decode(acknowledge_date, null , 'No','Yes') ackDate,
+		  to_char(CRCS.REQ_RECVD_DATE,'dd-Mon-yyyy HH24:MI:SS') requestRecvdDate
+		FROM CMS_REC_CASE_SCHEDULER CRCS,
+		  CMS_RECURR_CLIENTCASE CRC,
+		  CMS_REPORT_TYPE_MASTER CRTM,
+		  CMS_USER_MASTER CUM
+		WHERE CRCS.REC_CLIENT_CASE_ID = CRC.RECUR_CLIENTCASE_ID
+		 AND CRTM.REPORT_TYPE_MASTER_ID = CRC.REPORT_TYPE_ID
+		 AND CRC.CASE_MGR_ID = CUM.LOGIN_ID
+		 AND CRC.CASE_MGR_ID = #loginUser#
+		 <isNotNull prepend="AND" property="crnNumbers">
+			<isNotEmpty property="crnNumbers">
+				<iterate property="crnNumbers" conjunction="OR" open="("
+					close=")">
+					upper(CRC.CRN) LIKE '%' || trim(upper(#crnNumbers[]#)) ||
+					'%'
+        		</iterate>
+			</isNotEmpty>
+		</isNotNull>
+		 <isNotNull prepend="AND" property="startCaseRecvDate">
+			<isNotEmpty property="startCaseRecvDate">
+				to_char(CRCS.REQ_RECVD_DATE,'dd-Mon-yyyy hh24:mi:ss') <![CDATA[ >= ]]> to_char(to_date(#startCaseRecvDate#, 'dd-Mon-yyyy hh24:mi:ss'),'dd-Mon-yyyy hh24:mi:ss') 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="endCaseRecvDate">
+			<isNotEmpty property="endCaseRecvDate">
+				to_char(CRCS.REQ_RECVD_DATE,'dd-Mon-yyyy hh24:mi:ss') <![CDATA[ <= ]]> to_char(to_date(#endCaseRecvDate#, 'dd-Mon-yyyy hh24:mi:ss'),'dd-Mon-yyyy hh24:mi:ss') 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="messageText">
+			<isNotEmpty property="messageText">
+				upper(CRCS.DESCRIPTION) LIKE '%' ||
+				trim(upper(#messageText#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					ACKNOWLEDGE_DATE is null
+				</isEqual>
+				<isEqual property="acknowledge" compareValue="Yes">
+					ACKNOWLEDGE_DATE is not null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+		 <isEqual property="sortColumnName" compareValue="description">
+		 	 ORDER BY dbms_lob.substr($sortColumnName$,4000, 1) $sortType$
+		 </isEqual>
+		 <isNotEqual property="sortColumnName" compareValue="description">
+		 	ORDER BY UPPER($sortColumnName$) $sortType$
+		 </isNotEqual>
+		  )a WHERE ROWNUM <![CDATA[ <= ]]>
+		#maxRecord#) WHERE rn <![CDATA[ >= ]]>
+		#minRecord#
+	</select>
+	
+	<select id="getRecMessageCount" resultClass="java.lang.Integer"
+		parameterClass="com.worldcheck.atlas.bl.search.SearchCriteria">
+		SELECT COUNT(*)
+		FROM CMS_REC_CASE_SCHEDULER CRCS,
+		  CMS_RECURR_CLIENTCASE CRC,
+		  CMS_REPORT_TYPE_MASTER CRTM,
+		  CMS_USER_MASTER CUM
+		WHERE CRCS.REC_CLIENT_CASE_ID = CRC.RECUR_CLIENTCASE_ID
+		 AND CRTM.REPORT_TYPE_MASTER_ID = CRC.REPORT_TYPE_ID
+		 AND CRC.CASE_MGR_ID = CUM.LOGIN_ID
+		 AND CRC.CASE_MGR_ID = #loginUser#
+		  <isNotNull prepend="AND" property="crnNumbers">
+			<isNotEmpty property="crnNumbers">
+				<iterate property="crnNumbers" conjunction="OR" open="("
+					close=")">
+					upper(CRC.CRN) LIKE '%' || trim(upper(#crnNumbers[]#)) ||
+					'%'
+        		</iterate>
+			</isNotEmpty>
+		</isNotNull>
+		 <isNotNull prepend="AND" property="startCaseRecvDate">
+			<isNotEmpty property="startCaseRecvDate">
+				to_char(CRCS.REQ_RECVD_DATE,'dd-Mon-yyyy hh24:mi:ss') <![CDATA[ >= ]]> to_char(to_date(#startCaseRecvDate#, 'dd-Mon-yyyy hh24:mi:ss'),'dd-Mon-yyyy hh24:mi:ss') 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="endCaseRecvDate">
+			<isNotEmpty property="endCaseRecvDate">
+				to_char(CRCS.REQ_RECVD_DATE,'dd-Mon-yyyy hh24:mi:ss') <![CDATA[ <= ]]> to_char(to_date(#endCaseRecvDate#, 'dd-Mon-yyyy hh24:mi:ss'),'dd-Mon-yyyy hh24:mi:ss') 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="messageText">
+			<isNotEmpty property="messageText">
+				upper(CRCS.DESCRIPTION) LIKE '%' ||
+				trim(upper(#messageText#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					ACKNOWLEDGE_DATE is null
+				</isEqual>
+				<isEqual property="acknowledge" compareValue="Yes">
+					ACKNOWLEDGE_DATE is not null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+	</select>
+	
+		<select id="getExportRecMessage" resultClass="com.worldcheck.atlas.vo.search.MessageSearchVO"
+		parameterClass="java.util.Map">
+		SELECT 
+		CRCS.DESCRIPTION description,
+		   CUM.USER_FULL_NAME recipientFullName,
+		   decode(acknowledge_date, null , 'No','Yes') ackDate,
+		  to_char(CRCS.REQ_RECVD_DATE,'dd-Mon-yyyy HH24:MI:SS') requestRecvdDate
+		FROM CMS_REC_CASE_SCHEDULER CRCS,
+		  CMS_RECURR_CLIENTCASE CRC,
+		  CMS_REPORT_TYPE_MASTER CRTM,
+		  CMS_USER_MASTER CUM
+		WHERE CRCS.REC_CLIENT_CASE_ID = CRC.RECUR_CLIENTCASE_ID
+		 AND CRTM.REPORT_TYPE_MASTER_ID = CRC.REPORT_TYPE_ID
+		 AND CRC.CASE_MGR_ID = CUM.LOGIN_ID
+		 AND CRC.CASE_MGR_ID = #loginUser#
+		  <isNotNull prepend="AND" property="crnNumbers">
+			<isNotEmpty property="crnNumbers">
+				<iterate property="crnNumbers" conjunction="OR" open="("
+					close=")">
+					upper(CRC.CRN) LIKE '%' || trim(upper(#crnNumbers[]#)) ||
+					'%'
+        		</iterate>
+			</isNotEmpty>
+		</isNotNull>
+		 <isNotNull prepend="AND" property="startCaseRecvDate">
+			<isNotEmpty property="startCaseRecvDate">
+				to_char(CRCS.REQ_RECVD_DATE,'dd-Mon-yyyy hh24:mi:ss') <![CDATA[ >= ]]> to_char(to_date(#startCaseRecvDate#, 'dd-Mon-yyyy hh24:mi:ss'),'dd-Mon-yyyy hh24:mi:ss') 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="endCaseRecvDate">
+			<isNotEmpty property="endCaseRecvDate">
+				to_char(CRCS.REQ_RECVD_DATE,'dd-Mon-yyyy hh24:mi:ss') <![CDATA[ <= ]]> to_char(to_date(#endCaseRecvDate#, 'dd-Mon-yyyy hh24:mi:ss'),'dd-Mon-yyyy hh24:mi:ss') 
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="messageText">
+			<isNotEmpty property="messageText">
+				upper(CRCS.DESCRIPTION) LIKE '%' ||
+				trim(upper(#messageText#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="acknowledge">
+			<isNotEmpty property="acknowledge">
+				<isEqual property="acknowledge" compareValue="No">
+					ACKNOWLEDGE_DATE is null
+				</isEqual>
+				<isEqual property="acknowledge" compareValue="Yes">
+					ACKNOWLEDGE_DATE is not null
+				</isEqual>
+			</isNotEmpty>
+		</isNotNull>
+		order by ackDate Asc
+	</select>
+	
+	
+</sqlMap>

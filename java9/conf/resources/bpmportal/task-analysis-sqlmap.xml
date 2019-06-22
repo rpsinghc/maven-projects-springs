@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" 
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="taskanalysis">
+
+    <typeAlias alias="taWidget" type="com.savvion.sbm.bpmportal.domain.TaskAnalysisWidget"/> 
+    <resultMap id="taWidgetResult" class="taWidget">
+        <result property="applications" column="APPLICATIONS"/>     
+        <result property="status"  column="STATUS"/>  
+        <result property="priority"  column="PRIORITY"/> 
+        <result property="sortColumn"  column="SORT_COLUMN"/>
+        <result property="sortOrder"   column="SORT_ORDER"/>       
+        <result property="dueDate"   column="DUE_DATE"/>    
+        <result property="filterName"   column="FILTER"/>
+        <result property="fetchSize"   column="FETCH_SIZE"/>
+    </resultMap>
+
+      <insert id="insertByWidgetId" parameterClass="map" >
+        INSERT INTO PORTAL_TASKANALYSIS_WIDGETS (
+               WIDGET_ID,   DASHBOARD_WIDGET_ID, APPLICATIONS,  
+               STATUS, PRIORITY, SORT_COLUMN, SORT_ORDER,
+               DUE_DATE, FILTER, FETCH_SIZE ) VALUES(
+               #id#, -1, #applications,javaType=String,jdbcType=VARCHAR#, #status#, #priority,javaType=String,jdbcType=VARCHAR#, #sortColumn,javaType=String,jdbcType=VARCHAR#, #sortOrder,javaType=Integer#, #dueDate#, #filterName,javaType=String,jdbcType=VARCHAR#, #fetchSize,javaType=Integer#
+               )
+    </insert>
+
+     <insert id="insertByDashboardWidgetId" parameterClass="map" >
+        INSERT INTO PORTAL_TASKANALYSIS_WIDGETS (
+               WIDGET_ID,   DASHBOARD_WIDGET_ID, APPLICATIONS,  
+               STATUS, PRIORITY, SORT_COLUMN, SORT_ORDER,
+               DUE_DATE, FILTER, FETCH_SIZE ) VALUES(
+               -1, #id#, #applications,javaType=String,jdbcType=VARCHAR#, #status#, #priority,javaType=String,jdbcType=VARCHAR#, #sortColumn,javaType=String,jdbcType=VARCHAR#, #sortOrder,javaType=Integer#, #dueDate#, #filterName,javaType=String,jdbcType=VARCHAR#, #fetchSize,javaType=Integer#
+               )
+    </insert>
+
+     <update id="updateByWidgetId" parameterClass="map">
+        UPDATE  PORTAL_TASKANALYSIS_WIDGETS SET
+               APPLICATIONS = #applications,javaType=String,jdbcType=VARCHAR#,   
+               STATUS = #status,javaType=String,jdbcType=VARCHAR#,
+               PRIORITY = #priority,javaType=String,jdbcType=VARCHAR#,                     
+               SORT_COLUMN = #sortColumn,javaType=String,jdbcType=VARCHAR#,
+               SORT_ORDER = #sortOrder,javaType=Integer#,
+               DUE_DATE  = #dueDate#,
+               FILTER = #filterName,javaType=String,jdbcType=VARCHAR#,
+               FETCH_SIZE = #fetchSize,javaType=Integer#
+        WHERE 
+              WIDGET_ID = #id#
+    </update>
+
+     <update id="updateByDashboardWidgetId" parameterClass="map">
+        UPDATE  PORTAL_TASKANALYSIS_WIDGETS SET
+               APPLICATIONS = #applications,javaType=String,jdbcType=VARCHAR#,   
+               STATUS = #status,javaType=String,jdbcType=VARCHAR#,
+               PRIORITY = #priority,javaType=String,jdbcType=VARCHAR#,                     
+               SORT_COLUMN = #sortColumn,javaType=String,jdbcType=VARCHAR#,
+               SORT_ORDER = #sortOrder,javaType=Integer#,
+               DUE_DATE  = #dueDate#,
+               FILTER = #filterName,javaType=String,jdbcType=VARCHAR#,
+               FETCH_SIZE = #fetchSize,javaType=Integer#
+        WHERE 
+              DASHBOARD_WIDGET_ID = #id#
+    </update>
+
+     <delete id="deleteByWidgetId" parameterClass="long">
+        DELETE FROM  PORTAL_TASKANALYSIS_WIDGETS
+        WHERE WIDGET_ID = #value#
+    </delete>
+
+     <delete id="deleteByDashboardId" parameterClass="long">
+        DELETE FROM  PORTAL_TASKANALYSIS_WIDGETS
+        WHERE DASHBOARD_WIDGET_ID IN (SELECT 
+        DASHBOARD_WIDGET_ID FROM PORTAL_DASHBOARD_WIDGETS WHERE DASHBOARD_ID = #value# )
+    </delete>
+    
+    <delete id="deleteByDashboardWidgetId" parameterClass="long">
+            DELETE FROM  PORTAL_TASKANALYSIS_WIDGETS
+            WHERE DASHBOARD_WIDGET_ID = #value# 
+    </delete>
+
+     <delete id="removeByWidgetId" parameterClass="long">
+        DELETE FROM  PORTAL_TASKANALYSIS_WIDGETS
+        WHERE DASHBOARD_WIDGET_ID IN (SELECT 
+        DASHBOARD_WIDGET_ID FROM PORTAL_DASHBOARD_WIDGETS WHERE WIDGET_ID = #value#)
+    </delete>
+
+     <delete id="removeByDashboardId" parameterClass="long">
+        DELETE FROM  PORTAL_TASKANALYSIS_WIDGETS
+        WHERE DASHBOARD_WIDGET_ID IN (SELECT 
+        DASHBOARD_WIDGET_ID FROM PORTAL_DASHBOARD_WIDGETS WHERE DASHBOARD_ID = #value#)
+    </delete>
+
+    <select id="selectByWidgetId" parameterClass="long" resultMap="taWidgetResult" >
+        SELECT 
+               WIDGET_ID,                 
+               DASHBOARD_WIDGET_ID,                   
+               APPLICATIONS,    
+               STATUS,
+               PRIORITY,                      
+               SORT_COLUMN,
+               SORT_ORDER,
+               DUE_DATE,
+               FILTER,
+               FETCH_SIZE
+        FROM 
+              PORTAL_TASKANALYSIS_WIDGETS 
+        WHERE 
+              WIDGET_ID = #value#
+    </select>
+
+    <select id="selectByDashboardWidgetId" parameterClass="long" resultMap="taWidgetResult" >
+        SELECT 
+               WIDGET_ID,                 
+               DASHBOARD_WIDGET_ID,                   
+               APPLICATIONS,    
+               STATUS,
+               PRIORITY,                      
+               SORT_COLUMN,
+               SORT_ORDER,
+               DUE_DATE,
+               FILTER,
+               FETCH_SIZE 
+        FROM 
+              PORTAL_TASKANALYSIS_WIDGETS 
+        WHERE 
+              DASHBOARD_WIDGET_ID = #value#
+    </select>
+</sqlMap>

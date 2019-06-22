@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dashboard xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!--
+        Layouts - parent tag to hold the collection of layout
+        Layout  - tag representing individual layout
+            id      - layout Id (Mandatory. Must be greater than or equal to 30)
+            type    - type of layout-column/other
+                      If type is column, then Columns tag with values attribute is mandatory
+          Name          - name of the layout (Mandatory, Max length:60) 
+          Renderer      - Name of the jsp associated with the layout (Mandatory)
+          Description   - Layout description
+          Columns       - Specifies attributes of layout column(mandatory for column type)
+                values  - mentions the number of columns in the layout(mandatory)
+          
+        Sample:
+            <Layouts>
+                <Layout id="31" type="column">
+                    <Name>layout1</Name>
+                    <Renderer>layout1.jsp</Renderer>
+                    <Description>test layout</Description>
+                    <Columns values="5" />
+                </Layout>
+                <Layout id="32" type="other">
+                    <Name>layout2</Name>
+                    <Renderer>layout2.jsp</Renderer>
+                    <Description>other layout</Description>
+                </Layout>
+            </Layouts>
+     -->
+     
+     <Layouts>
+         <!-- Default implementation for 4 columns and 5 columns layout -->
+         <!--
+             <Layout id="31" type="column">
+                        <Name>FourColumns</Name>
+                        <Renderer>FourColumnsLayout.jsp</Renderer>
+                        <Description>Four column layout</Description>
+                        <Columns values="4" />
+             </Layout>
+             <Layout id="32" type="column">
+                        <Name>FiveColumns</Name>
+                        <Renderer>FiveColumnsLayout.jsp</Renderer>
+                        <Description>Five column layout</Description>
+                        <Columns values="5" />
+             </Layout>
+         -->
+             <Layout id="33" type="column">
+                        <Name>TwoColumns20-80</Name>
+                        <Renderer>TwoColumns2080Layout.jsp</Renderer>
+                        <Description>Two column layout</Description>
+                        <Columns values="2" />
+             </Layout>
+             <Layout id="34" type="column">
+                        <Name>ThreeColumns20-40-40</Name>
+                        <Renderer>ThreeColumns204040Layout.jsp</Renderer>
+                        <Description>Three column layout</Description>
+                        <Columns values="3" />
+             </Layout>
+             <Layout id="35" type="column">
+                        <Name>FourColumns20-20-20-40</Name>
+                        <Renderer>FourColumns20202040Layout.jsp</Renderer>
+                        <Description>Four column layout</Description>
+                        <Columns values="4" />
+             </Layout>
+     </Layouts>
+
+</Dashboard>
+

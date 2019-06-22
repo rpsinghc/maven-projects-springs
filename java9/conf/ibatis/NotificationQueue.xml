@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="NotificationQueue">
+	<insert id="insertCRNMapData" parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		INSERT INTO
+		CMS_NOTIFICATION_CRN_MAP (CRN,ALERT_NAME,USER_ID,PARENT_ALERT_ID)
+		VALUES (#crn#,#name#,#recipient#,#parentAlertId#)
+	</insert>
+	<select id="getUniqueNumber" resultClass="java.lang.Integer">
+		SELECT
+		CMS_ALERT_SEQ.NEXTVAL FROM DUAL
+	</select>
+
+	<select id="getMaxAlertID" resultClass="java.lang.Long"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT MAX(RALERT_ID) FROM RUNTIME_ALERT
+		WHERE RECIPIENT = #recipient# AND NAME = #name#
+	</select>
+
+	
+</sqlMap>

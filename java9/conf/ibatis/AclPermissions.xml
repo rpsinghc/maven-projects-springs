@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AclPermission">
+
+	
+<resultMap id="result"   class="com.worldcheck.atlas.vo.sbm.acl.RolePermissionVo">
+		<result property="roleId" column="role_id"/>
+		<result property="permissionId" column="permission_id"/>
+		<result property="permissionName" column="permission_name"/>
+		<result property="action" column="action"/>
+</resultMap>
+	
+	<!--- Showing data by ID -->
+	
+	    <select id="all" resultMap="result" >
+	  select rp.role_id, rp.action ,rp.permission_id,p.permission_name from cms_role_permission  rp join cms_permission   p on rp.permission_id= p.permission_id where role_id in (select role_id from cms_user_role_map where user_id=#id#)
+	  </select>    
+</sqlMap>

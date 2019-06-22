@@ -1,0 +1,1216 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+  
+<sqlMap namespace="Notification">
+
+	<parameterMap id="getParameterMap" class="java.util.Map">
+		<parameter property="alertId" jdbcType="INTEGER" javaType="java.lang.Integer"
+			mode="IN" />
+		<parameter property="parentAlertIds" jdbcType="VARCHAR"
+			javaType="java.lang.String" mode="OUT" />
+	</parameterMap>
+
+
+	<!--- Calling stored procedure -->
+	<procedure id="callMessageTrail" parameterMap="getParameterMap">
+
+		{ call getmessage_trail( ?, ?)} 
+   </procedure>
+
+	<select id="getMessageTrail" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		select A.NAME name,RALERT_ID id,ra.message message,description description,AD.RECIPIENT sender, cum.USER_FULL_NAME
+		senderFullName,cncm.crn,
+		TO_CHAR((to_timestamp('1-Jan-1970
+		05:30:00',
+		'dd-Mon-yyyy hh24:mi:ss')
+		+
+		numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )), 'dd-Mon-yyyy
+		hh24:mi:ss' ) recvTime
+		from RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,CMS_NOTIFICATION_CRN_MAP
+		CNCM ,
+		CMS_USER_MASTER CUM
+		where A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME = RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND CUM.LOGIN_ID = AD.RECIPIENT
+		and ra.ralert_id in ($message$)
+		order by recvTime desc
+	</select>
+
+	<select id="getTrailSentToList" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		select cncm.user_id recipient, alert_name name,cum.USER_FULL_NAME
+		recipientFullName,
+		to_char(ACKNOWLEDGE_DATE,'dd-Mon-yyyy hh24:mi:ss') ackDate
+		from
+		CMS_NOTIFICATION_CRN_MAP cncm , CMS_USER_MASTER cum
+		where alert_name in (select distinct(A.NAME)
+		from RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,CMS_NOTIFICATION_CRN_MAP
+		CNCM
+		where A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME = RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		and ra.ralert_id in ($message$))
+		AND upper(USER_ID) NOT IN upper(#sysUserName#)
+		AND cum.LOGIN_ID = cncm.user_id
+		ORDER BY ALERT_NAME,USER_ID
+	</select>
+
+	<select id="getAssignedUsersCase" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="java.lang.String">
+		SELECT distinct(CCC.CASE_MGR_ID)
+		username,cum.USER_FULL_NAME userFullName
+		FROM CMS_CLIENTCASE
+		CCC,cms_user_master cum
+		WHERE CRN=#crn#
+		and cum.login_id(+) = CCC.CASE_MGR_ID
+	</select>
+
+	<select id="getAssignedUsersTeam" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="java.lang.String">
+		select cum.login_id username,cum.USER_FULL_NAME userFullName from
+		cms_user_master cum, (SELECT team_id,
+		CASE pivot
+		WHEN 1
+		THEN manager_id
+		WHEN 2
+		THEN main_analyst
+		WHEN 3
+		THEN reviewer1
+		WHEN 4
+		THEN reviewer2
+		WHEN 5
+		THEN reviewer3
+		ELSE NULL
+		END subject
+		FROM cms_team_details ctd,(SELECT rownum pivot from dual
+		CONNECT BY LEVEL <![CDATA[ <= ]]>
+		5)
+		where ctd.crn = #crn#
+		order by team_id)
+		where cum.login_id(+) = subject
+	</select>
+
+	<select id="getAssignedUsersSubTeam" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="java.lang.String">
+		SELECT DISTINCT(PERFORMER) username,cum.USER_FULL_NAME
+		userFullName
+		FROM CMS_SUB_TEAM_RE_MAP CSTRM,cms_user_master cum
+		WHERE
+		CRN=#crn#
+		and cum.login_id(+) = CSTRM.PERFORMER
+	</select>
+
+	<select id="getUniqueNumber" resultClass="java.lang.Integer">
+		SELECT
+		CMS_ALERT_SEQ.NEXTVAL FROM DUAL
+	</select>
+
+	
+	
+	<select id="getUserNotifications" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+        SELECT * FROM (SELECT a.*, ROWNUM rn FROM (SELECT RALERT_ID
+		id,A.NAME name,ra.message message,sub.SUBJECT_NAME primarySub,
+		TO_CHAR((to_timestamp('1-Jan-1970
+		05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+		+
+		numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )), 'dd-Mon-yyyy
+		hh24:mi:ss' ) recvTime,
+		description description,AD.RECIPIENT sender,cum.user_full_name senderFullName,cncm.crn
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,(SELECT DISTINCT crn, alert_name, user_id,acknowledge_date FROM cms_notification_crn_map) cncm,cms_user_master cum,
+                (select * from cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME
+		= RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND
+		CNCM.ACKNOWLEDGE_DATE is null
+		AND (ra.RECIPIENT = #recipient#)
+		 and cum.login_id = AD.RECIPIENT
+		AND
+		AD.RECIPIENT not in #sysUserName#
+
+		<!-- Start BI293 Added by 6035037 -->
+		
+		AND
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) <![CDATA[ >= ]]>  to_char(sysdate-13,'dd-Mon-yyyy')
+		AND			
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) <![CDATA[ <= ]]>  to_char(sysdate,'dd-Mon-yyyy')
+		AND
+	    	(select CASE_STATUS_ID from CMS_CLIENTCASE where CRN =cncm.CRN) in(1,2,3)
+		
+		<!-- End BI293 Added by 6035037 -->
+		
+		<isEqual property="sortColumnName" compareValue="description">
+		 	 ORDER BY dbms_lob.substr($sortColumnName$,4000, 1) $sortType$
+		 </isEqual>
+		 <isEqual property="sortColumnName" compareValue="message">
+		 	 ORDER BY dbms_lob.substr($sortColumnName$,4000, 1) $sortType$
+		 </isEqual>
+		 <isEqual property="sortColumnName" compareValue="recvTime">
+		 	 ORDER BY (to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )) $sortType$
+		 </isEqual>
+		<isNotEqual property="sortColumnName" compareValue="message">
+			<isNotEqual property="sortColumnName" compareValue="description">
+				<isNotEqual property="sortColumnName" compareValue="recvTime">
+		 	 		order by upper($sortColumnName$) $sortType$
+		 	 	</isNotEqual>
+		 	 </isNotEqual>
+		</isNotEqual>
+		) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#maxRecord#) WHERE rn <![CDATA[ >= ]]>
+		#minRecord#
+	</select>
+	
+	<select id="getUserNotificationsCount" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT RALERT_ID id,A.NAME name,ra.message message,sub.SUBJECT_NAME primarySub,
+		TO_CHAR((to_timestamp('1-Jan-1970
+		05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+		+
+		numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )), 'dd-Mon-yyyy
+		hh24:mi:ss' ) recvTime,
+		description description,AD.RECIPIENT sender,cncm.crn
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,(SELECT DISTINCT crn, alert_name, user_id,acknowledge_date FROM cms_notification_crn_map) cncm,(select * from cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME
+		= RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND CNCM.ACKNOWLEDGE_DATE is null
+		AND RA.RECIPIENT=#recipient#
+		and AD.RECIPIENT not in #sysUserName#
+		<!-- Start BI293 Added by 6035037 -->
+		
+		AND
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) <![CDATA[ >= ]]>  to_char(sysdate-13,'dd-Mon-yyyy')
+		AND
+
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) 
+			<![CDATA[ <= ]]>  to_char(sysdate,'dd-Mon-yyyy')
+		AND
+	    (select CASE_STATUS_ID from CMS_CLIENTCASE where CRN =cncm.CRN) in(1,2,3)
+		
+		<!-- End BI293 Added by 6035037 -->
+	</select>
+	
+	
+	
+	
+    <!-- This Section is added by satish to implement CR L27 R1.3 -->
+    
+    <select id="checkNotificationCount" resultClass="java.lang.Integer" parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO" >
+      
+   <!--   SELECT count(*) 
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,
+    (SELECT DISTINCT crn, alert_name, user_id,acknowledge_date, parent_alert_id , flag FROM cms_notification_crn_map) cncm,
+    cms_user_master cum,
+    (select * from cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME
+		= RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		
+		AND CNCM.ACKNOWLEDGE_DATE is null 
+		AND (ra.RECIPIENT =  #recipient# )
+    AND cum.login_id = AD.RECIPIENT
+    AND	AD.RECIPIENT not in #sysUserName#
+    AND cncm.flag=#id#
+    AND cncm.user_id=#recipient#
+	AND AD.RECIPIENT not in #recipient# -->
+	<!-- AND cncm.parent_alert_id= -1-->
+	
+	 select count(CRN) from cms_notification_crn_map where  flag = 0  and user_id = #recipient#
+	
+	
+    </select>
+
+  <select id="checkSystemNotificationCount" resultClass="java.lang.Integer" parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO" >
+ 
+ <!--   SELECT count(*)
+     FROM SAVVIONDB.RUNTIME_ALERT RA,
+    SAVVIONDB.ALERT A               ,
+    SAVVIONDB.ALERT_DELIVERY AD     ,
+    (SELECT DISTINCT crn          ,
+      flag                        ,
+      alert_name                  ,
+      user_id                     ,
+      acknowledge_date,
+	  parent_alert_id
+       FROM cms_notification_crn_map
+    ) cncm,
+    (SELECT * FROM cms_subject sub WHERE sub.IS_PRIMARY_SUB = 1
+    ) sub
+    WHERE 
+   cncm.flag=#id#
+  AND cncm.user_id=        #recipient#
+  AND A.NAME             = RA.NAME
+  AND A.ALERT_ID             = AD.ALERT_ID
+  AND CNCM.ALERT_NAME        = RA.NAME
+  AND RA.RECIPIENT           = CNCM.USER_ID
+  AND sub.CRN(+)             = CNCM.CRN
+  AND CNCM.ACKNOWLEDGE_DATE IS NULL
+  AND RA.RECIPIENT           = #recipient#
+  AND AD.RECIPIENT           = #sysUserName#
+  AND AD.RECIPIENT not in #recipient# -->
+	<!-- AND cncm.parent_alert_id= -1-->
+
+	select count(CRN) from cms_notification_crn_map where  flag = 0  and user_id = #recipient#
+
+  </select>
+ 
+     
+	 
+	 
+	 
+	  <select id="getSystemAlerts" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO" parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO" >
+ 
+	   SELECT A.NAME
+		name
+		FROM
+		SAVVIONDB.RUNTIME_ALERT RA, SAVVIONDB.ALERT A, SAVVIONDB.ALERT_DELIVERY
+		AD,(SELECT DISTINCT crn, flag, alert_name,user_id,acknowledge_date, parent_alert_id FROM cms_notification_crn_map) cncm,
+		(select * from cms_subject sub where
+		sub.IS_PRIMARY_SUB = #falg# ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID =
+		AD.ALERT_ID
+		AND CNCM.ALERT_NAME = RA.NAME
+		AND RA.RECIPIENT =
+		CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND CNCM.ACKNOWLEDGE_DATE is null 
+		AND RA.RECIPIENT= #recipient# 
+		AND AD.RECIPIENT = #sysUserName#
+	   and cncm.user_id= #recipient#  and cncm.flag=#id# 
+       AND AD.RECIPIENT not in #recipient#
+	<!-- AND cncm.parent_alert_id= -1-->
+
+  </select>
+	 
+	 
+	  <select id="getUserAlerts" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO" parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO" >
+		
+	<!--	Changes By Vishal to resolve Notification issue.
+	
+	
+	SELECT A.NAME name
+		FROM
+		SAVVIONDB.RUNTIME_ALERT RA, SAVVIONDB.ALERT A, SAVVIONDB.ALERT_DELIVERY AD,(SELECT DISTINCT crn, alert_name, user_id,acknowledge_date,flag, parent_alert_id FROM cms_notification_crn_map) cncm,cms_user_master cum,
+        (select * from cms_subject sub where sub.IS_PRIMARY_SUB = #falg# ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME
+		= RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND	CNCM.ACKNOWLEDGE_DATE is null 
+		AND (ra.RECIPIENT = #recipient# )
+		 and cum.login_id = AD.RECIPIENT
+		AND
+		AD.RECIPIENT not in #sysUserName#
+        and cncm.user_id= #recipient# and cncm.flag=#id#  
+		AND AD.RECIPIENT not in #recipient#
+		 AND cncm.parent_alert_id= -1-->
+
+       SELECT DISTINCT alert_name name FROM cms_notification_crn_map where user_id = #recipient# and flag =0
+
+  </select>
+	 
+	 
+ <!--
+    <update id="updateNotificationFlag"  parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+    
+	
+	
+    update cms_notification_crn_map set flag=#falg#  WHERE flag=#id# and user_id= #recipient#
+	<dynamic prepend=" and alert_name IN ">
+    <iterate property="alertName"
+             open="(" close=")"
+             conjunction=",">
+				#alertName[]#
+    </iterate>
+	
+  </dynamic>
+
+    </update>
+
+-->
+
+  <update id="updateNotificationFlag"  parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+
+	  update cms_notification_crn_map set flag=1  WHERE user_id= #recipient# and flag=0
+
+  </update>
+
+
+<update id="updateNotificationFlagForSystem"  parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+
+      
+  
+ UPDATE cms_notification_crn_map
+SET flag            =1
+  WHERE alert_name IN
+  (SELECT distinct c1.alert_name
+     FROM cms_notification_crn_map c1,
+    cms_notification_crn_map c2
+    WHERE c1.flag   =0
+  AND c1.alert_name = c2.alert_name
+  AND c2.user_id    = 'System'
+  AND c1.user_id    =  #recipient#
+  ) 
+	  
+ </update>
+    
+    
+  
+
+
+<!--  <update id="updateNotificationFlagForSystem"  parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+    
+
+	
+    update cms_notification_crn_map set flag=#falg#  WHERE flag=#id# and user_id= #recipient#
+	
+	<dynamic prepend="AND alert_name IN ">
+    <iterate property="alertName"
+             open="(" close=")"
+             conjunction=",">
+       	#alertName[]#
+    </iterate>
+  </dynamic>
+  
+ 
+
+    
+ </update> -->
+
+    
+    
+  
+    <!-- This Section is ended by satish to implement CR L27 R1.3 -->
+
+	<select id="getUserNotificationDetails" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		select cncm.user_id recipient,alert_name
+		name,cum.USER_FULL_NAME
+		recipientFullName,to_char(ACKNOWLEDGE_DATE,'dd-Mon-yyyy hh24:mi:ss') ackDate from
+		CMS_NOTIFICATION_CRN_MAP cncm, CMS_USER_MASTER cum
+		where alert_name in (SELECT distinct(A.NAME) name
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,CMS_NOTIFICATION_CRN_MAP
+		CNCM,(select * from cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME = RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		<!--AND CNCM.ACKNOWLEDGE_DATE IS NULL-->
+        AND RA.RECIPIENT=#recipient#
+		AND AD.RECIPIENT NOT IN #sysUserName#)
+		AND upper(USER_ID) NOT IN upper(#sysUserName#)
+		AND cum.LOGIN_ID = cncm.user_id
+		ORDER BY ALERT_NAME,UPPER(cum.USER_FULL_NAME)
+	</select>
+
+
+	<select id="getSystemNotifications" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (SELECT RALERT_ID id,A.NAME
+		name,ra.message message,RA.RECIPIENT recipient,sub.SUBJECT_NAME
+		primarySub,
+		TO_CHAR((to_timestamp('1-Jan-1970
+		05:30:00', 'dd-Mon-yyyy
+		hh24:mi:ss')
+		+
+		numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )),
+		'dd-Mon-yyyy
+		hh24:mi:ss' ) recvTime,
+		description description,AD.RECIPIENT
+		sender,cncm.crn
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY
+		AD,(SELECT DISTINCT crn,alert_name,user_id,acknowledge_date FROM cms_notification_crn_map) cncm,
+		(select * from cms_subject sub where
+		sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID =
+		AD.ALERT_ID
+		AND CNCM.ALERT_NAME = RA.NAME
+		AND RA.RECIPIENT =
+		CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND CNCM.ACKNOWLEDGE_DATE is null
+		AND RA.RECIPIENT=#recipient#
+		AND AD.RECIPIENT=#sysUserName# 
+		
+		<!-- Added by 6027481 for BI-293 -->
+		
+		AND
+	    (select CASE_STATUS_ID from CMS_CLIENTCASE where CRN =cncm.CRN) in(1,2,3)
+		AND
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) <![CDATA[ >= ]]>  to_char(sysdate-13,'dd-Mon-yyyy')
+		AND
+			
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) 
+			<![CDATA[ <= ]]>  to_char(sysdate,'dd-Mon-yyyy')
+			
+		<!-- End  -->
+		<isEqual property="sortColumnName" compareValue="description">
+		 	 ORDER BY dbms_lob.substr($sortColumnName$,4000, 1) $sortType$
+		 </isEqual>
+		 <isEqual property="sortColumnName" compareValue="message">
+		 	 ORDER BY dbms_lob.substr($sortColumnName$,4000, 1) $sortType$
+		 </isEqual>
+		 <isEqual property="sortColumnName" compareValue="recvTime">
+		 	 ORDER BY (to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )) $sortType$
+		 </isEqual>
+		<isNotEqual property="sortColumnName" compareValue="message">
+			<isNotEqual property="sortColumnName" compareValue="description">
+				<isNotEqual property="sortColumnName" compareValue="recvTime">
+		 	 		order by upper($sortColumnName$) $sortType$
+		 	 	</isNotEqual>
+		 	 </isNotEqual>
+		</isNotEqual>
+		) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#maxRecord#) WHERE rn <![CDATA[ >= ]]>
+		#minRecord#
+	</select>
+
+
+	<select id="getSystemNotificationsCount" resultClass="java.lang.Integer"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT count(*)
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY
+		AD,(SELECT DISTINCT crn,alert_name,user_id,acknowledge_date FROM cms_notification_crn_map) cncm,
+		(select * from cms_subject sub where
+		sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID =
+		AD.ALERT_ID
+		AND CNCM.ALERT_NAME = RA.NAME
+		AND RA.RECIPIENT =
+		CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND CNCM.ACKNOWLEDGE_DATE is null
+		AND RA.RECIPIENT=#recipient#
+		AND AD.RECIPIENT = #sysUserName#
+		<!-- Added by 6035037 for BI-293 -->
+		<!--Start: Added for BI-293 by 6032662-->
+		AND
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) <![CDATA[ >= ]]>  to_char(sysdate-13,'dd-Mon-yyyy')
+		AND
+			
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) 
+			<![CDATA[ <= ]]>  to_char(sysdate,'dd-Mon-yyyy')
+		
+		<!-- End : Added for BI-293 by 603266-->
+		 AND
+	    (select CASE_STATUS_ID from CMS_CLIENTCASE where CRN =cncm.CRN) in(1,2,3)
+		
+		<!-- End  -->
+	</select>
+
+
+
+	<select id="getNotificationHistory" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (SELECT A.NAME
+		name,RALERT_ID id,ra.message message,sub.SUBJECT_NAME primarySub,
+       DECODE(cum.USER_FULL_NAME,null,ad.RECIPIENT,cum.USER_FULL_NAME) senderFullName ,
+		TO_CHAR((to_timestamp('1-Jan-1970
+		05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+		+
+		numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )), 'dd-Mon-yyyy
+		hh24:mi:ss' ) recvTime,
+		description description,AD.RECIPIENT sender,cncm.crn
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,(SELECT DISTINCT crn, alert_name, user_id,acknowledge_date FROM cms_notification_crn_map) cncm,
+		cms_user_master cum,(select * from cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME = RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND cncm.user_id = AD.RECIPIENT
+		and cum.login_id(+) = ad.recipient
+		AND cncm.crn=#crn# order by $sortOrder$) a
+		WHERE ROWNUM <![CDATA[ <= ]]>
+		#maxRecord#) WHERE rn <![CDATA[ >= ]]>
+		#minRecord#
+	</select>
+
+	<select id="getNotificationHistoryCount" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT A.NAME
+		name,RALERT_ID id,ra.message message,sub.SUBJECT_NAME primarySub,
+       DECODE(cum.USER_FULL_NAME,null,ad.RECIPIENT,cum.USER_FULL_NAME) senderFullName ,
+		TO_CHAR((to_timestamp('1-Jan-1970
+		05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+		+
+		numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )), 'dd-Mon-yyyy
+		hh24:mi:ss' ) recvTime,
+		description description,AD.RECIPIENT sender,cncm.crn
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,(SELECT DISTINCT crn, alert_name, user_id,acknowledge_date FROM cms_notification_crn_map) cncm,
+		cms_user_master cum,(select * from cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME = RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND cncm.user_id = AD.RECIPIENT
+		and cum.login_id(+) = ad.recipient
+		AND cncm.crn=#crn#
+	</select>
+
+
+	<select id="getNotificationHistoryDetails" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		select user_id recipient,cum.USER_FULL_NAME recipientFullName,alert_name
+		name,to_char(ACKNOWLEDGE_DATE,'dd-Mon-yyyy hh24:mi:ss') ackDate from
+		CMS_NOTIFICATION_CRN_MAP cncm,cms_user_master cum
+		where alert_name in (SELECT distinct(A.NAME) name
+		FROM
+		RUNTIME_ALERT RA,ALERT
+		A,ALERT_DELIVERY AD,CMS_NOTIFICATION_CRN_MAP
+		CNCM,(select * from
+		cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME =
+		RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME = RA.NAME
+		AND
+		RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND cncm.user_id = AD.RECIPIENT
+		AND cncm.crn=#crn#)
+		AND upper(USER_ID) NOT IN upper(#sysUserName#)
+		AND cum.LOGIN_ID = USER_ID
+		ORDER BY ALERT_NAME,UPPER(cum.USER_FULL_NAME)
+	</select>
+
+	<insert id="insertCRNMapData" parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		INSERT INTO
+		CMS_NOTIFICATION_CRN_MAP (CRN,ALERT_NAME,USER_ID,PARENT_ALERT_ID,FLAG)
+		VALUES (#crn#,#name#,#recipient#,#parentAlertId#,#falg#)
+	</insert>
+
+
+	<insert id="insertCRNMapReplyData" parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		INSERT INTO
+		CMS_NOTIFICATION_CRN_MAP
+		(CRN,ALERT_NAME,USER_ID,PARENT_ALERT_ID,ACKNOWLEDGE_DATE,FLAG)
+		VALUES
+		(#crn#,#name#,#recipient#,#parentAlertId#,SYSDATE,#falg#)
+	</insert>
+
+	<update id="updateAcknowledgeDate" parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		UPDATE
+		CMS_NOTIFICATION_CRN_MAP
+		SET ACKNOWLEDGE_DATE = SYSDATE
+		WHERE
+		ALERT_NAME
+		= #name#
+		AND USER_ID = #recipient#
+		</update>
+
+
+	<select id="getNotificationSentToList" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		select cncm.user_id username,cum.USER_FULL_NAME
+		userFullName from
+		CMS_NOTIFICATION_CRN_MAP cncm,cms_user_master cum
+		where alert_name in (SELECT distinct(A.NAME) name
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,CMS_NOTIFICATION_CRN_MAP
+		CNCM,(select * from cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME
+		= RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME = RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND RA.RECIPIENT=#recipient#
+		AND cncm.crn=#crn#
+		AND A.NAME =#name#)
+		AND upper(USER_ID) NOT IN upper(#recipient#)
+		AND upper(USER_ID) NOT IN upper(#sysUserName#)
+		AND cum.LOGIN_ID = cncm.USER_ID
+		ORDER BY ALERT_NAME,USER_ID
+	</select>
+
+	<select id="getRecNotifications" resultClass="com.worldcheck.atlas.scheduler.vo.SchedulerVo"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT * FROM (SELECT A.*, ROWNUM RN FROM (SELECT REC_CASE_SCH_ID recCaseSchedulerId,
+		  REC_CLIENT_CASE_ID recClientCaseId,
+		  CRC.CLIENT_CODE clientCode,
+		  CRTM.REPORT_TYPE reportType,
+		  CRC.LAST_RECURR_NUM lastRecurrenceNumber,
+		  CRCS.DESCRIPTION description,
+		  to_char(CRCS.REQ_RECVD_DATE,'dd-Mon-yyyy HH24:MI:SS') requestRecvdDate
+		FROM CMS_REC_CASE_SCHEDULER CRCS,
+		  CMS_RECURR_CLIENTCASE CRC,
+		  CMS_REPORT_TYPE_MASTER CRTM
+		WHERE CRCS.REC_CLIENT_CASE_ID = CRC.RECUR_CLIENTCASE_ID
+		 AND CRTM.REPORT_TYPE_MASTER_ID = CRC.REPORT_TYPE_ID
+		 AND ACKNOWLEDGE_DATE is null
+		 AND CRC.CASE_MGR_ID = #recipient#
+		<!-- Start : Added for BI-293 by 6032662-->
+		 AND (CRCS.REQ_RECVD_DATE <![CDATA[ >= ]]>
+					To_date(sysdate-13,'DD MON RRRR') 
+		AND CRCS.REQ_RECVD_DATE <![CDATA[ <= ]]>
+					To_date(sysdate,'DD MON RRRR'))
+		<!-- End : Added for BI-293 by 6032662 -->
+		 <isEqual property="sortColumnName" compareValue="description">
+		 	 ORDER BY dbms_lob.substr($sortColumnName$,4000, 1) $sortType$
+		 </isEqual>
+		 <isNotEqual property="sortColumnName" compareValue="description">
+		 	ORDER BY UPPER($sortColumnName$) $sortType$
+		 </isNotEqual>
+		  )a WHERE ROWNUM <![CDATA[ <= ]]>
+		#maxRecord#) WHERE rn <![CDATA[ >= ]]>
+		#minRecord#
+	</select>
+
+	<select id="getRecNotificationsCount" resultClass="java.lang.Integer"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT COUNT(*)
+		FROM CMS_REC_CASE_SCHEDULER CRCS,
+		  CMS_RECURR_CLIENTCASE CRC,
+		  CMS_REPORT_TYPE_MASTER CRTM
+		WHERE CRCS.REC_CLIENT_CASE_ID = CRC.RECUR_CLIENTCASE_ID
+		 AND CRTM.REPORT_TYPE_MASTER_ID = CRC.REPORT_TYPE_ID
+		 AND ACKNOWLEDGE_DATE is null
+		 AND CRC.CASE_MGR_ID = #recipient#
+		  <!-- Start : Added for BI-293 by 6032662-->
+		 AND (CRCS.REQ_RECVD_DATE <![CDATA[ >= ]]>
+					To_date(sysdate-13,'DD MON RRRR') 
+		 AND CRCS.REQ_RECVD_DATE <![CDATA[ <= ]]>
+					To_date(sysdate,'DD MON RRRR'))
+		 <!-- End : Added for BI-293 by 6032662 -->
+	</select>
+
+	<select id="getMaxAlertID" resultClass="java.lang.Long"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT MAX(RALERT_ID) FROM RUNTIME_ALERT
+		WHERE RECIPIENT = #recipient# AND NAME = #name#
+	</select>
+
+	
+	<!-- Added By 6027481 for BI-293-->
+	
+	<select id="getSystemNotificationsFilterBase" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+      SELECT * FROM (SELECT a.*, ROWNUM rn FROM (SELECT RALERT_ID
+		id,A.NAME name,ra.message message,sub.SUBJECT_NAME primarySub,
+		TO_CHAR((to_timestamp('1-Jan-1970
+		05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+		+
+		numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )), 'dd-Mon-yyyy
+		hh24:mi:ss' ) recvTime,
+		description description,AD.RECIPIENT sender,cum.user_full_name senderFullName,cncm.crn
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,(SELECT DISTINCT crn, alert_name, user_id,acknowledge_date FROM cms_notification_crn_map) cncm,cms_user_master cum,
+                (select * from cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME
+		= RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND (ra.RECIPIENT = #recipient#)
+		AND cum.login_id = RA.RECIPIENT
+		AND AD.RECIPIENT = #sysUserName#
+		AND CNCM.ACKNOWLEDGE_DATE is null
+		<isNotNull prepend="AND" property="crn">
+			<isNotEmpty property="crn">
+				upper(cncm.CRN) LIKE '%' || trim(upper(#crn#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="message">
+			<isNotEmpty property="message">
+				upper(description) LIKE '%' || upper(#message#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="caseStatus">
+			<isNotEmpty property="caseStatus">
+				(select CASE_STATUS_ID from CMS_CLIENTCASE where CRN =cncm.CRN)=#caseStatus#
+			</isNotEmpty>
+		</isNotNull> 
+		
+		<isNotNull prepend="AND" property="sentFromTime">
+			<isNotEmpty property="sentFromTime">
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) <![CDATA[ >= ]]>  trunc(TO_DATE(#sentFromTime#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="sentToTime">
+			<isNotEmpty property="sentToTime">
+			
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) 
+			<![CDATA[ <= ]]>  trunc(TO_DATE(#sentToTime#,'DD-MON-YYYY'))
+			
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="primarySub">
+			<isNotEmpty property="primarySub">
+				 upper(sub.SUBJECT_NAME) LIKE '%' || trim(UPPER(#primarySub#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isEqual property="sortColumnName" compareValue="description">
+		 	 ORDER BY dbms_lob.substr($sortColumnName$,4000, 1) $sortType$
+		 </isEqual>
+		 <isEqual property="sortColumnName" compareValue="message">
+		 	 ORDER BY dbms_lob.substr($sortColumnName$,4000, 1) $sortType$
+		 </isEqual>
+		 <isEqual property="sortColumnName" compareValue="recvTime">
+		 	 ORDER BY (to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )) $sortType$
+		 </isEqual>
+		<isNotEqual property="sortColumnName" compareValue="message">
+			<isNotEqual property="sortColumnName" compareValue="description">
+				<isNotEqual property="sortColumnName" compareValue="recvTime">
+		 	 		order by upper($sortColumnName$) $sortType$
+		 	 	</isNotEqual>
+		 	 </isNotEqual>
+		</isNotEqual>
+		) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#maxRecord#) WHERE rn <![CDATA[ >= ]]>
+		#minRecord#
+	</select>
+
+	
+	<select id="getSystemNotificationsCountFilterBase" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT RALERT_ID id,A.NAME name,ra.message message,sub.SUBJECT_NAME primarySub,
+		TO_CHAR((to_timestamp('1-Jan-1970
+		05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+		+
+		numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )), 'dd-Mon-yyyy
+		hh24:mi:ss' ) recvTime,
+		description description,AD.RECIPIENT sender,cncm.crn
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,(SELECT DISTINCT crn, alert_name, user_id,acknowledge_date FROM cms_notification_crn_map) cncm,(select * from cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME= RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND RA.RECIPIENT=#recipient#
+		and AD.RECIPIENT=#sysUserName#
+		
+		<isEmpty property="ackDate">AND
+		CNCM.ACKNOWLEDGE_DATE is null
+		</isEmpty>
+		<isNotNull prepend="AND" property="crn">
+			<isNotEmpty property="crn">
+				upper(cncm.CRN) LIKE '%' || trim(upper(#crn#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="message">
+			<isNotEmpty property="message">
+				upper(description) LIKE '%' || upper(#message#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="caseStatus">
+			<isNotEmpty property="caseStatus">
+				(select CASE_STATUS_ID from CMS_CLIENTCASE where CRN =cncm.CRN)=#caseStatus#
+			</isNotEmpty>
+		</isNotNull> 
+		<isNotNull prepend="AND" property="sentFromTime">
+			<isNotEmpty property="sentFromTime">
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) <![CDATA[ >= ]]>  trunc(TO_DATE(#sentFromTime#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="sentToTime">
+			<isNotEmpty property="sentToTime">
+			
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) 
+			<![CDATA[ <= ]]>  trunc(TO_DATE(#sentToTime#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="primarySub">
+			<isNotEmpty property="primarySub">
+				 upper(sub.SUBJECT_NAME) LIKE '%' || trim(UPPER(#primarySub#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		
+	</select>
+	
+	<!-- End-->
+	
+	
+	
+	<!-- Start: Added for BI-293  by 6032662-->
+	
+	<select id="getRecurrenceNotificationsFilter" resultClass="com.worldcheck.atlas.scheduler.vo.SchedulerVo"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT * FROM (SELECT A.*, ROWNUM RN FROM (SELECT REC_CASE_SCH_ID recCaseSchedulerId,
+		  REC_CLIENT_CASE_ID recClientCaseId,
+		  CRC.CLIENT_CODE clientCode,
+		  CRTM.REPORT_TYPE reportType,
+		  CRC.LAST_RECURR_NUM lastRecurrenceNumber,
+		  CRCS.DESCRIPTION description,
+		  to_char(CRCS.REQ_RECVD_DATE,'dd-Mon-yyyy HH24:MI:SS') requestRecvdDate
+		FROM CMS_REC_CASE_SCHEDULER CRCS,
+		  CMS_RECURR_CLIENTCASE CRC,
+		  CMS_REPORT_TYPE_MASTER CRTM
+		WHERE CRCS.REC_CLIENT_CASE_ID = CRC.RECUR_CLIENTCASE_ID
+		 AND CRTM.REPORT_TYPE_MASTER_ID = CRC.REPORT_TYPE_ID
+		<!-- AND ACKNOWLEDGE_DATE is null-->
+		<isEmpty property="recurrenceAcknowledgeDateFrom">AND
+		ACKNOWLEDGE_DATE is null</isEmpty>
+		AND CRC.CASE_MGR_ID = #recipient#
+		 
+		<isNotNull prepend="AND" property="clientCode">
+			<isNotEmpty property="clientCode">
+				upper(CRC.CLIENT_CODE) LIKE '%' || trim(upper(#clientCode#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="reportType">
+			<isNotEmpty property="reportType">
+			CRC.REPORT_TYPE_ID = (select REPORT_TYPE_MASTER_ID from CMS_REPORT_TYPE_MASTER where upper(report_code)=upper(#reportType#))
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="notificationFromDate">
+			<isNotEmpty property="notificationFromDate">
+			CRCS.REQ_RECVD_DATE <![CDATA[ >= ]]>
+					To_date(#notificationFromDate#,'DD MON RRRR')
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="notificationToDate">
+			<isNotEmpty property="notificationToDate">
+			CRCS.REQ_RECVD_DATE <![CDATA[ <= ]]>
+					To_date(#notificationToDate#,'DD MON RRRR')
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="recurrenceAcknowledgeDateFrom">
+			<isNotEmpty property="recurrenceAcknowledgeDateFrom">
+			CRCS.ACKNOWLEDGE_DATE <![CDATA[ >= ]]>
+					To_date(#recurrenceAcknowledgeDateFrom#,'DD MON RRRR')
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="recurrenceAcknowledgeDateTo">
+			<isNotEmpty property="recurrenceAcknowledgeDateTo">
+			CRCS.ACKNOWLEDGE_DATE <![CDATA[ <= ]]>
+					To_date(#recurrenceAcknowledgeDateTo#,'DD MON RRRR')
+			</isNotEmpty>
+		</isNotNull>
+		
+		 <isEqual property="sortColumnName" compareValue="description">
+		 	 ORDER BY dbms_lob.substr($sortColumnName$,4000, 1) $sortType$
+		 </isEqual>
+		 <isNotEqual property="sortColumnName" compareValue="description">
+		 	ORDER BY UPPER($sortColumnName$) $sortType$
+		 </isNotEqual>
+		  )a WHERE ROWNUM <![CDATA[ <= ]]>
+		#maxRecord#) WHERE rn <![CDATA[ >= ]]>
+		#minRecord#
+	</select>
+
+	<select id="getRecurrenceNotificationsCountFilter" resultClass="java.lang.Integer"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT COUNT(*)
+		FROM CMS_REC_CASE_SCHEDULER CRCS,
+		  CMS_RECURR_CLIENTCASE CRC,
+		  CMS_REPORT_TYPE_MASTER CRTM
+		WHERE CRCS.REC_CLIENT_CASE_ID = CRC.RECUR_CLIENTCASE_ID
+		 AND CRTM.REPORT_TYPE_MASTER_ID = CRC.REPORT_TYPE_ID
+		<!--AND ACKNOWLEDGE_DATE is null-->
+		<isEmpty property="recurrenceAcknowledgeDateFrom">AND
+		ACKNOWLEDGE_DATE is null</isEmpty>
+		 AND CRC.CASE_MGR_ID = #recipient#
+		 
+		 <isNotNull prepend="AND" property="clientCode">
+			<isNotEmpty property="clientCode">
+				upper(CRC.CLIENT_CODE) LIKE '%' || trim(upper(#clientCode#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="reportType">
+			<isNotEmpty property="reportType">
+			CRC.REPORT_TYPE_ID = (select REPORT_TYPE_MASTER_ID from CMS_REPORT_TYPE_MASTER where upper(report_code)=upper(#reportType#))
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="notificationFromDate">
+			<isNotEmpty property="notificationFromDate">
+			CRCS.REQ_RECVD_DATE <![CDATA[ >= ]]>
+					To_date(#notificationFromDate#,'DD MON RRRR')
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="notificationToDate">
+			<isNotEmpty property="notificationToDate">
+			CRCS.REQ_RECVD_DATE <![CDATA[ <= ]]>
+					To_date(#notificationToDate#,'DD MON RRRR')
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="recurrenceAcknowledgeDateFrom">
+			<isNotEmpty property="recurrenceAcknowledgeDateFrom">
+			CRCS.ACKNOWLEDGE_DATE <![CDATA[ >= ]]>
+					To_date(#recurrenceAcknowledgeDateFrom#,'DD MON RRRR')
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="recurrenceAcknowledgeDateTo">
+			<isNotEmpty property="recurrenceAcknowledgeDateTo">
+			CRCS.ACKNOWLEDGE_DATE <![CDATA[ <= ]]>
+					To_date(#recurrenceAcknowledgeDateTo#,'DD MON RRRR')
+			</isNotEmpty>
+		</isNotNull>
+	 </select>
+	 
+	 <!-- End: Added for BI-293 by 6032662-->
+	 
+	 
+	 
+	 <!-- Start BI 293  Added by 6035037 -->
+	
+	<select id="getUserNotificationsFilterBase" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+       SELECT * FROM (SELECT a.*, ROWNUM rn FROM (SELECT RALERT_ID
+		id,A.NAME name,ra.message message,sub.SUBJECT_NAME primarySub,
+		TO_CHAR((to_timestamp('1-Jan-1970
+		05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+		+
+		numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )), 'dd-Mon-yyyy
+		hh24:mi:ss' ) recvTime,
+		description description,AD.RECIPIENT sender,cum.user_full_name senderFullName,cncm.crn
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,(SELECT DISTINCT crn, alert_name, user_id,acknowledge_date FROM cms_notification_crn_map) cncm,cms_user_master cum,
+                (select * from cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME
+		= RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		
+		AND (ra.RECIPIENT = #recipient#)
+		 and cum.login_id = AD.RECIPIENT
+		AND
+		AD.RECIPIENT not in #sysUserName#
+		
+		
+		<isEmpty property="ackFromDate">AND
+		CNCM.ACKNOWLEDGE_DATE is null</isEmpty>
+				
+		<isNotNull prepend="AND" property="crn">
+		
+			<isNotEmpty property="crn">
+				upper(cncm.CRN) LIKE '%' || trim(upper(#crn#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		
+		
+		<isNotNull prepend="AND" property="message">
+			<isNotEmpty property="message">
+				upper(description) LIKE '%' || upper(#message#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="caseStatus">
+			<isNotEmpty property="caseStatus">
+				(select CASE_STATUS_ID from CMS_CLIENTCASE where CRN =cncm.CRN)=#caseStatus#
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="sentFromTime">
+			<isNotEmpty property="sentFromTime">
+			
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) <![CDATA[ >= ]]>  trunc(TO_DATE(#sentFromTime#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="sentToTime">
+			<isNotEmpty property="sentToTime">
+			
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) 
+			<![CDATA[ <= ]]>  trunc(TO_DATE(#sentToTime#,'DD-MON-YYYY'))
+			
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="ackFromDate">
+			<isNotEmpty property="ackFromDate">
+			trunc(CNCM.ACKNOWLEDGE_DATE )<![CDATA[ >= ]]> trunc(TO_DATE(#ackFromDate#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="ackToDate">
+			<isNotEmpty property="ackToDate">
+			trunc(CNCM.ACKNOWLEDGE_DATE )<![CDATA[ <= ]]> trunc(TO_DATE(#ackToDate#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		
+		
+		<isEqual property="sortColumnName" compareValue="description">
+		 	 ORDER BY dbms_lob.substr($sortColumnName$,4000, 1) $sortType$
+		 </isEqual>
+		 <isEqual property="sortColumnName" compareValue="message">
+		 	 ORDER BY dbms_lob.substr($sortColumnName$,4000, 1) $sortType$
+		 </isEqual>
+		 <isEqual property="sortColumnName" compareValue="recvTime">
+		 	 ORDER BY (to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )) $sortType$
+		 </isEqual>
+		<isNotEqual property="sortColumnName" compareValue="message">
+			<isNotEqual property="sortColumnName" compareValue="description">
+				<isNotEqual property="sortColumnName" compareValue="recvTime">
+		 	 		order by upper($sortColumnName$) $sortType$
+		 	 	</isNotEqual>
+		 	 </isNotEqual>
+		</isNotEqual>
+		) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#maxRecord#) WHERE rn <![CDATA[ >= ]]>
+		#minRecord#
+	</select>
+
+		
+	<select id="getUserNotificationsCountFilterBase" resultClass="com.worldcheck.atlas.vo.notification.NotificationVO"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT RALERT_ID id,A.NAME name,ra.message message,sub.SUBJECT_NAME primarySub,
+		TO_CHAR((to_timestamp('1-Jan-1970
+		05:30:00', 'dd-Mon-yyyy hh24:mi:ss')
+		+
+		numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' )), 'dd-Mon-yyyy
+		hh24:mi:ss' ) recvTime,
+		description description,AD.RECIPIENT sender,cncm.crn
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,(SELECT DISTINCT crn, alert_name, user_id,acknowledge_date FROM cms_notification_crn_map) cncm,(select * from cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME
+		= RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND RA.RECIPIENT=#recipient#
+		and AD.RECIPIENT not in #sysUserName#
+		
+		<isEmpty property="ackFromDate">AND
+		CNCM.ACKNOWLEDGE_DATE is null
+		</isEmpty>
+		
+		<isNotNull prepend="AND" property="crn">
+			<isNotEmpty property="crn">
+				upper(cncm.CRN) LIKE '%' || trim(upper(#crn#)) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="AND" property="message">
+			<isNotEmpty property="message">
+				upper(description) LIKE '%' || upper(#message#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="caseStatus">
+			<isNotEmpty property="caseStatus">
+				(select CASE_STATUS_ID from CMS_CLIENTCASE where CRN =cncm.CRN)=#caseStatus#
+			</isNotEmpty>
+		</isNotNull>
+		
+			<isNotNull prepend="AND" property="sentFromTime">
+			<isNotEmpty property="sentFromTime">
+			
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) <![CDATA[ >= ]]>  trunc(TO_DATE(#sentFromTime#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="sentToTime">
+			<isNotEmpty property="sentToTime">
+			
+			trunc(to_timestamp('1-Jan-1970   05:30:00', 'dd-Mon-yyyy   hh24:mi:ss')   +   numtodsinterval(ra.RECEIVED_TIME/(1000),'SECOND' ) ) 
+			<![CDATA[ <= ]]>  trunc(TO_DATE(#sentToTime#,'DD-MON-YYYY'))
+			
+			</isNotEmpty>
+		</isNotNull>
+	
+			<isNotNull prepend="AND" property="ackFromDate">
+			<isNotEmpty property="ackFromDate">
+			trunc(CNCM.ACKNOWLEDGE_DATE )<![CDATA[ >= ]]> trunc(TO_DATE(#ackFromDate#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="ackToDate">
+			<isNotEmpty property="ackToDate">
+			trunc(CNCM.ACKNOWLEDGE_DATE )<![CDATA[ <= ]]> trunc(TO_DATE(#ackToDate#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		
+	</select>
+	 
+	<!-- END-->
+	
+	 <!-- Added by 6027481 for BI-293-->
+	<select id="getUserNotificationsCountWithOutFilter" resultClass="java.lang.Integer"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT count(*)
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY AD,(SELECT DISTINCT crn, alert_name, user_id,acknowledge_date FROM cms_notification_crn_map) cncm,(select * from cms_subject sub where sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID = AD.ALERT_ID
+		AND CNCM.ALERT_NAME
+		= RA.NAME
+		AND RA.RECIPIENT = CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND CNCM.ACKNOWLEDGE_DATE is null
+		AND RA.RECIPIENT=#recipient#
+		and AD.RECIPIENT not in #sysUserName#
+		
+	</select>
+	
+	
+	<select id="getSystemNotificationsCountWithoutFilter" resultClass="java.lang.Integer"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT count(*)
+		FROM
+		RUNTIME_ALERT RA,ALERT A,ALERT_DELIVERY
+		AD,(SELECT DISTINCT crn,alert_name,user_id,acknowledge_date FROM cms_notification_crn_map) cncm,
+		(select * from cms_subject sub where
+		sub.IS_PRIMARY_SUB = 1 ) sub
+		WHERE A.NAME = RA.NAME
+		AND A.ALERT_ID =
+		AD.ALERT_ID
+		AND CNCM.ALERT_NAME = RA.NAME
+		AND RA.RECIPIENT =
+		CNCM.USER_ID
+		AND sub.CRN(+) = CNCM.CRN
+		AND CNCM.ACKNOWLEDGE_DATE is null
+		AND RA.RECIPIENT=#recipient#
+		AND AD.RECIPIENT = #sysUserName#
+		
+	</select>
+	
+	<select id="getRecCaseSystemNotificationCountWithoutFilter" resultClass="java.lang.Integer"
+		parameterClass="com.worldcheck.atlas.vo.notification.NotificationVO">
+		SELECT COUNT(*)
+		FROM CMS_REC_CASE_SCHEDULER CRCS,
+		  CMS_RECURR_CLIENTCASE CRC,
+		  CMS_REPORT_TYPE_MASTER CRTM
+		WHERE CRCS.REC_CLIENT_CASE_ID = CRC.RECUR_CLIENTCASE_ID
+		 AND CRTM.REPORT_TYPE_MASTER_ID = CRC.REPORT_TYPE_ID
+		 AND ACKNOWLEDGE_DATE is null
+		 AND CRC.CASE_MGR_ID = #recipient#
+		  
+	</select>
+	 <!-- End -->
+</sqlMap>

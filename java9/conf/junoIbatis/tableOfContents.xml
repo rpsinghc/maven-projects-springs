@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="TocSection">
+	
+	<resultMap id="componentSet"
+		class="com.worldcheck.juno.vo.component.TocComponent"
+		groupBy="id">
+		<result property="id" column="ComponentsID" />
+		<result property="title" column="component_title" />
+		<result property="order" column="component_number" />
+	</resultMap>
+	
+	<resultMap id="resultSections" class="com.worldcheck.juno.vo.component.TocSection">
+		<result property="id" column="sectionId" />
+		<result property="prefix" column="prefix" />
+		<result property="numberValue" column="number_value" />
+		<result property="suffix" column="suffix" />
+		<result property="title" column="title" />
+		<result property="level" column="section_level" />
+		<!-- <result property="components" resultMap="TocSection.componentSet" /> -->
+	</resultMap>
+	
+	<select id="getSections" resultMap="resultSections" parameterClass="java.util.HashMap">
+		select sec.caserpt_section_id as sectionId, upper(sec.prefix) prefix, sec.number_value,sec.suffix, upper(sec.title) title,
+		sec.section_level
+		from RG_CASERPT_TEMPLATE_SECTION sec
+		where 
+		sec.case_id = #crn# and sec.processcycleid = #processCycleId#
+		and sec.active_ind = 'Y' 
+    	and sec.section_order not in (1,2,3)
+		order by sec.SECTION_ORDER, sec.NUMBER_VALUE, sec.CASERPT_SECTION_ID
+	</select>
+	
+		<!-- select sec.caserpt_section_id as sectionId, sec.prefix, sec.number_value,sec.suffix ,sec.title,
+		sec.section_level as Slevel,
+		sec.section_level ,comp.caserpt_components_id as ComponentsID,comp.component_title, comp.component_number 
+		from RG_CASERPT_TEMPLATE_SECTION sec
+		join rg_caserpt_template_component comp on sec.caserpt_section_id = comp.section_id where 
+		sec.case_id = #crn# and sec.processcycleid = #processCycleId#
+		and sec.active_ind = 'Y' 
+		and comp.active_ind = 'Y' and comp.component_id not in (1,2,3)
+		order by sec.SECTION_ORDER, sec.NUMBER_VALUE, sec.CASERPT_SECTION_ID, comp.component_number -->
+	
+	<resultMap id="resultSubjects" class="com.worldcheck.juno.vo.component.TocSubject" groupBy="id">
+		<result property="id" column="subject_id" />
+		<result property="sectionId" column="sectionId" />
+		<result property="name" column="subject_name" />
+		<result property="primary" column="is_primary_subject" />
+		<result property="order" column="report_order" />
+		<result property="components" resultMap="TocSection.componentSet" />
+	</resultMap>
+	
+	<select id="getSubjects" resultMap="resultSubjects" parameterClass="java.util.HashMap">
+		select min(cmp.section_id) as sectionId,
+		sub.subject_id,
+		rgsub.report_order,
+		upper(min(rgsub.report_subject_name)) as subject_name, 
+		rgsub.subject_name as cms_subject_name, 
+		case when sub.is_primary_sub = 1 then 'true' else 'false' end as is_primary_subject, 
+		cmp.caserpt_components_id ComponentsID, 
+		min(cmp.component_id) as Component_id,
+		min(cmp.component_number) as component_number,
+		min(mst.REPORT_CMP_NAME) as component_title
+		from rg_caserpt_template_component cmp
+		join RG_COMPONENT_RE_MAP cmap on cmap.component_id = cmp.component_id
+		join RG_COMPONENT_MASTER mst on mst.component_id = cmp.component_id,
+		CMS_SUBJECT sub, RG_SUBJECT rgsub
+		where 
+		(sub.re_ids like ('%,' || cmap.research_type_id || ',%') or
+		sub.re_ids like (cmap.research_type_id || ',%') or
+		sub.re_ids like ('%,' || cmap.research_type_id)  or
+    	sub.re_ids = ''||cmap.research_type_id)
+		and sub.entity_type_id = cmp.component_level_id
+		and cmp.case_id = #crn# and cmp.processcycleid = #processCycleId# 
+    	and cmp.case_id = sub.crn and cmp.active_ind = 'Y' and rgsub.subject_id = sub.subject_id
+		group by cmp.caserpt_components_id, sub.subject_id, rgsub.report_order, rgsub.subject_name, sub.is_primary_sub 
+		order by sub.is_primary_sub desc, rgsub.report_order, upper(rgsub.subject_name), sub.subject_id, cmp.caserpt_components_id
+	</select>
+	
+	<select id="getSubjectsPastCycle" resultMap="resultSubjects" parameterClass="java.util.HashMap">
+		select min(cmp.section_id) as sectionId,
+		sub.subject_id,
+		sub.report_order,
+		upper(min(sub.report_subject_name)) as subject_name, 
+		sub.subject_name as cms_subject_name, 
+		case when sub.is_primary_sub = 1 then 'true' else 'false' end as is_primary_subject, 
+		cmp.caserpt_components_id ComponentsID, 
+		min(cmp.component_id) as Component_id,
+		min(cmp.component_number) as component_number,
+		min(mst.REPORT_CMP_NAME) as component_title  
+		from rg_caserpt_template_component cmp
+		join RG_COMPONENT_RE_MAP cmap on cmap.component_id = cmp.component_id
+		join RG_COMPONENT_MASTER mst on mst.component_id = cmp.component_id,
+		RG_SUBJECT_CYCLE sub
+		where 
+		(sub.re_ids like ('%,' || cmap.research_type_id || ',%') or
+		sub.re_ids like (cmap.research_type_id || ',%') or
+		sub.re_ids like ('%,' || cmap.research_type_id)  or
+    	sub.re_ids = ''||cmap.research_type_id)
+		and sub.entity_type_id = cmp.component_level_id and sub.processcycleid = cmp.processcycleid 
+		and cmp.case_id = #crn# and cmp.processcycleid = #processCycleId# and cmp.case_id = sub.crn and cmp.active_ind = 'Y' 
+		group by cmp.caserpt_components_id, sub.subject_id, sub.report_order, sub.subject_name, sub.is_primary_sub 
+		order by sub.is_primary_sub desc, sub.report_order, upper(sub.subject_name), sub.subject_id, cmp.caserpt_components_id
+	</select>
+</sqlMap>

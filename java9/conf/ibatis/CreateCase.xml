@@ -1,0 +1,796 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" 
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="CreateCase">
+
+<!-- Added By Saurabh Mittal -->
+
+   	   <resultMap id="caseCreationRiskAssociationVO" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="hasCntryBreakdown" column="HAS_CNTRY_BRKDOWN"/>
+			<result property="isRiskMandatory" column="RISK_GROUP"/>
+			<result property="isRiskApplied" column="RISK_GROUP"/>
+			<result property="riskCategoryId" column="RISK_CATEGORY_ID"/>
+			<result property="visibleToClient" column="VISIBLE_TO_CLIENT"/>
+			<result property="attributeId" column="ATTRIBUTE_ID"/>
+			<result property="attributeValue" column="VALUE"/>
+			<result property="riskType" column="RISK_TYPE"/>
+	   </resultMap>
+
+
+<!-- Added By Saurabh Mittal -->	   
+      	  <resultMap id="caseCreationRiskAssociationCntryBrkDownVO" class="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+			<result property="riskCode" column="RISK_CODE"/>
+			<result property="hasCntryBreakdown" column="HAS_CNTRY_BRKDOWN"/>
+			<result property="isRiskMandatory" column="RISK_GROUP"/>
+			<result property="isRiskApplied" column="RISK_GROUP"/>
+			<result property="riskCategoryId" column="RISK_CATEGORY_ID"/>
+			<result property="visibleToClient" column="VISIBLE_TO_CLIENT"/>
+			<result property="riskType" column="RISK_TYPE"/>
+	   </resultMap>
+
+         <resultMap id="subAdditionRiskAggregationVO" class="com.worldcheck.atlas.vo.RiskAggregationVO">
+			<result property="riskCategoryId" column="RISK_CATEGORY_ID"/>
+			<result property="riskType" column="RISK_TYPE"/>
+	   </resultMap>
+
+
+	<insert id="createCase_Client" parameterClass="com.worldcheck.atlas.vo.CaseDetails">
+		INSERT INTO
+		CMS_CLIENTCASE (
+		CRN,
+		CLIENT_CODE,
+		CLIENT_REF,
+		REPORT_TYPE_ID,
+		SUB_REPORT_TYPE_ID,
+		OFFICE_ID,
+		CASE_MGR_ID,
+		IS_EXPRESS,
+		IS_RECUR_CASE,
+		REQ_RECD_DT,
+		FINAL_DUE_DATE,
+		CLIENT_INT_DUEDATE1,
+		CLIENT_INT_DUEDATE2,
+		RSRCH_INT_DUEDATE1,
+		RSRCH_INT_DUEDATE2,
+		RSRCH_FINAL_DUE_DATE,
+		IS_AUTO_OFC_ASSIGN,
+		CASE_INFO,
+		CLIENT_FEEDBACK,
+		CASE_STATUS_ID,
+		CLIENT_REPORT_STATUS,
+		CASE_CREATOR_ID,
+		UPDATED_BY,
+		UPDATED_ON,
+		BULK_ORDER_ID,
+		IS_ISIS,
+		ORDER_GUID,
+		IS_BULK_ORDER,
+		ISIS_USER,
+		SALES_REPRESENTATIVE,
+		SFDC_OTN_NUMBERS,
+		REGIONAL_TERRITORY,
+		IS_SUBJ_LEVEL_SUBRPT_REQ
+
+		)values
+		(
+		#crn#,
+		(select client_code from cms_client_master
+		where
+		upper(client_name)=upper(#clientCode#)),
+		#clientRef#,
+		(select
+		Report_type_master_id from cms_report_type_master where
+		report_type=#reportTypeId#
+		and status =1),
+		(select subreport_type_master_id from cms_subreport_type_master SPT, cms_report_type_master RPT
+		where
+		SPT.sub_report=#subReportTypeId#
+		and RPT.report_type = #reportTypeId#
+		and RPT.STATUS = 1
+		and spt.status = 1
+		and RPT.REPORT_TYPE_MASTER_ID = SPT.REPORT_TYPE_ID),
+		(select
+		office_master_id from cms_office_master where office=#officeId#),
+		#caseMgrId#,
+		#expressCase#,
+		#isRecurCase#,
+		#reqRecdDate#,
+		#finalDueDate#,
+		#cInterim1#,
+		#cInterim2#,
+		#rInterim1#,
+		#rInterim2#,
+		#finalRDueDate#,
+		#isAutoOfcAssign#,
+		#caseInfo#,
+		#clientFeedBack#,
+		#caseStatusId#,
+		#clientReportStatus#,
+		#caseCreatorId#,
+		#updatedBy#,
+		sysdate,
+		#bulkOrderId#,
+		#isISIS#,
+		#orderGUID#,
+		#isBulkOrder#,
+		#isisUser#,
+		#salesRepresentative#,
+		#sfdcOtnNumbers#,
+		#regionalTerritory#,
+		(select IS_SUBJ_LEVEL_SUBRPT_REQ from cms_client_master
+		where
+		upper(client_name)=upper(#clientCode#))
+		)       
+   </insert>
+
+	<insert id="createCase_Client_Without_Subject" parameterClass="com.worldcheck.atlas.vo.CaseDetails">
+		INSERT INTO CMS_CLIENTCASE (
+		CRN,
+		CLIENT_CODE,
+		CLIENT_REF,
+		REPORT_TYPE_ID,
+		SUB_REPORT_TYPE_ID,
+		OFFICE_ID,
+		CASE_MGR_ID,
+		IS_EXPRESS,
+		IS_RECUR_CASE,
+		REQ_RECD_DT,
+		FINAL_DUE_DATE,
+		CLIENT_INT_DUEDATE1,
+		CLIENT_INT_DUEDATE2,
+		RSRCH_INT_DUEDATE1,
+		RSRCH_INT_DUEDATE2,
+		RSRCH_FINAL_DUE_DATE,
+		IS_AUTO_OFC_ASSIGN,
+		CASE_INFO,
+		CLIENT_FEEDBACK,
+		CASE_STATUS_ID,
+		CLIENT_REPORT_STATUS,
+		CASE_CREATOR_ID,
+		UPDATED_BY,
+		UPDATED_ON,
+		BULK_ORDER_ID,
+		IS_ISIS,
+		ORDER_GUID,
+		IS_BULK_ORDER,
+		ISIS_USER,
+		SALES_REPRESENTATIVE,
+		SFDC_OTN_NUMBERS,
+		REGIONAL_TERRITORY,
+		IS_SUBJ_LEVEL_SUBRPT_REQ
+
+		)values
+		(
+		#crn#,
+		(select client_code
+		from
+		cms_client_master where
+		upper(client_name)=upper(#clientCode#)),
+		#clientRef#,
+		(select
+		Report_type_master_id from cms_report_type_master
+		where
+		report_type =
+		#reportTypeId# 
+		and status=1),
+		0,
+		(select office_master_id from
+		cms_office_master where
+		office=#officeId#),
+		#caseMgrId#,
+		#expressCase#,
+		#isRecurCase#,
+		#reqRecdDate#,
+		#finalDueDate#,
+		#cInterim1#,
+		#cInterim2#,
+		#rInterim1#,
+		#rInterim2#,
+		#finalRDueDate#,
+		#isAutoOfcAssign#,
+		#caseInfo#,
+		#clientFeedBack#,
+		#caseStatusId#,
+		#clientReportStatus#,
+		#caseCreatorId#,
+		#updatedBy#,
+		sysdate,
+		#bulkOrderId#,
+		#isISIS#,
+		#orderGUID#,
+		#isBulkOrder#,
+		#isisUser#,
+		#salesRepresentative#,
+		#sfdcOtnNumbers#,
+		#regionalTerritory#,
+		(select IS_SUBJ_LEVEL_SUBRPT_REQ from cms_client_master
+		where
+		upper(client_name)=upper(#clientCode#))
+		)       
+   </insert>
+
+   <!-- Query to insert the Risk details associated to a particular case into PROFILE table Saurabh Mittal -->
+
+   	<insert id="associateRiskAtCaseCreation" parameterClass="com.worldcheck.atlas.vo.CaseCreationRiskAssociationVO">
+		
+	<selectKey resultClass="long" type="pre" keyProperty="profileId">
+       SELECT CMS_RISK_PROFILE_SEQ.NEXTVAL AS VALUE FROM DUAL
+    </selectKey>
+		
+		INSERT INTO CMS_RISK_PROFILE (
+		RISK_PROFILE_ID,
+		RISK_CATEGORY_ID,
+		RISK_CODE,
+		RISK_TYPE,
+		CRN,
+		ATTRIBUTE_ID,
+		ATTRIBUTE_VALUE,
+		IS_RISK_MANDATORY,
+		IS_RISK_APPLIED,
+		VISIBLE_TO_CLIENT,
+		UPDATEDON
+		)values
+		(
+		#profileId#,
+		#riskCategoryId#,
+		#riskCode#,
+		#riskType#,
+		#crn#,
+		#attributeId#,
+		#attributeValue#,
+		#isRiskMandatory#,
+		#isRiskApplied#,
+		#visibleToClient#,
+		sysdate
+		)       
+   </insert>
+
+  
+   <!-- Query to insert the case level risk history into CMS_RISK_PROFILE_HISTORY Saurabh Mittal -->
+
+
+<insert id="insertCaseLevelRiskHistory" parameterClass="com.worldcheck.atlas.vo.RiskProfileHistoryVO">
+		
+	<selectKey resultClass="long" type="pre" keyProperty="historyId">
+       SELECT CMS_RISK_PROFILE_HISTORY_SEQ.NEXTVAL AS VALUE FROM DUAL
+    </selectKey>
+		
+		INSERT INTO CMS_RISK_PROFILE_HISTORY (
+		HISTORY_ID,
+		RISK_CATEGORY_ID,
+		RISK_CODE,
+		CRN,
+		ATTRIBUTE_ID,
+		NEW_VALUE,
+		ACTION,
+		TASK,
+		UPDATEDON
+		)values
+		(
+		#historyId#,
+		#riskCategoryId#,
+		#riskCode#,
+		#crn#,
+		#attributeId#,
+		#newValue#,
+		#action#,
+		#task#,
+		sysdate
+		)       
+   </insert>
+   
+   <!-- Added by saurabh mittal -->
+
+   	<insert id="insertCaseAdditionTotalRiskAggr" parameterClass="com.worldcheck.atlas.vo.TotalRiskAggregationVO">
+
+	<selectKey resultClass="int" type="pre" keyProperty="totalAggregationId">
+       SELECT CMS_RISK_TOTAL_AGGREGATION_SEQ.NEXTVAL AS VALUE FROM DUAL
+    </selectKey>
+
+			INSERT INTO CMS_RISK_TOTAL_AGGREGATION (
+			TOTAL_AGGREGATION_ID,
+			CRN,
+			OVERALL_CASE_LEVEL_AGGRN,
+			OVERALL_CRN_LEVEL_AGGRN,
+			OVERALL_SUBJECT_LEVEL_AGGRN,
+			UPDATEDBY
+			)values (
+			#totalAggregationId#,
+			#crn#,
+			#overallCaseLvlAggr#,
+			#overallCrnLvlAggr#,
+			#overallSubLvlAggr#,
+			SYSDATE
+		)
+		</insert>
+   
+
+	<!--
+		<insert id="createCase_History"
+		parameterClass="com.worldcheck.atlas.vo.CaseDetails"> <selectKey
+		resultClass="int" type="pre" keyProperty="caseHistoryId"> SELECT
+		CMS_CASEHISTORY_SEQ.nextval AS VALUE FROM DUAL </selectKey> INSERT
+		INTO CMS_CASE_HISTORY_DETAILS ( CASE_HISTORY_ID, PID, CRN, PERFORMER,
+		MODTIME) values ( #caseHistoryId#, #pid#, #crn#, #performer#, sysdate
+		) </insert>
+	-->
+
+	<update id="updateCreateCase_Client" parameterClass="com.worldcheck.atlas.vo.CaseDetails">
+		UPDATE CMS_CLIENTCASE set CASE_MGR_ID =
+			#caseMgrId#
+		<isNotNull property="clientCode" prepend=",">
+			CLIENT_CODE=#clientCode#
+		</isNotNull>
+		<isNotNull property="clientRef" prepend=",">
+			CLIENT_REF =
+			#clientRef#
+		</isNotNull>
+		<isNotNull property="reportTypeId" prepend=",">
+			REPORT_TYPE_ID =
+			(select
+			Report_type_master_id from
+			cms_report_type_master where
+			report_type=#reportTypeId#)
+		</isNotNull>
+		<isNotNull property="subReportTypeId" prepend=",">
+			SUB_REPORT_TYPE_ID = (select subreport_type_master_id from cms_subreport_type_master SPT, cms_report_type_master RPT
+									where
+									SPT.sub_report=#subReportTypeId#
+									and RPT.report_type = #reportTypeId#
+									and RPT.REPORT_TYPE_MASTER_ID = SPT.REPORT_TYPE_ID)
+		</isNotNull>
+		<isNotNull property="officeId" prepend=",">
+			OFFICE_ID
+			= (select
+			office_master_id
+			from cms_office_master where
+			office=#officeId#)
+		</isNotNull>
+		<isNotNull property="expressCase" prepend=",">
+			IS_EXPRESS =
+			#expressCase#
+		</isNotNull>
+		<isNotNull property="reqRecdDate" prepend=",">
+			REQ_RECD_DT =
+			#reqRecdDate#
+		</isNotNull>
+		<isNotNull property="finalDueDate" prepend=",">
+			FINAL_DUE_DATE = #finalDueDate#
+		</isNotNull>
+		<isNotNull property="cInterim1" prepend=",">
+			CLIENT_INT_DUEDATE1 = #cInterim1#
+		</isNotNull>
+		<isNotNull property="cInterim2" prepend=",">
+			CLIENT_INT_DUEDATE2 = #cInterim2#
+		</isNotNull>
+		<isNotNull property="rInterim1" prepend=",">
+			RSRCH_INT_DUEDATE1= #rInterim1#
+		</isNotNull>
+		<isNotNull property="rInterim2" prepend=",">
+			RSRCH_INT_DUEDATE2= #rInterim2#
+		</isNotNull>
+		<isNotNull property="finalRDueDate" prepend=",">
+			RSRCH_FINAL_DUE_DATE= #finalRDueDate#
+		</isNotNull>
+		<isNotNull property="isAutoOfcAssign" prepend=",">
+			IS_AUTO_OFC_ASSIGN =
+			#isAutoOfcAssign#
+		</isNotNull>
+		<isNotNull property="caseInfo" prepend=",">
+			CASE_INFO = #caseInfo#
+		</isNotNull>
+		<isNotNull property="clientFeedBack" prepend=",">
+			CLIENT_FEEDBACK =
+			#clientFeedBack#
+		</isNotNull>
+		
+		<isNotEqual property="caseStatusId" compareValue="0" prepend=",">
+			CASE_STATUS_ID = #caseStatusId#
+			</isNotEqual>
+		
+		<isNotNull property="clientReportStatus" prepend=",">
+			CLIENT_REPORT_STATUS
+			= #clientReportStatus#
+		</isNotNull>
+		where CRN=#crn#
+	</update>
+
+	<update id="updateCreateCase_Client_Without_Subject"
+		parameterClass="com.worldcheck.atlas.vo.CaseDetails">
+		UPDATE CMS_CLIENTCASE set CASE_MGR_ID =
+			#caseMgrId#
+		<isNotNull property="clientCode" prepend=",">
+			CLIENT_CODE=#clientCode#
+		</isNotNull>
+		<isNotNull property="clientRef" prepend=",">
+			CLIENT_REF =
+			#clientRef#
+		</isNotNull>
+		<isNotNull property="reportTypeId" prepend=",">
+			REPORT_TYPE_ID =
+			(select
+			Report_type_master_id from
+			cms_report_type_master where
+			report_type=#reportTypeId#)
+		</isNotNull>
+		<isNotNull property="subReportTypeId" prepend=",">
+			SUB_REPORT_TYPE_ID = 0
+		</isNotNull>
+		<isNotNull property="officeId" prepend=",">
+			OFFICE_ID
+			= (select
+			office_master_id
+			from cms_office_master where
+			office=#officeId#)
+		</isNotNull>
+		<isNotNull property="expressCase" prepend=",">
+			IS_EXPRESS =
+			#expressCase#
+		</isNotNull>
+		<isNotNull property="reqRecdDate" prepend=",">
+			REQ_RECD_DT =
+			#reqRecdDate#
+		</isNotNull>
+		<isNotNull property="finalDueDate" prepend=",">
+			FINAL_DUE_DATE = #finalDueDate#
+		</isNotNull>
+		<isNotNull property="cInterim1" prepend=",">
+			CLIENT_INT_DUEDATE1 = #cInterim1#
+		</isNotNull>
+		<isNotNull property="cInterim2" prepend=",">
+			CLIENT_INT_DUEDATE2 = #cInterim2#
+		</isNotNull>
+		<isNotNull property="rInterim1" prepend=",">
+			RSRCH_INT_DUEDATE1= #rInterim1#
+		</isNotNull>
+		<isNotNull property="rInterim2" prepend=",">
+			RSRCH_INT_DUEDATE2= #rInterim2#
+		</isNotNull>
+		<isNotNull property="finalRDueDate" prepend=",">
+			RSRCH_FINAL_DUE_DATE= #finalRDueDate#
+		</isNotNull>
+		<isNotNull property="isAutoOfcAssign" prepend=",">
+			IS_AUTO_OFC_ASSIGN =
+			#isAutoOfcAssign#
+		</isNotNull>
+		<isNotNull property="caseInfo" prepend=",">
+			CASE_INFO = #caseInfo#
+		</isNotNull>
+		<isNotNull property="clientFeedBack" prepend=",">
+			CLIENT_FEEDBACK =
+			#clientFeedBack#
+		</isNotNull>
+		
+		<isNotEqual property="caseStatusId" compareValue="0" prepend=",">
+			CASE_STATUS_ID = #caseStatusId#
+		 </isNotEqual>
+		
+		<isNotNull property="clientReportStatus" prepend=",">
+			CLIENT_REPORT_STATUS
+			= #clientReportStatus#
+		</isNotNull>
+		where CRN=#crn#
+   </update>
+
+	<select id="checkForCase" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(*) from cms_clientcase where crn=#crn#
+	</select>
+
+	<!-- Query to check if case level risk Data for given case reference no into Risk Profile Table Saurabh Mittal -->
+
+	<select id="checkForRiskData" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(*) from cms_risk_profile where crn=#crn#
+	</select>
+
+   
+   	<!-- Query to check if case level risk history Data for given case reference no into Risk Profile history Table Saurabh Mittal -->
+
+		<select id="checkForRiskHistoryData" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(*) from cms_risk_profile_history where crn=#crn#
+	</select>
+
+	<select id="getAssociatedBDMforClient" parameterClass="java.lang.String"
+		resultClass="java.lang.String">
+		select ASSOCIATED_BDM from CMS_CLIENT_MASTER where CLIENT_NAME = #clientName#
+	</select>
+
+	<select id="checkForRecurrCase" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(*) from cms_recurr_clientcase where crn=#crn#
+	</select>
+	
+	<!-- Query to get the Risk Details associated to a Particular Case Saurabh Mittal -->
+
+    <select id="getRiskCode" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationVO">
+
+			SELECT  cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			att_map.risk_category_id, map.visible_to_client, att_map.attribute_id,(Select Default_Value from CMS_RISK_ATTR_DEFAULT_VAL_MAP where Attribute_ID=att_map.attribute_id) Value FROM cms_risk_master_tbl cms_risk_mst,cms_risk_category_attr_map att_map,
+			cms_risk_mapping map WHERE cms_risk_mst.risk_category_id = att_map.risk_category_id AND map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 1 AND map.risk_group=1 AND cms_risk_mst.has_cntry_brkdown=0
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isNotNull>
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			)
+				              
+	</select>
+	
+	<!-- End -->
+
+
+	   <select id="getAlreadyAssociatedRisks" parameterClass="java.lang.String" resultClass="java.lang.String">
+       Select Risk_Code from CMS_RISK_PROFILE where CRN=#crn# and RISK_TYPE=1              
+		</select> 
+
+	<!-- End -->
+
+		<!-- End -->
+
+
+	   <select id="getAlreadyAggregatedCategory" parameterClass="java.lang.String" resultClass="java.lang.String">
+       Select RISK_CATEGORY_ID from CMS_RISK_AGGREGATION where CRN=#crn# and RISK_TYPE=1	 	              
+		</select> 
+
+	<!-- End -->
+
+
+	<!-- Query to get the Risk Details associated to a Particular Case in case of has country break down Saurabh Mittal -->
+
+    <select id="getRiskCodeHasCntryBrkDown" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="caseCreationRiskAssociationCntryBrkDownVO">
+
+			SELECT  cms_risk_mst.risk_code,map.risk_group,cms_risk_mst.risk_type,cms_risk_mst.has_cntry_brkdown,
+			cms_risk_mst.risk_category_id,map.visible_to_client FROM cms_risk_master_tbl cms_risk_mst,
+			cms_risk_mapping map WHERE map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 1 AND map.risk_group=1 AND cms_risk_mst.has_cntry_brkdown=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isNotNull>
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			)
+				              
+	</select>
+	
+	<!-- End -->
+
+
+	 <select id="getCaseLevelRiskAggregation" parameterClass="com.worldcheck.atlas.vo.SubjectLevelRiskProfileDetailsVO" resultMap="subAdditionRiskAggregationVO">
+
+			SELECT distinct cms_risk_mst.risk_type,
+			cms_risk_mst.risk_category_id FROM cms_risk_master_tbl cms_risk_mst,
+			cms_risk_mapping map WHERE map.risk_code = cms_risk_mst.risk_code
+			AND cms_risk_mst.risk_type = 1 AND map.risk_group=1
+			AND map.mapping_id IN(SELECT crm.mapping_id FROM cms_risk_mapping crm 
+			INNER JOIN (SELECT mapping_id,client_code FROM cms_risk_mapping_clients) cmc ON crm.mapping_id = cmc.mapping_id
+			INNER JOIN (SELECT mapping_id,report_type FROM cms_risk_mapping_reports) cmr ON crm.mapping_id = cmr.mapping_id
+			<isNotNull property="subReportType">
+			INNER JOIN (SELECT mapping_id,sub_report_type FROM cms_risk_mapping_subreports) cmsr ON crm.mapping_id = cmsr.mapping_id
+			</isNotNull>
+			INNER JOIN (SELECT mapping_id,research_element FROM cms_risk_mapping_re)cmre ON crm.mapping_id = cmre.mapping_id
+			WHERE (cmc.client_code = #clientCode# OR cmc.client_code = '-1')
+			AND (cmr.report_type = #reportType# OR cmr.report_type =-1)
+			<isNotNull property="subReportType">
+			AND (cmsr.sub_report_type = #subReportType# OR cmsr.sub_report_type =-1)
+			</isNotNull>
+			AND (cmre.research_element in
+			<iterate property="reIds" open="(" close=")" conjunction=",">
+			#reIds[]#
+			</iterate>
+			OR cmre.research_element=-1)
+			)
+				              
+	</select> 
+
+
+	<delete id="removeCase" parameterClass="java.lang.String">
+		delete from
+		cms_clientcase where crn=#crn#
+	</delete>
+
+<!-- Added By Saurabh Mittal -->
+		<delete id="removeRiskData" parameterClass="java.lang.String">
+		delete from
+		cms_risk_profile where crn=#crn#
+	</delete>
+
+<!-- Added By Saurabh Mittal -->
+			<delete id="removeRiskHistoryData" parameterClass="java.lang.String">
+		delete from
+		cms_risk_profile_history where crn=#crn#
+	</delete>
+
+	<delete id="removeRecurrCase" parameterClass="java.lang.String">
+		delete from
+		cms_recurr_clientcase where crn=#crn#
+	</delete>
+
+   <!-- Added by U6027780 for CR BI-293 Start -->
+<insert id="createCase_With_Subject" parameterClass="com.worldcheck.atlas.vo.CaseDetails">
+		INSERT INTO
+		CMS_CLIENTCASE (
+		CRN,
+		CLIENT_CODE,
+		CLIENT_REF,
+		REPORT_TYPE_ID,
+		SUB_REPORT_TYPE_ID,
+		OFFICE_ID,
+		CASE_MGR_ID,
+		IS_EXPRESS,
+		IS_RECUR_CASE,
+		REQ_RECD_DT,
+		FINAL_DUE_DATE,
+		CLIENT_INT_DUEDATE1,
+		CLIENT_INT_DUEDATE2,
+		RSRCH_INT_DUEDATE1,
+		RSRCH_INT_DUEDATE2,
+		RSRCH_FINAL_DUE_DATE,
+		IS_AUTO_OFC_ASSIGN,
+		CASE_INFO,
+		CLIENT_FEEDBACK,
+		CASE_STATUS_ID,
+		CLIENT_REPORT_STATUS,
+		CASE_CREATOR_ID,
+		UPDATED_BY,
+		UPDATED_ON,
+		BULK_ORDER_ID,
+		IS_ISIS,
+		ORDER_GUID,
+		IS_BULK_ORDER,
+		ISIS_USER,
+		SALES_REPRESENTATIVE,
+		SFDC_OTN_NUMBERS,
+		REGIONAL_TERRITORY,
+		IS_SUBJ_LEVEL_SUBRPT_REQ,
+		pid
+		)values
+		(
+		#crn#,
+		(select client_code from cms_client_master
+		where
+		upper(client_name)=upper(#clientCode#)),
+		#clientRef#,
+		#reportTypeId#,
+		#subReportTypeId#,
+		(select
+		office_master_id from cms_office_master where office=#officeId#),
+		#caseMgrId#,
+		#expressCase#,
+		#isRecurCase#,
+		#reqRecdDate#,
+		#finalDueDate#,
+		#cInterim1#,
+		#cInterim2#,
+		#rInterim1#,
+		#rInterim2#,
+		#finalRDueDate#,
+		#isAutoOfcAssign#,
+		#caseInfo#,
+		#clientFeedBack#,
+		#caseStatusId#,
+		#clientReportStatus#,
+		#caseCreatorId#,
+		#updatedBy#,
+		sysdate,
+		#bulkOrderId#,
+		#isISIS#,
+		#orderGUID#,
+		#isBulkOrder#,
+		#isisUser#,
+		#salesRepresentative#,
+		#sfdcOtnNumbers#,
+		#regionalTerritory#,
+		#isSubjLevelSubRPTReq#,
+		#pid#
+		)       
+   </insert>
+
+	<insert id="createCase_Without_Subject" parameterClass="com.worldcheck.atlas.vo.CaseDetails">
+		INSERT INTO CMS_CLIENTCASE (
+		CRN,
+		CLIENT_CODE,
+		CLIENT_REF,
+		REPORT_TYPE_ID,
+		SUB_REPORT_TYPE_ID,
+		OFFICE_ID,
+		CASE_MGR_ID,
+		IS_EXPRESS,
+		IS_RECUR_CASE,
+		REQ_RECD_DT,
+		FINAL_DUE_DATE,
+		CLIENT_INT_DUEDATE1,
+		CLIENT_INT_DUEDATE2,
+		RSRCH_INT_DUEDATE1,
+		RSRCH_INT_DUEDATE2,
+		RSRCH_FINAL_DUE_DATE,
+		IS_AUTO_OFC_ASSIGN,
+		CASE_INFO,
+		CLIENT_FEEDBACK,
+		CASE_STATUS_ID,
+		CLIENT_REPORT_STATUS,
+		CASE_CREATOR_ID,
+		UPDATED_BY,
+		UPDATED_ON,
+		BULK_ORDER_ID,
+		IS_ISIS,
+		ORDER_GUID,
+		IS_BULK_ORDER,
+		ISIS_USER,
+		SALES_REPRESENTATIVE,
+		SFDC_OTN_NUMBERS,
+		REGIONAL_TERRITORY,
+		IS_SUBJ_LEVEL_SUBRPT_REQ,
+		PID
+		)values
+		(
+		#crn#,
+		(select client_code
+		from
+		cms_client_master where
+		upper(client_name)=upper(#clientCode#)),
+		#clientRef#,
+		#reportTypeId#,
+		0,
+		(select office_master_id from
+		cms_office_master where
+		office=#officeId#),
+		#caseMgrId#,
+		#expressCase#,
+		#isRecurCase#,
+		#reqRecdDate#,
+		#finalDueDate#,
+		#cInterim1#,
+		#cInterim2#,
+		#rInterim1#,
+		#rInterim2#,
+		#finalRDueDate#,
+		#isAutoOfcAssign#,
+		#caseInfo#,
+		#clientFeedBack#,
+		#caseStatusId#,
+		#clientReportStatus#,
+		#caseCreatorId#,
+		#updatedBy#,
+		sysdate,
+		#bulkOrderId#,
+		#isISIS#,
+		#orderGUID#,
+		#isBulkOrder#,
+		#isisUser#,
+		#salesRepresentative#,
+		#sfdcOtnNumbers#,
+		#regionalTerritory#,
+		#isSubjLevelSubRPTReq#,
+		#pid#
+		)       
+   </insert>
+   <!-- Added by U6027780 for CR BI-293 End -->
+</sqlMap>

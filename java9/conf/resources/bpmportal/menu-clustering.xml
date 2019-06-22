@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<SBMPortal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="menu.xsd">
+
+     <Menu name="SBMAdmin" displayname="SBMAdmin" default="false">
+
+          <MenuItem name="user"
+                    displayname="User Admin"
+                    target="commonArea"
+                    link="/sbm/BizPass/SBM_AdminController.jsp?l_k=/sbmadmin/SBMAdminUserManager"/>
+
+          <!--MenuItem name="help"
+                    displayname="SBM Admin Help"
+                    target="commonArea"
+                    link="/sbm/onlinehelp/SBMAdmin/sbmadmin.htm"/-->
+     </Menu>
+
+     <Menu name="BizSite" displayname="BizSite" default="true">
+          <MenuItem name="assigned"
+                    displayname="Task Assigned"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizSiteController.jsp?l_k=/jsp/sidebartodo.jsp&amp;type=assinged"/>
+
+          <MenuItem name="available"
+                    displayname="Task Available"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizSiteController.jsp?l_k=/jsp/sidebartodo.jsp&amp;type=available"/>
+
+          <MenuItem name="status"
+                    displayname="Status"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizSiteController.jsp?l_k=/jsp/sidebarstatus.jsp"/>
+
+          <MenuItem name="application"
+                    displayname="Application"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizSiteController.jsp?l_k=/jsp/apps.jsp"/>
+
+          <!--MenuItem name="BizSite Help"
+                    displayname="BizSite Help"
+                    target="commonArea"
+                    link="/sbm/onlinehelp/BizSite/bizsite.htm"/-->
+
+     </Menu>
+
+     <Menu name="BizManage" displayname="BizManage" default="false">
+          <MenuItem name="ov"
+                    displayname="Overview"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizManageController.jsp?l_k=/BizManage/root/jsp/Bottom.jsp"/>
+
+          <MenuItem name="mc"
+                    displayname="Management Console"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizManageController.jsp?l_k=/BizManage/root/jsp/GlobalFrame.jsp"/>
+
+          <MenuItem name="sum"
+                    displayname="Summary"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizManageController.jsp?l_k=/BizManage/root/jsp/Summary.jsp"/>
+
+          <MenuItem name="report"
+                    displayname="Report"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizManageController.jsp?l_k=/BizManage/root/jsp/Report.jsp"/>
+
+		  <MenuItem name="aim"
+                    displayname="Advanced Instance Manager"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizManageController.jsp?l_k=/BizManage/root/applications/aim/Start.jsp"/>
+					
+		  <MenuItem name="bs"
+                    displayname="Balanced Scorecard"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizManageController.jsp?l_k=/BizManage/root/jsp/BalancedScorecard.jsp"/>
+					
+          <MenuItem name="im"
+                    displayname="Infopad Manager"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizManageController.jsp?l_k=/bizmanage/com.savvion.sbm.bizmanage.processreportgenerator.servlet.ProcessReportGeneratorServlet&amp;service=getApplicationHTMLFile&amp;srcFile=/testApp/ExampleApplet.html"/>
+
+          <!--MenuItem name="help"
+                    displayname="BizManage Help"
+                    target="commonArea"
+                    link="/sbm/onlinehelp/BizManage/bizmanage.htm"/-->
+
+     </Menu>
+
+     <Menu name="MyApps" displayname="My Apps" default="true">
+          <MenuItem name="myapps" 
+                    displayname="Apps"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizSiteController.jsp?l_k=/jsp/extapps.jsp"/>
+
+          <MenuItem name="updateinfo"
+                    displayname="Update Info"
+                    target="commonArea"
+                    link="/sbm/BizPass/BizSiteController.jsp?l_k=/jsp/userinfo.jsp"/>
+     </Menu>
+
+     <!--Menu name="Help" default="true"
+           displayname="Help"
+           target="_top"
+           link="/sbm/BizPass/logout.jsp"/-->
+
+     <Menu name="Logout" default="true"
+           displayname="Logout"
+           target="_top"
+           link="/sbm/BizPass/logout.jsp"/>
+
+
+</SBMPortal>

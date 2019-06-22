@@ -1,0 +1,828 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="LbreTableVO">
+
+	<resultMap id="result"
+		class="com.worldcheck.juno.vo.component.LbreTableVO">
+		<result property="id" column="LBRE_SUMMARY_ID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="subjectName" column="REPORT_SUBJECT_NAME" />
+		<result property="tableName" column="TABLE_NAME" />
+		<result property="topDescription" column="DESCRIPTION_TOP" />
+		<result property="bottomDescription" column="DESCRIPTION_BOTTOM" />
+		<result property="countryId" column="LBRE_COUNTRY_ID" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="subcomponentName" column="SUBCOMPONENT_NAME" />
+		<result property="teamTypeId" column="TEAM_ID" />
+		<result property="lbreType" column="LBRE_COMP_TYPE" />
+		<result property="includeExcludeIdentifire" column="REPORT_INCLUDE_IND" />
+		
+		
+
+
+	</resultMap>
+		<resultMap id="resultSubjectProcessCycle"
+		class="com.worldcheck.juno.vo.component.LbreTableVO">
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="id" column="LBRE_SUMMARY_ID" />
+	</resultMap>
+
+	<resultMap id="formResult"
+		class="com.worldcheck.juno.vo.component.LbreTableVO">
+		<result property="id" column="LBRE_SUMMARY_ID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="subjectName" column="REPORT_SUBJECT_NAME" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="tableName" column="TABLE_NAME" />
+		<result property="topDescription" column="DESCRIPTION_TOP" />
+		<result property="bottomDescription" column="DESCRIPTION_BOTTOM" />
+		<result property="countryId" column="LBRE_COUNTRY_ID" />
+		<result property="countryName" column="COUNTRY" />
+		<result property="teamTypeId" column="TEAM_ID" />
+		<result property="lbreType" column="LBRE_COMP_TYPE" />
+	</resultMap>
+
+
+	<resultMap id="resultHistory"
+		class="com.worldcheck.juno.vo.component.LbreTableVO">
+		<result property="topDescription" column="DESCRIPTION_TOP" />
+		<result property="bottomDescription" column="DESCRIPTION_BOTTOM" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="id" column="HISTORY_ID" />
+		<result property="countryName" column="COUNTRY" />
+	</resultMap>
+
+
+
+
+	<resultMap id="resultVO"
+		class="com.worldcheck.juno.vo.component.LbreTableVO">
+		<result property="id" column="LBRE_SUMMARY_ID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="subjectName" column="REPORT_SUBJECT_NAME" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="tableBottomNotes" column="TABLE_BOTTOM_NOTES" />
+		<result property="title" column="TITLE" />
+		<result property="countryId" column="LBRE_COUNTRY_ID" />
+		
+
+	</resultMap>
+
+
+	<!-- Insert example, using the Account parameter class -->
+	<insert id="insert"
+		parameterClass="com.worldcheck.juno.vo.component.LbreTableVO">
+
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT RG_LBRE_SUMMARY_SEQ.NEXTVAL from dual
+		</selectKey>
+		INSERT INTO RG_LBRE_SUMMARY
+		(LBRE_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,DESCRIPTION_TOP,DESCRIPTION_BOTTOM,TABLE_NAME,
+		UPDATED_ON,UPDATED_BY,LBRE_COUNTRY_ID,IS_AUTO_SAVED,REPORT_INCLUDE_IND,TEAM_ID,LBRE_COMP_TYPE,rd_number)
+		VALUES
+		(#id#,#subjectId#,#processCycleId#,#crn#,#topDescription#,#bottomDescription#,'LBRE',sysdate,#updateBy#,#countryId#,'N',
+		'Y',#teamTypeId#,#lbreType#,0)
+	</insert>
+	<insert id="insertLbreTable" parameterClass="java.util.HashMap">
+		INSERT INTO RG_LBRE_TABLE_INFO (LBRE_TABLE_INFO_ID,LBR_HEADER,DATASET,DATASET_DESCRIPTION,LBRE_SUMMARY_ID,COMMENTS,NON_AVAILABILITY_COMMENTS,lbr_Info_Id)
+		  select RG_LBRE_TABLE_INFO_SEQ.NEXTVAL, inner_view.*
+		  FROM 
+			<iterate property="recList" conjunction="UNION ALL" open="(" close=")">
+				SELECT #recList[].lbrHeader# LBRE_HEADER
+				, #recList[].dataSet# DATASET, #recList[].dataSetDescription# DATASET_DESCRIPTION
+				, #recList[].lbreTableVO.id# LBRE_SUMMARY_ID
+				, #recList[].comment# COMMENTS
+				, #recList[].nonAvailableComments# NON_AVAILABILITY_COMMENTS
+				, #recList[].lbrInfoId# lbr_Info_Id FROM DUAL
+				WHERE NOT EXISTS (SELECT
+					LBRE_TABLE_INFO_ID
+					FROM RG_LBRE_TABLE_INFO
+					WHERE
+					LBRE_SUMMARY_ID = #recList[].lbreTableVO.id#
+					)
+			</iterate>
+		inner_view
+		
+    </insert>
+	<select id="listByCRN" resultMap="result" parameterClass="java.util.HashMap">
+
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (SELECT
+		rbs.LBRE_SUMMARY_ID,rbs.SUBJECT_ID,rbs.PROCESSCYCLEID,rbs.CASE_ID,
+		rbs.UPDATED_ON,NVL(rbs.updated_by,'system')  UPDATED_BY,rbs.TABLE_NAME,DESCRIPTION_TOP,DESCRIPTION_BOTTOM,LBRE_COUNTRY_ID,
+		cms.REPORT_SUBJECT_NAME,cmscase.DESCRIPTION,rbs.SUBCOMPONENT_NAME,rbs.TEAM_ID,rbs.LBRE_COMP_TYPE,rbs.REPORT_INCLUDE_IND
+		FROM RG_LBRE_SUMMARY rbs
+		LEFT OUTER JOIN RG_SUBJECT cms ON cms.SUBJECT_ID=rbs.SUBJECT_ID
+		LEFT OUTER JOIN CMS_CASECYCLE cmscase ON rbs.PROCESSCYCLEID=cmscase.CASECYCLE_ID
+		where CASE_ID=#crn# AND upper(IS_AUTO_SAVED)=upper('N')
+      
+      
+		<isNotNull property="componentLevel">
+			<isNotEqual prepend="AND" property="componentLevel"
+				compareValue="0">
+				cms.ENTITY_TYPE_ID=#componentLevel# 
+			</isNotEqual>
+		</isNotNull>
+		<isNotNull property="subjectId">
+			<isNotEqual prepend="AND" property="subjectId"
+				compareValue="0">
+				rbs.SUBJECT_ID=#subjectId# 
+			</isNotEqual>
+		</isNotNull>
+
+		<isNotNull property="processCycleId">
+			<isNotEqual prepend="AND" property="processCycleId"
+				compareValue="0">
+				rbs.PROCESSCYCLEID=#processCycleId# 
+			</isNotEqual>
+		</isNotNull>
+		<isNotNull property="componentType">
+			<isNotEqual prepend="AND" property="componentType" compareValue="">
+				rbs.LBRE_COMP_TYPE=#componentType# 
+			</isNotEqual>
+			</isNotNull>
+		order by rbs.REPORT_INCLUDE_IND desc, cms.is_primary_sub desc,cms.REPORT_ORDER
+		ASC,upper(cms.REPORT_SUBJECT_NAME) asc,cmscase.processcycle_order desc,rbs.rd_number asc
+		) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+
+	</select>
+	
+	<update id="update"
+		parameterClass = "com.worldcheck.juno.vo.component.LbreTableVO">
+		update RG_LBRE_SUMMARY set
+		DESCRIPTION_TOP = #topDescription#,
+		DESCRIPTION_BOTTOM = #bottomDescription# ,
+		LBRE_COUNTRY_ID = #countryId# ,
+		PROCESSCYCLEID = #processCycleId# ,
+		UPDATED_ON = sysdate,
+		UPDATED_BY = #updateBy#
+		where
+		LBRE_SUMMARY_ID =#id# AND
+		upper(IS_AUTO_SAVED)=upper('N')
+	  </update>
+
+	<delete id="deleteLbreTableDetail"
+		parameterClass="com.worldcheck.juno.vo.component.LbreTableVO">
+		
+		DELETE FROM RG_LBRE_TABLE_INFO 
+		where LBRE_SUMMARY_ID = #id#
+  </delete>
+	  
+	<select id="getProcessList" resultClass="java.lang.Integer"
+		parameterClass="java.util.HashMap">
+		SELECT PROCESSCYCLEID FROM RG_LBRE_SUMMARY
+		WHERE SUBJECT_ID=#subId#
+		AND CASE_ID=#crn# AND upper(IS_AUTO_SAVED)=upper('N')
+    </select>
+
+
+	<select id="getBySubject" resultMap="formResult" >
+
+		SELECT
+		rbs.LBRE_SUMMARY_ID,rbs.SUBJECT_ID,rbs.PROCESSCYCLEID,rbs.CASE_ID,
+		rbs.UPDATED_ON,rbs.UPDATED_BY, rbs.TITLE,rbs.TABLE_BOTTOM_NOTES,
+		cms.REPORT_SUBJECT_NAME,cmscase.DESCRIPTION
+
+		FROM RG_LBRE_SUMMARY rbs,RG_SUBJECT cms,CMS_CASECYCLE cmscase
+		WHERE cms.SUBJECT_ID=rbs.SUBJECT_ID ANd
+		rbs.PROCESSCYCLEID=cmscase.CASECYCLE_ID
+		AND rbs.LBRE_SUMMARY_ID =#id# AND upper(IS_AUTO_SAVED)=upper('N')
+
+	</select>
+
+
+	
+
+	<delete id="deleteId">
+		delete FROM RG_LBRE_SUMMARY WHERE
+		LBRE_SUMMARY_ID in (#id#)
+		
+
+	</delete>
+	<select id="getSubjectProcessCycleData" resultMap="resultSubjectProcessCycle" parameterClass="java.util.HashMap">
+		select distinct LBRE_SUMMARY_ID,subject_id,PROCESSCYCLEID,CASE_ID FROM RG_LBRE_SUMMARY WHERE LBRE_SUMMARY_ID in 
+		<iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[]#
+	    </iterate>
+	</select>
+	<parameterMap id="getParameterMapResetTableName" class="java.util.Map">
+		<parameter property="crn" jdbcType="VARCHAR"
+			javaType="java.lang.String" mode="IN" />
+		<parameter property="processCycleId" jdbcType="INTEGER"
+			javaType="java.lang.Long" mode="IN" />
+		<parameter property="subjectId" jdbcType="INTEGER" javaType="java.lang.Long"
+			mode="IN" />
+		<parameter property="errorCode" jdbcType="VARCHAR" javaType="java.lang.String"
+			mode="OUT" />
+	</parameterMap>
+
+
+	<!--- Calling stored procedure -->
+	<procedure id="callresetTableName" parameterMap="getParameterMapResetTableName">
+		{call RG_PROC_RESET_TABLE_NAME( ?, ?, ?,?)} 
+   </procedure>
+	<insert id="insertHistoryBeforeDeletion"
+		parameterClass="java.util.HashMap">
+		insert into RG_LBRE_SUMMARY_HST (
+		HISTORY_ID,CASE_ID,SUBJECT_ID,PROCESSCYCLEID,UPDATED_ON,UPDATED_BY,LBRE_SUMMARY_ID,LBRE_COMP_TYPE
+		) SELECT RG_LBRE_SUMMARY_HST_SEQ.NEXTVAL,inner_view.*
+		FROM
+		<iterate property="recList" conjunction="UNION ALL" open="("
+			close=")">
+			 (SELECT CASE_ID,SUBJECT_ID,PROCESSCYCLEID,sysdate,#userName# UPDATED_BY ,#recList[]#,LBRE_COMP_TYPE LBRE_SUMMARY_ID
+			 from RG_LBRE_SUMMARY  
+   			 where LBRE_SUMMARY_ID=#recList[]#)
+   			 
+		
+		</iterate>
+		inner_view
+		
+    </insert>
+	<insert id="insertHistory" parameterClass="com.worldcheck.juno.vo.component.LbreTableVO">
+		
+		<selectKey keyProperty="summaryHstId" resultClass="long">
+			SELECT RG_LBRE_SUMMARY_HST_SEQ.nextval from dual
+		</selectKey>
+		INSERT INTO RG_LBRE_SUMMARY_HST
+		(HISTORY_ID,LBRE_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,
+		UPDATED_ON,UPDATED_BY,DESCRIPTION_TOP,DESCRIPTION_BOTTOM,TABLE_NAME,TITLE,SUBCOMPONENT_NAME,REPORT_INCLUDE_IND,TEAM_ID,LBRE_COMP_TYPE,LBRE_COUNTRY_ID)
+		SELECT #summaryHstId#,LBRE_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,
+		sysdate,UPDATED_BY,DESCRIPTION_TOP,DESCRIPTION_BOTTOM,TABLE_NAME,TITLE,SUBCOMPONENT_NAME,REPORT_INCLUDE_IND,TEAM_ID,LBRE_COMP_TYPE,LBRE_COUNTRY_ID
+		FROM RG_LBRE_SUMMARY WHERE LBRE_SUMMARY_ID = #id#
+	
+	  </insert>
+
+	<insert id="insertHistoryLbreTable" parameterClass="java.util.HashMap">
+		INSERT INTO RG_LBRE_TABLE_INFO_HST
+		(HISTORY_ID,LBR_HEADER,DATASET,DATASET_DESCRIPTION,LBRE_SUMMARY_ID,COMMENTS,LBRE_TABLE_INFO_ID,LBRE_SUMMARY_HST_ID)
+		 SELECT RG_LBRE_TABLE_INFO_HST_SEQ.nextval,LBR_HEADER,DATASET,DATASET_DESCRIPTION,LBRE_SUMMARY_ID,COMMENTS,LBRE_TABLE_INFO_ID,#summaryHstId#
+		 FROM RG_LBRE_TABLE_INFO WHERE LBRE_SUMMARY_ID = #summaryId#
+	
+	  </insert>
+
+	<select id="getHistory" resultMap="resultHistory"
+		parameterClass="java.util.HashMap">
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (
+		SELECT rghst.UPDATED_ON, rghst.HISTORY_ID,rghst.UPDATED_BY, DESCRIPTION_TOP,DESCRIPTION_BOTTOM,
+		cmscase.DESCRIPTION,rghst.LBRE_COUNTRY_ID,cmscountry.COUNTRY
+		FROM
+		RG_LBRE_SUMMARY_HST rghst, cms_casecycle cmscase, cms_country_master cmscountry
+		WHERE LBRE_SUMMARY_ID=#recordId#
+		AND cmscountry.country_master_id= rghst.lbre_country_id
+		AND cmscase.casecycle_id= rghst.processcycleid
+		order by rghst.UPDATED_ON desc
+		
+		) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+
+	</select>
+
+
+	<select id="getAutoSaveById" resultMap="resultVO" >
+
+		SELECT
+		rbs.LBRE_SUMMARY_ID,rbs.SUBJECT_ID,rbs.PROCESSCYCLEID,rbs.CASE_ID,
+		rbs.UPDATED_ON,rbs.UPDATED_BY, rbs.TITLE,rbs.TABLE_BOTTOM_NOTES,LBRE_COUNTRY_ID,
+		cms.REPORT_SUBJECT_NAME,cmscase.DESCRIPTION
+
+		FROM RG_LBRE_SUMMARY rbs,RG_SUBJECT cms,CMS_CASECYCLE cmscase
+		WHERE cms.SUBJECT_ID=rbs.SUBJECT_ID ANd
+		rbs.PROCESSCYCLEID=cmscase.CASECYCLE_ID
+		AND rbs.LBRE_SUMMARY_ID=#id#
+		AND upper(IS_AUTO_SAVED)=upper('Y')
+
+	</select>
+	<select id="getAutoSave" resultMap="resultVO" parameterClass="java.util.HashMap">
+
+		SELECT
+		rbs.LBRE_SUMMARY_ID,rbs.SUBJECT_ID,rbs.PROCESSCYCLEID,rbs.CASE_ID,
+		rbs.UPDATED_ON,rbs.UPDATED_BY, rbs.TITLE,rbs.TABLE_BOTTOM_NOTES,LBRE_COUNTRY_ID,
+		cms.REPORT_SUBJECT_NAME,cmscase.DESCRIPTION
+
+		FROM RG_LBRE_SUMMARY rbs,RG_SUBJECT cms,CMS_CASECYCLE cmscase
+		WHERE cms.SUBJECT_ID=rbs.SUBJECT_ID ANd
+		rbs.PROCESSCYCLEID=cmscase.CASECYCLE_ID
+		ANd rbs.CASE_ID=#crn#
+		AND rbs.SUBJECT_ID=#subId#
+		ANd rbs.PROCESSCYCLEID=#processCycle#
+
+		AND upper(IS_AUTO_SAVED)=upper('Y')
+
+	</select>
+
+	<update id="updateAutoSave"
+		parameterClass="com.worldcheck.juno.vo.component.LbreTableVO">
+		update RG_LBRE_SUMMARY set
+		TITLE = #title#,
+		TABLE_BOTTOM_NOTES=#tableBottomNotes# ,
+		LBRE_COUNTRY_ID = #countryId#,
+		PROCESSCYCLEID=#processCycleId# ,
+		UPDATED_ON=sysdate
+		where LBRE_SUMMARY_ID=#autoSaveId#
+		
+		AND upper(IS_AUTO_SAVED)=upper('Y')
+	</update>
+
+
+	<delete id="deleteAutoSaveById">
+		delete FROM RG_LBRE_SUMMARY
+		WHERE
+		LBRE_SUMMARY_ID=#id#
+		AND
+		upper(IS_AUTO_SAVED)=upper('Y')
+	</delete>
+	
+	<!--generic query-->
+	<delete id="deleteNewAutoSave">
+		delete FROM RG_LBRE_SUMMARY WHERE
+		CASE_ID=#crn#
+		AND
+		upper(IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID IS NULL
+	</delete>
+
+	<!--generic query-->
+	<delete id="deleteAutoSave">
+		delete FROM RG_LBRE_SUMMARY
+		where CASE_ID=#crn#
+		AND
+		upper(IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID = #parentId#
+	</delete>
+
+	<!--generic query-->
+	<select id="findAutoSave" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Long">
+		SELECT rg.LBRE_SUMMARY_ID
+		FROM RG_LBRE_SUMMARY rg
+		WHERE
+		upper(rg.IS_AUTO_SAVED)=upper('Y') AND
+		rg.PARENT_RECORD_ID =
+		#parentId#
+	</select>
+
+	<!--generic query-->
+	<select id="findNewAutoSave" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Long">
+		SELECT rg.LBRE_SUMMARY_ID
+		FROM RG_LBRE_SUMMARY rg
+		WHERE CASE_ID=#crn# AND
+		upper(rg.IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID IS NULL
+	</select>
+	
+	
+	<!--generic query-->
+	<select id="findById" resultClass="int">
+		select
+		count(rg.LBRE_SUMMARY_ID)
+		FROM RG_LBRE_SUMMARY rg
+		WHERE
+		rg.LBRE_SUMMARY_ID = #id#
+	</select>
+
+	<!--generic query-->
+	<delete id="delete">
+		delete FROM RG_LBRE_SUMMARY WHERE
+		LBRE_SUMMARY_ID = #id#
+	</delete>
+
+	<!--generic query-->
+	<delete id="deleteIds" parameterClass="java.util.HashMap">
+		delete FROM RG_LBRE_SUMMARY WHERE
+		LBRE_SUMMARY_ID IN
+
+		<iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[]#
+	    </iterate>
+	</delete>
+	
+	
+	<select id="getSearchCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+
+		SELECT
+		count(*)
+		FROM RG_LBRE_SUMMARY rbs,RG_SUBJECT cms,CMS_CASECYCLE cmscase
+		WHERE cms.SUBJECT_ID=rbs.SUBJECT_ID ANd
+		rbs.PROCESSCYCLEID=cmscase.CASECYCLE_ID
+		ANd CASE_ID=#crn# 
+		AND upper(IS_AUTO_SAVED)=upper('N')
+		
+		<isNotNull property="componentLevel">
+			<isNotEqual prepend="AND" property="componentLevel"
+				compareValue="0">
+				cms.ENTITY_TYPE_ID=#componentLevel# 
+			</isNotEqual>
+		</isNotNull>
+		
+		<isNotNull property="subjectId">
+			<isNotEqual prepend="AND" property="subjectId"
+				compareValue="0">
+				rbs.SUBJECT_ID=#subjectId# 
+			</isNotEqual>
+		</isNotNull>
+
+		<isNotNull property="processCycleId">
+			<isNotEqual prepend="AND" property="processCycleId"
+				compareValue="0">
+				rbs.PROCESSCYCLEID=#processCycleId# 
+			</isNotEqual>
+		</isNotNull>
+		<isNotNull property="componentType">
+			<isNotEqual prepend="AND" property="componentType" compareValue="">
+				rbs.LBRE_COMP_TYPE=#componentType# 
+			</isNotEqual>
+		</isNotNull>
+		</select>
+		
+	<select id="getHistoryCount" resultClass="java.lang.Integer">
+		SELECT count(*)
+		FROM RG_LBRE_SUMMARY_HST
+		rg where
+		rg.LBRE_SUMMARY_ID=#recordId#
+		
+		
+		</select>
+	
+	<select id="getById" resultMap="formResult" >
+
+		SELECT
+		rbs.LBRE_SUMMARY_ID,rbs.SUBJECT_ID,rbs.PROCESSCYCLEID,rbs.CASE_ID,
+		rbs.UPDATED_ON,rbs.UPDATED_BY, rbs.TABLE_NAME,rbs.DESCRIPTION_TOP,rbs.DESCRIPTION_BOTTOM,rbs.LBRE_COUNTRY_ID,cm.COUNTRY,
+		cms.REPORT_SUBJECT_NAME,cmscase.DESCRIPTION,rbs.TEAM_ID,rbs.LBRE_COMP_TYPE
+
+		FROM RG_LBRE_SUMMARY rbs 
+		LEFT OUTER JOIN CMS_COUNTRY_MASTER cm ON cm.COUNTRY_MASTER_ID = rbs.LBRE_COUNTRY_ID
+    	LEFT OUTER JOIN RG_SUBJECT cms ON cms.SUBJECT_ID=rbs.SUBJECT_ID
+    	LEFT OUTER JOIN CMS_CASECYCLE cmscase ON rbs.PROCESSCYCLEID=cmscase.CASECYCLE_ID
+		WHERE rbs.LBRE_SUMMARY_ID =#id#
+
+	</select>
+	
+	
+	<!--generic query-->
+	<select id="getSubProcCycleList" resultMap="ReportSubjectVO.subProcCycleList">
+
+		select rem.subject_id
+		subject_id,
+		rem.processcycleid Process_Cycle_Id,cs.REPORT_subject_name
+		subject_name,
+		ccl.DESCRIPTION Process_Cycle
+		from RG_LBRE_SUMMARY rem,
+		RG_SUBJECT cs ,CMS_CASECYCLE ccl
+		where cs.CRN = rem.case_id
+		and
+		ccl.CASECYCLE_ID= rem.processcycleid
+		and cs.subject_id =rem.subject_id
+		and rem.SUBCOMPONENT_NAME = 'LBRE'
+		and rem.case_id = #crn#
+		and rem.is_auto_saved = 'N'
+		order by cs.subject_id, rem.processcycleid
+	</select>
+	
+	
+	<select id="getProcessCycleList" parameterClass="java.util.HashMap"
+		resultMap="ProcessCycleVO.processCycleList">
+		select rem.processcycleid Process_Cycle_Id,cc.DESCRIPTION
+		Process_Cycle
+		from RG_LBRE_SUMMARY rem, cms_casecycle cc
+		where rem.subject_id=#subId# and rem.case_id=#crn#
+		and cc.casecycle_id= rem.processcycleid
+		and upper(rem.IS_AUTO_SAVED)=upper('N')
+		and rem.LBRE_SUMMARY_ID != #recordId#
+		and rem.table_name = 'LBRE'
+</select>
+
+
+
+<insert id="insertAutoSave" parameterClass="com.worldcheck.juno.vo.component.LbreTableVO">
+		<selectKey keyProperty="autoSaveId" resultClass="long">
+			SELECT RG_LBRE_SUMMARY_SEQ.NEXTVAL from dual
+		</selectKey>
+		INSERT INTO RG_LBRE_SUMMARY
+		(LBRE_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,LBRE_COUNTRY_ID,
+		UPDATED_ON,UPDATED_BY,DESCRIPTION_TOP,DESCRIPTION_BOTTOM,TABLE_NAME,IS_AUTO_SAVED,PARENT_RECORD_ID,
+		REPORT_INCLUDE_IND,TEAM_ID,LBRE_COMP_TYPE,RD_NUMBER)
+		VALUES
+		(#autoSaveId#,#subjectId#,#processCycleId#,#crn#,#countryId#,sysdate,#updateBy#,#topDescription#,
+		#bottomDescription#,'LBRE','Y',#id#,'Y',#teamTypeId#,#lbreType#,0)
+
+
+	</insert>
+	
+<update id="insertDefaultEntries" parameterClass="java.util.HashMap">	
+	
+declare 
+recordId	number(10);  
+hstId	number(10);
+recordIddtl	number(10);  
+hstIddtl	number(10);
+subList varray_varchar;
+subId number;
+subjectNameValue VARCHAR2(200);
+subjectName VARCHAR2(200);
+subjectCountry number(10);
+subjectType number(1);
+recordCount number(10):=0;
+crn VARCHAR2(200):=#crn#;
+teamId NUMBER:=#teamId#; 
+processCycle	number:=#processCycleId#; 
+userName VARCHAR2(200):=#userName#;
+lbreType VARCHAR2(20):=#componentType#;
+
+ begin 
+  subList:= varray_varchar
+				  <iterate property="ids" open="(" close=")" conjunction=",">
+							#ids[].subjectId#
+				 </iterate>;
+  for elem in 1 .. subList.count     
+   loop
+   subId:=subList(elem);
+   dbms_output.put_line(subId);
+   		 select count(*) into recordCount from RG_SUBJECT_CYCLE where SUBJECT_ID = subId and PROCESSCYCLEID = processCycle;
+   		 if recordCount = 0 then
+	   		 select  rg.REPORT_SUBJECT_NAME,cms.COUNTRY_ID,rg.entity_type_id into subjectNameValue,subjectCountry, subjectType from RG_SUBJECT rg join CMS_SUBJECT cms on
+	   		 cms.SUBJECT_ID = rg.CMS_SUBJECT_ID WHERE rg.SUBJECT_ID = subId;	
+   		 else
+   		 	select rg.REPORT_SUBJECT_NAME, rg.COUNTRY_ID,rg.entity_type_id into subjectNameValue, subjectCountry, subjectType from RG_SUBJECT_CYCLE rg WHERE rg.SUBJECT_ID = subId;
+   		 end if;
+   		 
+   		 subjectName:= subjectNameValue || ' was involved in the following lawsuit(s):';
+         select  RG_LBRE_SUMMARY_SEQ.NEXTVAL into recordId from dual;
+         
+         select count(*) into recordCount from RG_LBR_COUNTRY_MASTER cm join rg_lbr_data_master dm on dm.lbr_country_master_id = cm.rg_lbr_country_master_id where cm.COUNTRY_MASTER_ID = subjectCountry and dm.subject_type_id = subjectType;
+         if recordCount = 0 then
+         	INSERT INTO RG_LBRE_SUMMARY (LBRE_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,UPDATED_ON,UPDATED_BY,TABLE_NAME,LBRE_COMP_TYPE,IS_AUTO_SAVED,
+         	REPORT_INCLUDE_IND,SUBCOMPONENT_NAME,TEAM_ID,SAME_NAME_IND,DESCRIPTION_TOP,DESCRIPTION_BOTTOM,LBRE_COUNTRY_ID,rd_number)
+         	values(recordId,  subId , processCycle , crn ,sysdate,userName,'LBRE',lbreType,'N' ,'Y','LBRE',teamId,'N',
+         	'<![CDATA[<p>Litigation, bankruptcy, regulatory and law enforcement checks could not be undertaken due to the non-availability of sources.</p>]]>','<![CDATA[<p><i>Please refer Annuexure XX for the supporting documents.</i></p>]]>',null,0);
+		 else
+		 	if lbreType = 'LBRE_FCPA' then
+			 	INSERT INTO RG_LBRE_SUMMARY (LBRE_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,UPDATED_ON,UPDATED_BY,TABLE_NAME,LBRE_COMP_TYPE,IS_AUTO_SAVED,
+	         	REPORT_INCLUDE_IND,SUBCOMPONENT_NAME,TEAM_ID,SAME_NAME_IND,DESCRIPTION_TOP,DESCRIPTION_BOTTOM,LBRE_COUNTRY_ID,rd_number)
+	         	values(recordId,  subId , processCycle , crn ,sysdate,userName,'LBRE',lbreType,'N' ,'Y','LBRE',teamId,'N',
+	         	'<![CDATA[<p>Litigation, bankruptcy, regulatory and law enforcement checks counducted on <b>XX</b> and <b>XX</b> revealed the following results.</p>]]>','<![CDATA[<p><i>Please refer Annuexure XX for the supporting documents.</i></p>]]>',subjectCountry,0);
+		 	else
+			 	INSERT INTO RG_LBRE_SUMMARY (LBRE_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,UPDATED_ON,UPDATED_BY,TABLE_NAME,LBRE_COMP_TYPE,IS_AUTO_SAVED,
+	         	REPORT_INCLUDE_IND,SUBCOMPONENT_NAME,TEAM_ID,SAME_NAME_IND,DESCRIPTION_TOP,DESCRIPTION_BOTTOM,LBRE_COUNTRY_ID,rd_number)
+	         	values(recordId,  subId , processCycle , crn ,sysdate,userName,'LBRE',lbreType,'N' ,'Y','LBRE',teamId,'N',
+	         	'<![CDATA[<p>Litigation, bankruptcy, regulatory and law enforcement checks conducted on <b>XXX</b> revealed the following results.</p>]]>','<![CDATA[<p><i>Please refer Annuexure XX for the supporting documents.</i></p>]]>',subjectCountry,0);
+	        end if; 	
+         end if;	
+                  
+         if recordCount > 0 then
+         	insert into RG_LBRE_TABLE_INFO (LBRE_TABLE_INFO_ID, LBRE_SUMMARY_ID, LBR_HEADER, DATASET, DATASET_DESCRIPTION, COMMENTS, NON_AVAILABILITY_COMMENTS, LBR_INFO_ID)
+			select RG_LBRE_TABLE_INFO_SEQ.nextval, recordId, sub.* from (select info.lbr_header, dm.lbr_data_set, dm.lbr_data_desc, 'No Risk Found', info.non_availability_comments, info.lbr_info_id
+			from RG_LBR_COUNTRY_MASTER cm join rg_lbr_data_master dm on dm.lbr_country_master_id = cm.rg_lbr_country_master_id
+			join rg_lbr_info_master info on info.lbr_info_id = dm.lbr_info_id
+			where COUNTRY_MASTER_ID = subjectCountry and dm.subject_type_id = subjectType order by dm.lbr_data_order) sub;
+         end if;
+         
+         select  RG_LBRE_SUMMARY_SEQ.NEXTVAL into recordId from dual;
+         
+         
+         INSERT INTO RG_LBRE_SUMMARY (LBRE_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,UPDATED_ON,UPDATED_BY,TABLE_NAME,LBRE_COMP_TYPE,TITLE,IS_AUTO_SAVED,REPORT_INCLUDE_IND,SUBCOMPONENT_NAME,TEAM_ID,SAME_NAME_IND,rd_number)
+         values(recordId,  subId , processCycle , crn ,sysdate,userName,'Table A',lbreType,subjectName,'N','Y','Type 1',teamId,'N',1);
+         
+         INSERT INTO RG_LBRE_TABLE_TYPE1_DET (LBRE_TABLE_TYPE1_DET_ID,SR_NO_TITLE,CASENO_TITLE,
+         CASEDATE_TITLE,COURT_TITLE,
+         PLAINTIFF_TITLE,DEFENDANT_TITLE,ARTICLE_TEXT,LBRE_SUMMARY_ID)
+		 VALUES
+		 (RG_LBRE_TABLE_TYPE1_DET_SEQ.NEXTVAL,'<![CDATA[<p><b>Serial No.</b></p>]]>','<![CDATA[<p><b>Case No.</b></p>]]>','<![CDATA[<p><b>Date</b></p>]]>',
+		 '<![CDATA[<p><b>Court</b></p>]]>','<![CDATA[<p><b>Plaintiff</b></p>]]>','<![CDATA[<p><b>Defendant</b></p>]]>','<![CDATA[<p><b>Background:</b></p><p>In 200x, etc</p><p><b>Judgement</b></p><p>xx</p>]]>',recordId);
+		
+		
+         select  RG_LBRE_SUMMARY_SEQ.NEXTVAL into recordId from dual;
+         
+         
+         INSERT INTO RG_LBRE_SUMMARY (LBRE_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,UPDATED_ON,UPDATED_BY,TABLE_NAME,LBRE_COMP_TYPE,TITLE,IS_AUTO_SAVED,REPORT_INCLUDE_IND,SUBCOMPONENT_NAME,TEAM_ID,SAME_NAME_IND,rd_number)
+         values(recordId,  subId , processCycle , crn ,sysdate,userName,'Table B',lbreType,subjectName,'N','Y','Type 2' ,teamId,'N',2);
+         
+         insert into RG_LBRE_TABLE_TYPE2_DET ( LBRE_TABLE_TYPE2_DET_ID,ROW_NO,COLUMN_NO,FIELD_VALUE,LBRE_SUMMARY_ID)
+         select RG_LBRE_TBL_TY2_DET_SEQ.NEXTVAL,ROW_NO,COLUMN_NO,FIELDVALUE,recordId from RG_LBRE_DTL_STATIC where TABLE_TYPE = 'Table 2';
+ 
+         select  RG_LBRE_SUMMARY_SEQ.NEXTVAL into recordId from dual;
+         
+         
+         INSERT INTO RG_LBRE_SUMMARY (LBRE_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,UPDATED_ON,UPDATED_BY,TABLE_NAME,LBRE_COMP_TYPE,TITLE,IS_AUTO_SAVED,REPORT_INCLUDE_IND,SUBCOMPONENT_NAME,TEAM_ID,SAME_NAME_IND,rd_number)
+         values(recordId,  subId , processCycle , crn ,sysdate,userName,'Table C' ,lbreType,subjectName,'N','Y','Type 3',teamId,'N',3);
+         
+         insert into RG_LBRE_TABLE_TYPE3_DET ( LBRE_TABLE_TYPE3_DET_ID,ROW_NO,COLUMN_NO,FIELD_VALUE,LBRE_SUMMARY_ID)
+         select RG_LBRE_TBL_TY3_DET_SEQ.NEXTVAL,ROW_NO,COLUMN_NO,FIELDVALUE,recordId from RG_LBRE_DTL_STATIC where TABLE_TYPE = 'Table 3';
+    end loop;
+   END; 
+  </update>
+  
+  <select id="getHistoryCountForCRN" resultClass="java.lang.Long" parameterClass="java.util.HashMap">  
+		select count(*) from  (
+		select case_id from RG_LBRE_SUMMARY rg, RG_SUBJECT cs where case_id=#crn# and rg.subject_id=cs.subject_id
+		<isNotNull property="componentLevel">
+			<isNotEqual prepend="AND" property="componentLevel"
+				compareValue="0">
+				cs.entity_type_id=#componentLevel# 
+			</isNotEqual>
+		</isNotNull>
+		<isNotNull property="componentType">
+			<isNotEqual prepend="AND" property="componentType" compareValue="">
+				rg.LBRE_COMP_TYPE=#componentType# 
+			</isNotEqual>
+			</isNotNull>
+		union 
+		select case_id from RG_LBRE_SUMMARY_HST rg, RG_SUBJECT cs where case_id=#crn# and rg.subject_id=cs.subject_id
+		<isNotNull property="componentLevel">
+			<isNotEqual prepend="AND" property="componentLevel"
+				compareValue="0">
+				cs.entity_type_id=#componentLevel# 
+			</isNotEqual>
+		</isNotNull>
+		<isNotNull property="componentType">
+			<isNotEqual prepend="AND" property="componentType" compareValue="">
+				rg.LBRE_COMP_TYPE=#componentType# 
+			</isNotEqual>
+			</isNotNull>
+		)		  
+
+    	
+  		
+  </select>
+  
+	<resultMap id="resultCountry" class="com.worldcheck.juno.vo.component.LbreTableVO">
+		<result property="countryName" column="COUNTRY" />
+		<result property="id" column="COUNTRY_MASTER_ID" />
+	</resultMap>
+	
+  
+  	
+	<select id="getLBRMainCountryList" resultMap="resultCountry" parameterClass="java.util.HashMap">
+		select unique
+		cm.country COUNTRY,cm.COUNTRY_MASTER_ID COUNTRY_MASTER_ID from cms_country_master cm join RG_LBR_COUNTRY_MASTER lbrcm
+    	on cm.COUNTRY_MASTER_ID = lbrcm.country_master_id join rg_lbr_data_master lbrdm on lbrdm.lbr_country_master_id = lbrcm.rg_lbr_country_master_id
+		where cm.status = 1 and lbrcm.status = 1
+		<isNotNull property="subjectTypeId">
+			<isNotEqual prepend="AND" property="subjectTypeId"
+				compareValue="0">
+				lbrdm.SUBJECT_TYPE_ID = #subjectTypeId# 
+			</isNotEqual>
+		</isNotNull>
+		order by cm.COUNTRY
+	  </select>
+  	<resultMap id="lbrDatasetTableVO" class="com.worldcheck.juno.vo.component.LbrDatasetTableVO">
+  		<result property="dataSet" column="LBR_DATA_SET" />
+		<result property="dataSetDescription" column="LBR_DATA_DESC" />
+		<result property="lbrHeader" column="LBR_HEADER" />
+		<result property="comment" column="COMMENT1" />
+		<result property="nonAvailableComments" column="NON_AVAILABILITY_COMMENTS" />
+		<result property="lbrInfoId" column="LBR_INFO_ID" />
+	</resultMap>
+	
+  	<resultMap id="lbrDatasetTableVOHST" class="com.worldcheck.juno.vo.component.LbrDatasetTableVO">
+  		<result property="dataSet" column="LBR_DATA_SET" />
+		<result property="dataSetDescription" column="LBR_DATA_DESC" />
+		<result property="lbrHeader" column="LBR_HEADER" />
+		<result property="comment" column="COMMENT1" />
+	</resultMap>
+
+	
+	<select id="getByCountry" resultMap="lbrDatasetTableVO" parameterClass="java.util.HashMap">
+		select
+		lbrcm.COUNTRY_MASTER_ID,lbrim.LBR_HEADER,lbrdm.LBR_DATA_SET,lbrdm.LBR_DATA_DESC,lbrim.LBR_INFO_ID,lbrim.NON_AVAILABILITY_COMMENTS, 'No risk found / Risk found / Possible risk found' Comment1
+		from rg_lbr_country_master lbrcm, RG_LBR_DATA_MASTER lbrdm ,CMS_COUNTRY_MASTER cm ,RG_LBR_INFO_MASTER lbrim
+		where lbrcm.COUNTRY_MASTER_ID= cm.COUNTRY_MASTER_ID and lbrcm.rg_lbr_country_master_id = lbrdm.lbr_country_master_id
+		and lbrdm.LBR_INFO_ID=lbrim.LBR_INFO_ID and lbrcm.STATUS = 1
+		<isNotNull property="subjectTypeId">
+			<isNotEqual prepend="AND" property="subjectTypeId"
+				compareValue="0">
+				lbrdm.SUBJECT_TYPE_ID = #subjectTypeId# 
+			</isNotEqual>
+		</isNotNull>
+		and lbrcm.COUNTRY_MASTER_ID = #id#
+	</select>
+	
+	
+	
+	<select id="getByCountryUpdate" resultMap="lbrDatasetTableVO">
+		select LBR_HEADER,DATASET LBR_DATA_SET,DATASET_DESCRIPTION LBR_DATA_DESC,LBR_INFO_ID,NON_AVAILABILITY_COMMENTS,COMMENTS Comment1
+		from RG_LBRE_TABLE_INFO
+		where LBRE_SUMMARY_ID = #id# 
+	</select>
+
+	<select id="getTableValuesHistory" resultMap="lbrDatasetTableVOHST">
+		select LBR_HEADER,DATASET LBR_DATA_SET,DATASET_DESCRIPTION LBR_DATA_DESC,COMMENTS Comment1
+		from RG_LBRE_TABLE_INFO_HST
+		where LBRE_SUMMARY_HST_ID = #recordId# 
+	</select>
+			<parameterMap id="getParameterMapIncExdReport" class="java.util.Map">
+		<parameter property="includeExcludeIds" jdbcType="VARCHAR"
+			javaType="java.lang.String" mode="IN" />
+		<parameter property="includeExcludeIdentifire" jdbcType="VARCHAR"
+			javaType="java.lang.String" mode="IN" />
+		<parameter property="userCode" jdbcType="VARCHAR" javaType="java.lang.String"
+			mode="IN" />
+		<parameter property="errorCode" jdbcType="INTEGER" javaType="java.lang.Integer"
+			mode="OUT" />
+	</parameterMap>
+
+
+	<!--- Calling stored procedure -->
+	<procedure id="callIncExdReport" parameterMap="getParameterMapIncExdReport">
+		{call RG_PROC_IND_EXD_REPORT( ?, ?, ?,?,'LBRE','N','LBRE_SUMMARY_ID','N','N')} 
+   </procedure>
+	  <insert id="makeCopy"
+		parameterClass="java.util.HashMap">
+
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_LBRE_SUMMARY_SEQ.NEXTVAL from dual
+		</selectKey>
+
+		INSERT INTO RG_LBRE_SUMMARY
+		(LBRE_SUMMARY_ID,SUBJECT_ID,PROCESSCYCLEID,CASE_ID,TABLE_NAME,LBRE_COUNTRY_ID,UPDATED_ON,UPDATED_BY,
+		DESCRIPTION_TOP,DESCRIPTION_BOTTOM,IS_AUTO_SAVED,SAME_NAME_IND,TITLE,REPORT_INCLUDE_IND,SUBCOMPONENT_NAME,TEAM_ID,LBRE_COMP_TYPE,rd_number)
+		select	#id#, SUBJECT_ID,#processCycleId#,CASE_ID,TABLE_NAME,LBRE_COUNTRY_ID,
+		sysdate,#updatedBy#,DESCRIPTION_TOP,DESCRIPTION_BOTTOM,IS_AUTO_SAVED,SAME_NAME_IND,TITLE,'Y',SUBCOMPONENT_NAME,TEAM_ID,LBRE_COMP_TYPE,rd_number from RG_LBRE_SUMMARY
+		where LBRE_SUMMARY_ID=#recordId#
+	</insert>
+	
+	<insert id="makeCopyLbreTable"
+		parameterClass="java.util.HashMap">
+
+		INSERT INTO RG_LBRE_TABLE_INFO
+		(LBRE_TABLE_INFO_ID,LBR_HEADER,DATASET,DATASET_DESCRIPTION,LBRE_SUMMARY_ID,COMMENTS)
+		select	RG_LBRE_TABLE_INFO_SEQ.NEXTVAL, LBR_HEADER,DATASET,DATASET_DESCRIPTION,#genId#,COMMENTS from RG_LBRE_TABLE_INFO
+		where LBRE_SUMMARY_ID = #recordId#
+	</insert>
+	<select id="checkIfExist" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from RG_LBRE_SUMMARY where PROCESSCYCLEID=#processCycleId# and SUBJECT_ID = #subjectId#  and case_id=#crn#
+		and upper(IS_AUTO_SAVED)=upper('N') and subcomponent_name = #subcomponentName#
+	</select>
+	
+	
+	<insert id="makeCopyHst"
+		parameterClass="java.util.HashMap">
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_LBRE_SUMMARY_HST_SEQ.nextval from dual
+		</selectKey>
+
+		insert into RG_LBRE_SUMMARY_HST(HISTORY_ID ,
+		LBRE_SUMMARY_ID ,SUBJECT_ID,
+		PROCESSCYCLEID ,
+		CASE_ID ,
+		TABLE_NAME ,LBRE_COUNTRY_ID,
+		UPDATED_ON ,
+		UPDATED_BY ,
+		DESCRIPTION_TOP,DESCRIPTION_BOTTOM,SAME_NAME_IND,TITLE,REPORT_INCLUDE_IND,SUBCOMPONENT_NAME,TEAM_ID,LBRE_COMP_TYPE
+		)
+
+		select
+		#id#,#recordId#, SUBJECT_ID,PROCESSCYCLEID,CASE_ID,TABLE_NAME,LBRE_COUNTRY_ID,
+		sysdate,#updatedBy#,DESCRIPTION_TOP,DESCRIPTION_BOTTOM,SAME_NAME_IND,TITLE,REPORT_INCLUDE_IND,SUBCOMPONENT_NAME,TEAM_ID,LBRE_COMP_TYPE from RG_LBRE_SUMMARY
+		where LBRE_SUMMARY_ID = #recordId#
+	</insert>
+	
+	<insert id="makeCopyLbreTableHst" parameterClass="java.util.HashMap">
+
+		INSERT INTO RG_LBRE_TABLE_INFO_HST
+		(HISTORY_ID,LBR_HEADER,DATASET,DATASET_DESCRIPTION,LBRE_SUMMARY_ID,COMMENTS,LBRE_TABLE_INFO_ID,LBRE_SUMMARY_HST_ID)
+		 SELECT RG_LBRE_TABLE_INFO_HST_SEQ.nextval,LBR_HEADER,DATASET,DATASET_DESCRIPTION,LBRE_SUMMARY_ID,COMMENTS,LBRE_TABLE_INFO_ID,#summaryHstId#
+		 FROM RG_LBRE_TABLE_INFO WHERE LBRE_SUMMARY_ID = #summaryId#
+	
+	  </insert>
+	<resultMap id="miniComponentRecord"
+		class="com.worldcheck.juno.vo.component.LbreTableVO" groupBy="id">
+		<result property="id" column="LBRE_SUMMARY_ID" />
+		<result property="updateOn" column="UPDATED_ON" />
+	</resultMap>
+
+	<!--generic query-->
+	<select id="getUpdationTimeById" resultMap="miniComponentRecord">
+		SELECT
+		rg.LBRE_SUMMARY_ID,
+		rg.UPDATED_ON
+		FROM RG_LBRE_SUMMARY rg
+		WHERE
+		rg.LBRE_SUMMARY_ID = #id#
+	</select>
+</sqlMap>
+
+		

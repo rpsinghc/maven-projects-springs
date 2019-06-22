@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" 
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="alerts">
+
+    <typeAlias alias="alertsWidget" type="com.savvion.sbm.bpmportal.domain.AlertsWidget"/> 
+    <resultMap id="alertsWidgetResult" class="alertsWidget">
+        <result property="application" column="APPLICATION"/>     
+        <result property="severity"    column="SEVERITY"/>  
+        <result property="recFromDate" column="RECD_DATE_FROM"/> 
+        <result property="recToDate"   column="RECD_DATE_TO"/>
+        <result property="sortColumn"  column="SORT_COLUMN"/>
+        <result property="sortOrder"   column="SORT_ORDER"/>
+        <result property="fetchSize"   column="FETCH_SIZE"/>
+    </resultMap>
+
+     <insert id="insertByWidgetId" parameterClass="map" >
+        INSERT INTO PORTAL_ALERTS_WIDGETS (
+               WIDGET_ID,   DASHBOARD_WIDGET_ID, APPLICATION, 
+               SEVERITY, RECD_DATE_FROM, RECD_DATE_TO,
+               SORT_COLUMN, SORT_ORDER, FETCH_SIZE ) VALUES(
+               #id#, -1, #application,javaType=String,jdbcType=VARCHAR#, 
+               #severity,javaType=String,jdbcType=VARCHAR#, #recFromDate#, #recToDate#, 
+               #sortColumn,javaType=String,jdbcType=VARCHAR#, #sortOrder,javaType=Integer#,
+               #fetchSize,javaType=Integer#
+               )
+    </insert>
+
+     <insert id="insertByDashboardWidgetId" parameterClass="map" >
+        INSERT INTO PORTAL_ALERTS_WIDGETS (
+               WIDGET_ID, DASHBOARD_WIDGET_ID, APPLICATION, SEVERITY,
+               RECD_DATE_FROM, RECD_DATE_TO,
+               SORT_COLUMN, SORT_ORDER, FETCH_SIZE) VALUES(
+               -1, #id#, #application,javaType=String,jdbcType=VARCHAR#, 
+               #severity,javaType=String,jdbcType=VARCHAR#, #recFromDate#, #recToDate#,
+               #sortColumn,javaType=String,jdbcType=VARCHAR#, #sortOrder,javaType=Integer#,
+               #fetchSize,javaType=Integer#
+               )
+    </insert>
+
+     <update id="updateByWidgetId" parameterClass="map">
+        UPDATE PORTAL_ALERTS_WIDGETS SET
+               APPLICATION = #application,javaType=String,jdbcType=VARCHAR#,   
+               SEVERITY = #severity,javaType=String,jdbcType=VARCHAR#,
+               RECD_DATE_FROM = #recFromDate#,
+               RECD_DATE_TO  = #recToDate#,
+               SORT_COLUMN = #sortColumn,javaType=String,jdbcType=VARCHAR#,
+               SORT_ORDER = #sortOrder,javaType=Integer#,
+               FETCH_SIZE = #fetchSize,javaType=Integer#
+        WHERE 
+              WIDGET_ID = #id#
+    </update>
+
+     <update id="updateByDashboardWidgetId" parameterClass="map">
+        UPDATE PORTAL_ALERTS_WIDGETS SET
+               APPLICATION = #application,javaType=String,jdbcType=VARCHAR#,   
+               SEVERITY = #severity,javaType=String,jdbcType=VARCHAR#,
+               RECD_DATE_FROM = #recFromDate#,
+               RECD_DATE_TO  = #recToDate#,
+               SORT_COLUMN = #sortColumn,javaType=String,jdbcType=VARCHAR#,
+               SORT_ORDER = #sortOrder,javaType=Integer#,
+               FETCH_SIZE = #fetchSize,javaType=Integer#
+        WHERE 
+              DASHBOARD_WIDGET_ID = #id#
+    </update>
+
+     <delete id="deleteByWidgetId" parameterClass="long">
+        DELETE FROM  PORTAL_ALERTS_WIDGETS
+        WHERE WIDGET_ID = #value#
+    </delete>
+
+     <delete id="deleteByDashboardId" parameterClass="long">
+        DELETE FROM  PORTAL_ALERTS_WIDGETS
+        WHERE DASHBOARD_WIDGET_ID IN (SELECT 
+        DASHBOARD_WIDGET_ID FROM PORTAL_DASHBOARD_WIDGETS WHERE DASHBOARD_ID = #value# )
+    </delete>
+    
+    <delete id="deleteByDashboardWidgetId" parameterClass="long">
+            DELETE FROM  PORTAL_ALERTS_WIDGETS
+            WHERE DASHBOARD_WIDGET_ID  = #value#
+    </delete>
+
+
+     <delete id="removeByWidgetId" parameterClass="long">
+        DELETE FROM  PORTAL_ALERTS_WIDGETS
+        WHERE DASHBOARD_WIDGET_ID IN (SELECT 
+        DASHBOARD_WIDGET_ID FROM PORTAL_DASHBOARD_WIDGETS WHERE WIDGET_ID = #value#)
+    </delete>
+
+     <delete id="removeByDashboardId" parameterClass="long">
+        DELETE FROM PORTAL_ALERTS_WIDGETS
+        WHERE DASHBOARD_WIDGET_ID IN (SELECT 
+        DASHBOARD_WIDGET_ID FROM PORTAL_DASHBOARD_WIDGETS WHERE DASHBOARD_ID = #value#)
+    </delete>
+
+    <select id="selectByWidgetId" parameterClass="long" resultMap="alertsWidgetResult" >
+        SELECT 
+               APPLICATION,                 
+               SEVERITY,                   
+               RECD_DATE_FROM,    
+               RECD_DATE_TO,
+               SORT_COLUMN,
+               SORT_ORDER,
+               FETCH_SIZE
+        FROM 
+              PORTAL_ALERTS_WIDGETS 
+        WHERE 
+              WIDGET_ID = #value#
+    </select>
+
+    <select id="selectByDashboardWidgetId" parameterClass="long" resultMap="alertsWidgetResult">
+        SELECT 
+               APPLICATION,                 
+               SEVERITY,                   
+               RECD_DATE_FROM,    
+               RECD_DATE_TO,
+               SORT_COLUMN,
+               SORT_ORDER,
+               FETCH_SIZE
+        FROM 
+              PORTAL_ALERTS_WIDGETS 
+        WHERE 
+              DASHBOARD_WIDGET_ID = #value#
+    </select>
+</sqlMap>

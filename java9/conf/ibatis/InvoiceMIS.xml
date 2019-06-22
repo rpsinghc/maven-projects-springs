@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" 
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="InvoiceMIS">
+
+
+   
+     <select id="getInvoiceMISData" parameterClass="com.worldcheck.atlas.vo.report.InvoiceMISVO" resultClass="com.worldcheck.atlas.vo.report.InvoiceMISVO">
+		select ccc.CRN crn,
+		ccc.CLIENT_REF clientReferenceNo,
+		cs.SUBJECT_NAME subjectName,
+		(select ccm.COUNTRY from CMS_COUNTRY_MASTER ccm where ccm.COUNTRY_MASTER_ID = cs.COUNTRY_ID )subjectCountry,
+		(select  cem.ENTITY_NAME from CMS_ENTITYTYPE_MASTER cem  where cem.ENTITY_TYPE_ID=cs.ENTITY_TYPE_ID)entityType,
+		(select csrm.SUB_REPORT from CMS_SUBREPORT_TYPE_MASTER csrm where csrm.SUBREPORT_TYPE_MASTER_ID = cs.SUB_REPORT_TYPE_ID )reportLevel,
+        cs.SUBJECT_FEE subjectFee,
+		ca.CASE_FEE caseFee,
+		ccc.CASE_CREATION_DATE caseCreationDate,
+		ccc.CLIENT_FINAL_SENTDATE finalaReportSentdate, 
+		ca.REGISTER_NO registerNumber,
+		ca.REGISTER_DATE registerDate
+        from CMS_CLIENTCASE ccc,CMS_SUBJECT cs ,CMS_ACCOUNTS ca  
+		where ccc.CRN = cs.CRN  AND cs.CRN = ca.CRN
+		
+		<isNotNull prepend="AND" property="clientCode">
+			<isNotEmpty property="clientCode">
+				ccc.CLIENT_CODE in 	
+				<iterate property="clientCode" open="(" close=")" conjunction=", ">
+			#clientCode[]#
+			</iterate>
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="caseStatus">
+			<isNotEmpty property="caseStatus">
+				ccc.CASE_STATUS_ID in 	
+				<iterate property="caseStatus" open="(" close=")" conjunction=", ">
+			#caseStatus[]#
+			</iterate>
+			</isNotEmpty>
+		</isNotNull>
+		
+		
+		
+		<isNotNull prepend="AND" property="caseCreationDateFrom">
+			<isNotEmpty property="caseCreationDateFrom">
+			trunc(ccc.CASE_CREATION_DATE )<![CDATA[ >= ]]> trunc(TO_DATE(#caseCreationDateFrom#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		
+		
+		<isNotNull prepend="AND" property="caseCreationDateTo">
+			<isNotEmpty property="caseCreationDateTo">
+			trunc(ccc.CASE_CREATION_DATE )<![CDATA[ <= ]]> trunc(TO_DATE(#caseCreationDateTo#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="finalaReportSentdateFrom">
+			<isNotEmpty property="finalaReportSentdateFrom">
+			trunc(ccc.CLIENT_FINAL_SENTDATE )<![CDATA[ = ]]> trunc(TO_DATE(#finalaReportSentdateFrom#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="AND" property="finalaReportSentdateTo">
+			<isNotEmpty property="finalaReportSentdateTo">
+			trunc(ccc.CLIENT_FINAL_SENTDATE )<![CDATA[ <= ]]> trunc(TO_DATE(#finalaReportSentdateTo#,'DD-MON-YYYY'))
+			</isNotEmpty>
+		</isNotNull>
+		
+		order by crn
+			
+		 </select>
+</sqlMap>

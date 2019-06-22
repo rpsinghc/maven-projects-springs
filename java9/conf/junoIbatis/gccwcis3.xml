@@ -1,0 +1,760 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="GccIS3WCVO">
+	<insert id="insert" parameterClass="com.worldcheck.juno.vo.component.GccIS3WCVO">
+	  <selectKey keyProperty="id"
+				 resultClass="long">
+		SELECT RG_GCC_IS3_SUMMARY_SEQ.NEXTVAL from dual
+	  </selectKey>
+	  insert into RG_GCC_IS3_SUMMARY (
+		GCC_IS3_SUMMARY_ID,CASE_ID,SUBJECT_ID,PROCESSCYCLEID,TEAM_ID,
+		DOCUMENT_NO,FORM_TYPE_DATASET,UPDATED_ON,UPDATED_BY,TABLE_BOTTOM_NOTES,
+		SAME_NAME_IND,REPORT_INCLUDE_IND,IS_AUTO_SAVED,LOCK_ARRANGMENT_IND,RISK_SUMMARY,ENTERED_DATE,GCC_COMP_TYPE,GRID_UPDATED_ON
+		)values (
+		#id#,#crn#,#subjectId#,#processCycleId#,#teamTypeId#,
+		#rdNumber#,'W-C',sysdate,#updateBy#,#tableBottomNotes#,
+		#identifiedSubject#,'Y','N','N',#summaryOfRisk#,#entered#,#gccType#,sysdate
+		)
+	</insert>
+	<insert id="insertDetailsForGccWC" parameterClass="com.worldcheck.juno.vo.component.GccIS3WCVO">
+			INSERT INTO RG_GCC_IS3_WCDOC_DTL (GCC_IS3_WCDOC_ID,SUBJECT_NAME,WC_UI,OFFICIAL_LIST_IND,ARTICLE_TEXT,GCC_IS3_SUMMARY_ID)
+		values (RG_GCC_IS3_WCDOC_DTL_SEQ.NEXTVAL, #subjectNameWc#,#worldCheckUi#,#officialList#,#articleText#,#id#		
+              )
+	
+	</insert>
+	<insert id="insertRisksForRecord" parameterClass="com.worldcheck.juno.vo.component.GccIS3WCRiskVO">
+		INSERT INTO RG_GCC_IS3_RISK_MAP (GCC_IS3_RISK_MAP_ID, RISK_CODE, GCC_IS3_SUMMARY_ID)
+		SELECT RG_GCC_IS3_RISK_MAP_SEQ.NEXTVAL, #riskVO.code#,#gccIS3WCVO.id#
+		FROM dual
+		WHERE NOT EXISTS (SELECT GCC_IS3_RISK_MAP_ID
+                    FROM RG_GCC_IS3_RISK_MAP
+                    WHERE GCC_IS3_SUMMARY_ID = #gccIS3WCVO.id#
+					AND RISK_CODE = #riskVO.code#
+              )
+    </insert>
+	
+	<insert id="insertAutoSave" parameterClass="com.worldcheck.juno.vo.component.GccIS3WCVO">
+	  <selectKey keyProperty="autoSaveId"
+				 resultClass="long">
+		SELECT RG_GCC_IS3_SUMMARY_SEQ.NEXTVAL from dual
+	  </selectKey>
+	  insert into RG_GCC_IS3_SUMMARY (
+		GCC_IS3_SUMMARY_ID,CASE_ID,SUBJECT_ID,PROCESSCYCLEID,TEAM_ID,ENTERED_DATE,
+		FORM_TYPE_DATASET,UPDATED_ON,UPDATED_BY,TABLE_BOTTOM_NOTES,
+		SAME_NAME_IND,REPORT_INCLUDE_IND,IS_AUTO_SAVED,LOCK_ARRANGMENT_IND,PARENT_RECORD_ID,GCC_COMP_TYPE
+		)values (
+		#autoSaveId#,#crn#,#subjectId#,#processCycleId#,#teamTypeId#,#entered#,
+		'W-C',sysdate,#updateBy#,#tableBottomNotes#,
+		#identifiedSubject#,'Y','Y','N',#id#,#gccType#
+		)
+	</insert>
+	
+	<update id="update" parameterClass="com.worldcheck.juno.vo.component.GccIS3WCVO">
+		UPDATE RG_GCC_IS3_SUMMARY
+		SET
+		PROCESSCYCLEID = #processCycleId#,
+		UPDATED_ON = sysdate,
+		UPDATED_BY = #updateBy#,
+		TABLE_BOTTOM_NOTES = #tableBottomNotes#,
+		SAME_NAME_IND =	#identifiedSubject#,
+		RISK_SUMMARY = #summaryOfRisk#,
+		ENTERED_DATE = #entered#,
+		IS_AUTO_SAVED = 'N',
+		PARENT_RECORD_ID = null,
+		DOCUMENT_NO = #rdNumber#
+		WHERE GCC_IS3_SUMMARY_ID = #id#
+	</update>
+	<update id="updateDetailsForGccWC" parameterClass="com.worldcheck.juno.vo.component.GccIS3WCVO">
+			UPDATE RG_GCC_IS3_WCDOC_DTL 
+			SET
+			SUBJECT_NAME = #subjectNameWc#,
+			WC_UI = #worldCheckUi#,
+			OFFICIAL_LIST_IND = #officialList#,
+			ARTICLE_TEXT = #articleText#
+			WHERE GCC_IS3_SUMMARY_ID = #id#
+	</update>
+	<update id="updateAutoSave" parameterClass="com.worldcheck.juno.vo.component.GccIS3WCVO">
+		UPDATE RG_GCC_IS3_SUMMARY 
+		SET
+		PROCESSCYCLEID = #processCycleId#,
+		UPDATED_ON = sysdate,
+		UPDATED_BY = #updateBy#,
+		TABLE_BOTTOM_NOTES = #tableBottomNotes#,
+		SAME_NAME_IND = #identifiedSubject#,
+		RISK_SUMMARY = #summaryOfRisk#,
+		ENTERED_DATE = #entered#,
+		IS_AUTO_SAVED = 'Y',
+		PARENT_RECORD_ID = #id#
+		WHERE GCC_IS3_SUMMARY_ID = #autoSaveId#
+	</update>
+	
+	<select id="canMarkDone" resultClass="java.lang.Boolean">
+		select case when count(*) > 0 then 'true' else 'false' END
+		from rg_gcc_is3_direct_risks where case_id = #crn# and processcycleid = #processCycleId#
+	</select>
+	
+	<resultMap id="riskCat" class="com.worldcheck.juno.vo.component.RiskVO">
+		<result property="code" column="RISK_CODE" />
+		<result property="name" column="RISK" />
+	</resultMap>
+	
+	<resultMap id="gccRiskSet" class="com.worldcheck.juno.vo.component.GccWCRiskVO" groupBy="id">
+		<result property="id" column="GCC_IS3_RISK_MAP_ID" />
+		<result property="parentId" column="GCC_IS3_SUMMARY_ID" />
+		<result property="riskVO" resultMap="GccIS3WCVO.riskCat" />
+	</resultMap>
+	
+	<resultMap id="gccList" class="com.worldcheck.juno.vo.component.GccIS3WCVO" groupBy="id">
+		<result property="id" column="GCC_IS3_SUMMARY_ID" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="subjectName" column="REPORT_SUBJECT_NAME" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="isAutoSave" column="IS_AUTO_SAVED" />
+		<result property="entered" column="ENTERED_DATE" />
+		<result property="gccWcdocId" column="GCC_IS3_WCDOC_ID" />
+		<result property="summaryOfRisk" column="RISK_SUMMARY" />
+		<result property="teamTypeId" column="TEAM_ID" />
+		<result property="identifiedSubject" column="SAME_NAME_IND" />
+		<result property="formType" column="FORM_TYPE_DATASET" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="rdNumber" column="DOCUMENT_NO" />
+		<result property="gccId" column="GCC_ID" />
+		<result property="includeExcludeIdentifire" column="REPORT_INCLUDE_IND" />
+		<result property="gccRiskSet" resultMap="GccIS3WCVO.gccRiskSet" notNullColumn="GCC_IS3_RISK_MAP_ID" />
+		<result property="gccType" column="GCC_COMP_TYPE" />
+	</resultMap>
+	
+	<resultMap id="directRiskListResult" class="com.worldcheck.juno.vo.component.GccIS3WCVO"
+		groupBy="id">
+		<result property="id" column="gcc_is3_summary_id" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="rdNumber" column="document_no" />
+		<result property="identifiedSubject" column="SAME_NAME_IND" />
+		<result property="gccRiskSet" resultMap="GccIS3WCVO.gccRiskSet"
+			notNullColumn="gcc_is3_risk_map_id" />
+	</resultMap>
+	
+	<select id="getDirectRiskList" parameterClass="java.util.HashMap" resultMap="directRiskListResult">
+		select smry.gcc_is3_summary_id, smry.subject_id, smry.same_name_ind, smry.document_no, 
+       		   smry.case_id, risk.risk_code,risk.gcc_is3_risk_map_id,smry.processcycleid, rm.risk
+		from RG_GCC_IS3_SUMMARY smry
+		join RG_GCC_IS3_RISK_MAP risk on risk.gcc_is3_summary_id = smry.gcc_is3_summary_id
+    	join CMS_RISK_MASTER rm on rm.risk_code = risk.risk_code
+		where case_id = #crn# and processcycleid = #processCycleId# and IS_AUTO_SAVED = 'N' and smry.report_include_ind = 'Y'
+		order by smry.document_no asc, smry.subject_id asc
+	</select>
+	
+		<select id="getSearchCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		
+
+		SELECT count(*)
+		FROM RG_GCC_IS3_SUMMARY rg
+		,CMS_CASECYCLE cc, RG_SUBJECT cs
+		WHERE
+		CASE_ID=#crn# and
+		rg.PROCESSCYCLEID = cc.CASECYCLE_ID and rg.SUBJECT_ID
+		= cs.SUBJECT_ID
+		AND upper(rg.IS_AUTO_SAVED)=upper('N')
+		<isNotNull property="componentType">
+			<isNotEqual prepend="AND" property="componentType" compareValue="">
+				rg.GCC_COMP_TYPE=#componentType# 
+			</isNotEqual>
+		</isNotNull>
+		 <isNotNull property="subjectId">
+			<isNotEqual prepend="AND" property="subjectId"
+				compareValue="0">
+				rg.SUBJECT_ID=#subjectId# 
+			</isNotEqual>
+			</isNotNull>
+
+			<isNotNull property="processCycleId">
+			<isNotEqual prepend="AND" property="processCycleId"
+				compareValue="0">
+				rg.PROCESSCYCLEID=#processCycleId# 
+			</isNotEqual>
+			</isNotNull>
+		
+		</select>
+		<select id="listByCRN" resultMap="gccList">
+            select rgData.*,
+            rgwcrk.RISK_CODE,rgwcrk.GCC_IS3_RISK_MAP_ID,
+			risk.RISK
+            from (
+            SELECT rg.GCC_IS3_SUMMARY_ID,rg.IS_AUTO_SAVED,rg.RISK_SUMMARY,rownum rn,
+            rg.FORM_TYPE_DATASET,rg.CASE_ID,rg.SUBJECT_ID,
+            cs.REPORT_SUBJECT_NAME,rg.PROCESSCYCLEID,cc.DESCRIPTION,cc.PROCESSCYCLE_ORDER,
+            rg.UPDATED_ON,
+            rg.UPDATED_BY,
+            rg.TABLE_BOTTOM_NOTES,
+            rg.DOCUMENT_NO,rg.GCC_ID,rg.SAME_NAME_IND,cs.REPORT_ORDER,cs.is_primary_sub,
+            rg.PRINT_ORDER,rg.LOCK_ARRANGMENT_IND,rg.REPORT_INCLUDE_IND,
+            rg.TEAM_ID,rg.ENTERED_DATE,rg.GCC_COMP_TYPE,
+            rgwcdtl.GCC_IS3_WCDOC_ID
+            FROM RG_GCC_IS3_SUMMARY rg
+            JOIN CMS_CASECYCLE cc ON cc.CASECYCLE_ID = rg.PROCESSCYCLEID
+            JOIN RG_SUBJECT cs ON (cs.SUBJECT_ID = rg.SUBJECT_ID and cs.ENTITY_TYPE_ID=#componentLevel#)
+            LEFT OUTER JOIN RG_GCC_IS3_WCDOC_DTL rgwcdtl ON rgwcdtl.GCC_IS3_SUMMARY_ID = rg.GCC_IS3_SUMMARY_ID
+            
+        	WHERE
+			rg.CASE_ID =#crn# AND
+			upper(rg.IS_AUTO_SAVED)=upper('N')
+            
+            <isNotNull property="subjectId">
+			<isNotEqual prepend="AND" property="subjectId"
+				compareValue="0">
+				rg.SUBJECT_ID=#subjectId# 
+			</isNotEqual>
+			</isNotNull>
+
+			<isNotNull property="processCycleId">
+			<isNotEqual prepend="AND" property="processCycleId"
+				compareValue="0">
+				rg.PROCESSCYCLEID=#processCycleId# 
+			</isNotEqual>
+			</isNotNull>
+			
+			<isNotNull property="componentType">
+			<isNotEqual prepend="AND" property="componentType" compareValue="">
+				rg.GCC_COMP_TYPE=#componentType# 
+			</isNotEqual>
+			</isNotNull>
+		
+			order by rg.REPORT_INCLUDE_IND desc,cs.is_primary_sub desc, cs.REPORT_ORDER asc, upper(cs.REPORT_SUBJECT_NAME) asc,
+			cc.PROCESSCYCLE_ORDER desc ,rg.DOCUMENT_NO asc
+
+			) rgData
+            LEFT OUTER JOIN RG_GCC_IS3_RISK_MAP rgwcrk ON rgwcrk.GCC_IS3_SUMMARY_ID = rgData.GCC_IS3_SUMMARY_ID
+            LEFT OUTER JOIN RG_GCC_IS3_WCDOC_DTL rgwcdtl ON rgwcdtl.GCC_IS3_SUMMARY_ID = rgData.GCC_IS3_SUMMARY_ID
+            LEFT OUTER JOIN CMS_RISK_MASTER risk ON risk.RISK_CODE = rgwcrk.RISK_CODE
+            
+            <isNotNull property="limit">
+			<isNotEqual property="limit" compareValue="0">
+				WHERE rgData.rn
+				BETWEEN
+				#start# AND #limit#
+		   		</isNotEqual>
+			</isNotNull>
+			order by rgData.REPORT_INCLUDE_IND desc,rgData.FORM_TYPE_DATASET desc,rgData.is_primary_sub desc, rgData.REPORT_ORDER asc, upper(rgData.REPORT_SUBJECT_NAME) asc,
+			rgData.SAME_NAME_IND ASC,rgData.PROCESSCYCLE_ORDER desc, rgData.DOCUMENT_NO, risk.RISK asc
+			
+			
+		
+	</select>
+		<resultMap id="listResetRDNumberRes"
+		class="com.worldcheck.juno.vo.component.GccIS3WCVO">
+		<result property="id" column="gcc_reset_id" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="subjectId" column="SUBJECT_ID" />
+	</resultMap>
+	
+	<select id="listResetRDNumber" resultMap="listResetRDNumberRes" parameterClass="java.util.HashMap">
+		SELECT gcc_reset_id, subject_id, processcycleid FROM rg_reset_gcc_rd_number where case_id = #crn#
+	</select>
+	<delete id="removeRDNumberData" parameterClass="java.util.HashMap">
+		delete from rg_reset_gcc_rd_number where gcc_reset_id in($idList$)
+	</delete>
+	<resultMap id="extendedGccWCList" class="com.worldcheck.juno.vo.component.GccIS3WCVO" extends="gccList">
+		<result property="tableBottomNotes" column="TABLE_BOTTOM_NOTES" />
+		<result property="worldCheckUi" column="WC_UI" />
+		<result property="subjectNameWc" column="SUBJECT_NAME_WC" />
+		<result property="articleText" column="ARTICLE_TEXT" />
+		<result property="officialList" column="OFFICIAL_LIST_IND" />
+		
+	</resultMap>
+	<select id="getById" resultMap="extendedGccWCList">
+		SELECT rg.GCC_IS3_SUMMARY_ID,rg.IS_AUTO_SAVED,rg.RISK_SUMMARY,
+            rg.FORM_TYPE_DATASET,rg.CASE_ID,rg.SUBJECT_ID,
+            cs.REPORT_SUBJECT_NAME,rg.PROCESSCYCLEID,cc.DESCRIPTION,
+            to_date(to_char(rg.UPDATED_ON, 'dd/mm/yyyy HH:MI:SS AM'),'dd/mm/yyyy HH:MI:SS AM') UPDATED_ON,rg.UPDATED_BY,rg.TABLE_BOTTOM_NOTES,
+            rg.DOCUMENT_NO,rg.GCC_ID,rg.SAME_NAME_IND,
+            rg.PRINT_ORDER,rg.LOCK_ARRANGMENT_IND,rg.REPORT_INCLUDE_IND,
+            rg.TEAM_ID,rg.ENTERED_DATE, rg.GCC_COMP_TYPE,
+            rgwcdtl.GCC_IS3_WCDOC_ID,rgwcrk.GCC_IS3_RISK_MAP_ID,
+            rgwcrk.RISK_CODE,
+			risk1.RISK,rgwcdtl.subject_name SUBJECT_NAME_WC,rgwcdtl.WC_UI,rgwcdtl.ARTICLE_TEXT,rgwcdtl.OFFICIAL_LIST_IND
+		FROM RG_GCC_IS3_SUMMARY rg
+		JOIN CMS_CASECYCLE cc ON cc.CASECYCLE_ID = rg.PROCESSCYCLEID
+		JOIN RG_SUBJECT cs ON cs.SUBJECT_ID = rg.SUBJECT_ID
+		LEFT OUTER JOIN RG_GCC_IS3_RISK_MAP rgwcrk ON rgwcrk.GCC_IS3_SUMMARY_ID = rg.GCC_IS3_SUMMARY_ID
+        LEFT OUTER JOIN RG_GCC_IS3_WCDOC_DTL rgwcdtl ON rgwcdtl.GCC_IS3_SUMMARY_ID = rg.GCC_IS3_SUMMARY_ID
+        LEFT OUTER JOIN CMS_RISK_MASTER risk1 ON risk1.RISK_CODE = rgwcrk.RISK_CODE
+        
+		WHERE
+		rg.GCC_IS3_SUMMARY_ID = #id#
+		order by risk1.RISK, rg.PRINT_ORDER ASC
+	</select>
+	<delete id="removeRisksExceptIds">
+		DELETE FROM RG_GCC_IS3_RISK_MAP
+		WHERE GCC_IS3_SUMMARY_ID = #gccId# 
+		AND RISK_CODE NOT IN ($idList$)
+	</delete>
+	<delete id="removeRisksForRecord">
+		DELETE FROM RG_GCC_IS3_RISK_MAP WHERE
+		GCC_IS3_SUMMARY_ID = #gccId#
+	</delete>
+	<!--generic query-->
+	<select id="findById" resultClass="int">
+		select count(rg.GCC_IS3_SUMMARY_ID)
+		FROM RG_GCC_IS3_SUMMARY rg
+		WHERE
+		rg.GCC_IS3_SUMMARY_ID = #id#
+	</select>
+	
+	<!--generic query-->
+	<delete id="delete">
+		delete FROM RG_GCC_IS3_SUMMARY WHERE
+		GCC_IS3_SUMMARY_ID = #id#
+	</delete>
+	
+	<!--generic query-->
+	<delete id="deleteIds">
+		delete FROM RG_GCC_IS3_SUMMARY WHERE
+		GCC_IS3_SUMMARY_ID IN 
+		<iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[]#
+	    </iterate>
+	</delete>
+	<!--generic query-->
+	<delete id="deleteNewAutoSave">
+		delete FROM RG_GCC_IS3_SUMMARY WHERE
+		CASE_ID=#crn#  AND
+		upper(IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID IS NULL
+	</delete>
+	
+	<!--generic query-->
+	<delete id="deleteAutoSave">
+		delete FROM RG_GCC_IS3_SUMMARY WHERE
+		CASE_ID=#crn#  AND
+		upper(IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID = #parentId#
+	</delete>
+	
+	<!--generic query-->
+	<select id="findAutoSave" parameterClass="java.util.HashMap" resultClass="java.lang.Long">
+		SELECT rg.GCC_IS3_SUMMARY_ID
+		FROM RG_GCC_IS3_SUMMARY rg
+		WHERE 
+		upper(rg.IS_AUTO_SAVED)=upper('Y') AND
+		rg.PARENT_RECORD_ID = #parentId#
+	</select>
+	
+	<!--generic query-->
+	<select id="findNewAutoSave" parameterClass="java.util.HashMap" resultClass="java.lang.Long">
+		SELECT rg.GCC_IS3_SUMMARY_ID
+		FROM RG_GCC_IS3_SUMMARY rg
+		WHERE CASE_ID=#crn# AND
+		upper(rg.IS_AUTO_SAVED)=upper('Y') AND
+		PARENT_RECORD_ID IS NULL
+	</select>
+	
+	<resultMap id="gccListForDirectRisk"
+		class="com.worldcheck.juno.vo.component.GccIS3WCVO" groupBy="id">
+		<result property="id" column="GCC_IS3_SUMMARY_ID" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="subjectName" column="REPORT_SUBJECT_NAME" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="rdNumber" column="DOCUMENT_NO" />
+		<result property="identifiedSubject" column="SAME_NAME_IND" />
+		<result property="gccRiskSet" resultMap="GccIS3WCVO.gccRiskSet"
+			notNullColumn="GCC_IS3_RISK_MAP_ID" />
+	</resultMap>
+	
+	<!-- this query is used in direct risk factors component -->
+	<select id="getGCCList" resultMap="gccListForDirectRisk">
+	
+	
+		SELECT rg.GCC_IS3_SUMMARY_ID,
+		rg.SUBJECT_ID,
+		cs.REPORT_SUBJECT_NAME,
+		rg.PROCESSCYCLEID,
+		rg.CASE_ID,
+		rgccrisk.RISK_CODE,
+		rg.DOCUMENT_NO,
+		risk.RISK, rg.SAME_NAME_IND,
+		rgccrisk.GCC_IS3_RISK_MAP_ID
+		FROM RG_GCC_IS3_SUMMARY rg
+		JOIN
+		CMS_CASECYCLE cc ON cc.CASECYCLE_ID =
+		rg.PROCESSCYCLEID
+		JOIN RG_SUBJECT
+		cs ON cs.SUBJECT_ID = rg.SUBJECT_ID
+
+
+		LEFT OUTER JOIN
+		RG_GCC_IS3_RISK_MAP rgccrisk ON
+		rgccrisk.GCC_IS3_SUMMARY_ID =
+		rg.GCC_IS3_SUMMARY_ID
+		LEFT OUTER JOIN
+		CMS_RISK_MASTER risk ON
+		risk.RISK_CODE = rgccrisk.RISK_CODE
+		WHERE
+		rg.CASE_ID =#crn# AND
+		rg.PROCESSCYCLEID=#processCycleId# AND
+		rg.SUBJECT_ID=#subjectId# AND
+		upper(rg.IS_AUTO_SAVED)=upper('N')
+		AND upper(rg.REPORT_INCLUDE_IND)=upper('Y')
+		<isNotNull property="componentType">
+			<isNotEqual prepend="AND" property="componentType" compareValue="">
+				rg.GCC_COMP_TYPE=#componentType# 
+			</isNotEqual>
+		</isNotNull>
+		order by rg.DOCUMENT_NO ASC,
+		rg.SUBJECT_ID ASC
+	</select>
+	
+	<!-- this query is used when Direct Risk Factor component is marked done -->
+	<select id="getRisksForSubject" resultMap="ReportSubjectVO.getSubjectRisks">
+		select distinct risk.risk_code, gcc.subject_id from RG_GCC_IS3_RISK_MAP risk
+		join RG_GCC_IS3_SUMMARY gcc on gcc.gcc_is3_summary_id = risk.gcc_is3_summary_id
+		where gcc.case_id = #crn# and gcc.processcycleid = #processCycleId#
+	</select>
+
+	<insert id="insertHistory" parameterClass="com.worldcheck.juno.vo.component.GccIS3WCVO">
+		<selectKey keyProperty="summaryHstId" resultClass="long">
+			SELECT RG_GCC_IS3_SUMMARY_HST_SEQ.NEXTVAL from dual
+		</selectKey>
+		insert into RG_GCC_IS3_SUMMARY_HST (
+		HISTORY_ID,CASE_ID,SUBJECT_ID,PROCESSCYCLEID,UPDATED_ON,UPDATED_BY,TABLE_BOTTOM_NOTES,SAME_NAME_IND,
+		RISK_SUMMARY,REPORT_INCLUDE_IND,FORM_TYPE_DATASET,TEAM_ID,ENTERED_DATE,DOCUMENT_NO,GCC_IS3_SUMMARY_ID,GCC_COMP_TYPE
+		) SELECT #summaryHstId#,CASE_ID,SUBJECT_ID,PROCESSCYCLEID,sysdate,UPDATED_BY,TABLE_BOTTOM_NOTES,SAME_NAME_IND,
+		RISK_SUMMARY,REPORT_INCLUDE_IND,FORM_TYPE_DATASET,TEAM_ID,ENTERED_DATE,DOCUMENT_NO,GCC_IS3_SUMMARY_ID,GCC_COMP_TYPE
+		FROM RG_GCC_IS3_SUMMARY
+		WHERE GCC_IS3_SUMMARY_ID = #id#
+		
+	</insert>
+	
+	<insert id="insertHistoryDetails" parameterClass="java.util.HashMap">
+		insert into RG_GCC_IS3_WCDOC_DTL_HST (
+		HISTORY_ID,SUBJECT_NAME,WC_UI,OFFICIAL_LIST_IND,ARTICLE_TEXT,GCC_IS3_WCDOC_ID,GCC_IS3_SUMMARY_ID,HISTORY_SUMMARY_ID
+		) SELECT RG_GCC_IS3_WCDOC_DTL_HST_SEQ.NEXTVAL,SUBJECT_NAME,WC_UI,OFFICIAL_LIST_IND,ARTICLE_TEXT,GCC_IS3_WCDOC_ID,GCC_IS3_SUMMARY_ID,#summaryId#
+		FROM RG_GCC_IS3_WCDOC_DTL
+		WHERE GCC_IS3_SUMMARY_ID = #id#
+		
+	</insert>
+	
+	<!-- GCC History  -->
+	<select id="getArticleText" resultClass="java.lang.String">
+		select ARTICLE_TEXT from
+		RG_GCC_IS3_WCDOC_DTL_HST where history_id=#recordId#
+	</select>
+
+	<select id="getHistoryCount" resultClass="java.lang.Integer">
+		SELECT count(*)
+		FROM
+		RG_GCC_IS3_WCDOC_DTL_HST
+		rg where
+		rg.GCC_IS3_SUMMARY_ID=#recordId#
+	</select>
+
+	<resultMap id="resultHistory"
+		class="com.worldcheck.juno.vo.component.GccIS3WCVO">
+		<result property="id" column="HISTORY_ID" />
+		<result property="updateOn" column="UPDATED_ON" />
+		<result property="updateBy" column="UPDATED_BY" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="processCycleName" column="DESCRIPTION" />
+		<result property="entered" column="ENTERED_DATE" />
+		<result property="worldCheckUi" column="WC_UI" />
+		<result property="subjectNameWc" column="SUBJECT_NAME" />
+		<result property="officialList" column="OFFICIAL_LIST_IND" />
+		<result property="summaryOfRisk" column="RISK_SUMMARY" />
+		<result property="tableBottomNotes" column="TABLE_BOTTOM_NOTES" />
+
+	</resultMap>
+
+	<select id="getHistory" resultMap="resultHistory"
+		parameterClass="java.util.HashMap">
+
+		SELECT * FROM (SELECT a.*, ROWNUM rn FROM (
+		SELECT
+		wchst.HISTORY_ID,
+		rg.UPDATED_ON, rg.UPDATED_BY, rg.PROCESSCYCLEID,
+		cc.DESCRIPTION,rg.ENTERED_DATE,rg.RISK_SUMMARY,
+		rg.TABLE_BOTTOM_NOTES, wchst.wc_ui, wchst.official_list_ind,wchst.SUBJECT_NAME
+		FROM RG_GCC_IS3_SUMMARY_HST	rg,CMS_CASECYCLE cc,
+		RG_GCC_IS3_WCDOC_DTL_HST wchst
+		WHERE rg.PROCESSCYCLEID = cc.CASECYCLE_ID
+		and rg.GCC_IS3_SUMMARY_ID=#recordId#	
+		and rg.history_id=wchst.history_summary_id
+      	order by rg.UPDATED_ON desc
+		) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#
+
+	</select>
+	<resultMap id="resultVO"
+		class="com.worldcheck.juno.vo.component.GccIS3WCVO">
+		<result property="id" column="GCC_IS3_SUMMARY_ID" />
+
+	</resultMap>
+	
+	<select id="getOrderedDocs" parameterClass="java.util.HashMap"
+		resultMap="resultVO">
+		SELECT GCC_IS3_SUMMARY_ID
+		FROM RG_GCC_IS3_SUMMARY rg, RG_SUBJECT cs
+		WHERE
+		rg.CASE_ID = #crn#
+		AND rg.SUBJECT_ID=cs.subject_id 
+		AND	upper(rg.IS_AUTO_SAVED)=upper('N')
+		AND upper(rg.REPORT_INCLUDE_IND)!='N'
+		AND rg.PROCESSCYCLEID=#processCycleId#
+		AND rg.SUBJECT_ID=#subjectId# 
+		order by rg.FORM_TYPE_DATASET desc,cs.is_primary_sub desc, cs.report_order, upper(cs.subject_name),same_name_ind asc, GCC_IS3_SUMMARY_ID asc
+	</select>
+	
+	<select id="getAddedOrderedDocs" parameterClass="java.util.HashMap"
+		resultMap="resultVO">
+		SELECT GCC_IS3_SUMMARY_ID
+		FROM RG_GCC_IS3_SUMMARY rg, RG_SUBJECT cs
+		WHERE
+		rg.CASE_ID = #crn#
+		AND	upper(rg.IS_AUTO_SAVED)=upper('N')
+		AND rg.SUBJECT_ID=cs.subject_id 
+		AND upper(rg.REPORT_INCLUDE_IND)!='N'
+		AND rg.PROCESSCYCLEID=#processCycleId#
+		AND rg.SUBJECT_ID=#subjectId# 
+		order by rg.FORM_TYPE_DATASET desc,cs.report_order,same_name_ind asc, document_no asc
+	</select>
+
+	<update id="updateRdNumber" parameterClass="java.util.HashMap">
+		update RG_GCC_IS3_SUMMARY set DOCUMENT_NO=
+		case GCC_IS3_SUMMARY_ID
+		<iterate property="recList">
+			when #recList[].id# then #recList[].rdNumber#
+		</iterate>
+		END
+		<isEqual prepend="," property="changeUpdateOn"
+				compareValue="true">
+		GRID_UPDATED_ON = sysdate
+		</isEqual>
+		where GCC_IS3_SUMMARY_ID IN
+
+		<iterate property="recList" open="(" close=")" conjunction=",">
+			#recList[].id#
+	    </iterate>
+
+	</update>
+	
+	<insert id="makeCopy" parameterClass="java.util.HashMap">
+
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_GCC_IS3_SUMMARY_SEQ.NEXTVAL from dual
+	  </selectKey>
+		insert into RG_GCC_IS3_SUMMARY (
+		GCC_IS3_SUMMARY_ID,CASE_ID,SUBJECT_ID,PROCESSCYCLEID,DOCUMENT_NO,
+		UPDATED_ON,UPDATED_BY,TABLE_BOTTOM_NOTES,SAME_NAME_IND,
+		RISK_SUMMARY,REPORT_INCLUDE_IND,
+		IS_AUTO_SAVED,FORM_TYPE_DATASET,TEAM_ID,ENTERED_DATE,GCC_COMP_TYPE
+		)
+		select #id#, CASE_ID,SUBJECT_ID,#processCycleId#,DOCUMENT_NO,
+		sysdate,#userName#,TABLE_BOTTOM_NOTES,SAME_NAME_IND,
+		RISK_SUMMARY,'Y',
+		IS_AUTO_SAVED,FORM_TYPE_DATASET,#teamId#,ENTERED_DATE,GCC_COMP_TYPE
+		from
+		RG_GCC_IS3_SUMMARY
+		where GCC_IS3_SUMMARY_ID =#recordId#
+
+	</insert>
+
+	<insert id="makecopyGCCDTL" parameterClass="java.util.HashMap">
+
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_GCC_IS3_WCDOC_DTL_SEQ.NEXTVAL from dual
+	  </selectKey>
+
+		insert into RG_GCC_IS3_WCDOC_DTL (
+		GCC_IS3_WCDOC_ID,SUBJECT_NAME,WC_UI,OFFICIAL_LIST_IND,ARTICLE_TEXT,GCC_IS3_SUMMARY_ID
+		)
+		select #id#, SUBJECT_NAME,WC_UI,OFFICIAL_LIST_IND,ARTICLE_TEXT,#ids#
+		from
+		RG_GCC_IS3_WCDOC_DTL
+		where GCC_IS3_SUMMARY_ID =#recordId#
+
+	</insert>
+	<insert id="makeCopyRisk" parameterClass="java.util.HashMap">
+		INSERT INTO
+		RG_GCC_IS3_RISK_MAP
+		(GCC_IS3_RISK_MAP_ID, RISK_CODE,
+		GCC_IS3_SUMMARY_ID)
+		SELECT RG_GCC_IS3_RISK_MAP_SEQ.NEXTVAL,
+		RISK_CODE,#id# from RG_GCC_IS3_RISK_MAP
+		Where
+		GCC_IS3_SUMMARY_ID=#recordId#
+		
+		</insert>
+		
+	<select id="getMaxTime" parameterClass="java.util.HashMap"
+		resultClass="java.util.Date">
+		select nvl(max(GRID_UPDATED_ON),sysdate) from RG_GCC_IS3_SUMMARY rg where
+		rg.case_id=#crn#
+		<isNotNull property="subjectId">
+			<isNotEqual prepend="AND" property="subjectId"
+				compareValue="0">
+				rg.SUBJECT_ID=#subjectId# 
+			</isNotEqual>
+		</isNotNull>
+
+		<isNotNull property="processCycleId">
+			<isNotEqual prepend="AND" property="processCycleId"
+				compareValue="0">
+				rg.PROCESSCYCLEID=#processCycleId# 
+			</isNotEqual>
+		</isNotNull>
+
+	</select>
+		<resultMap id="gccListForRiskTable"
+		class="com.worldcheck.juno.vo.component.GccIS3WCVO" groupBy="id">
+		<result property="id" column="GCC_IS3_SUMMARY_ID" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="subjectName" column="REPORT_SUBJECT_NAME" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="crn" column="CASE_ID" />
+		<result property="rdNumber" column="DOCUMENT_NO" />
+		<result property="identifiedSubject" column="SAME_NAME_IND" />
+		<result property="gccRiskSet" resultMap="GccIS3WCVO.gccRiskSet"
+			notNullColumn="GCC_IS3_RISK_MAP_ID" />
+	</resultMap>
+	
+	<select id="getGCCListRiskTable" resultMap="gccListForRiskTable">
+	
+		SELECT rg.GCC_IS3_SUMMARY_ID,
+		rg.SUBJECT_ID,
+		cs.REPORT_SUBJECT_NAME,
+		rg.PROCESSCYCLEID,
+		rg.CASE_ID,
+		rgccrisk.RISK_CODE,
+		rg.DOCUMENT_NO,
+		risk.RISK, rg.SAME_NAME_IND,
+		rgccrisk.GCC_IS3_RISK_MAP_ID
+		FROM RG_GCC_IS3_SUMMARY rg
+		JOIN
+		CMS_CASECYCLE cc ON cc.CASECYCLE_ID =
+		rg.PROCESSCYCLEID
+		JOIN RG_SUBJECT
+		cs ON cs.SUBJECT_ID = rg.SUBJECT_ID
+		LEFT OUTER JOIN
+		RG_GCC_IS3_RISK_MAP rgccrisk ON
+		rgccrisk.GCC_IS3_SUMMARY_ID =
+		rg.GCC_IS3_SUMMARY_ID
+		LEFT OUTER JOIN
+		CMS_RISK_MASTER risk ON
+		risk.RISK_CODE = rgccrisk.RISK_CODE
+		WHERE
+		rg.CASE_ID =#crn# AND
+		rg.PROCESSCYCLEID=#processCycleId# AND
+		upper(rg.IS_AUTO_SAVED)=upper('N')
+		AND upper(rg.REPORT_INCLUDE_IND)=upper('Y')
+		order by rg.DOCUMENT_NO ASC,
+		rg.SUBJECT_ID ASC
+	</select>
+	
+	<insert id="insertHistoryBeforeDeletion"
+		parameterClass="java.util.HashMap">
+		insert into RG_GCC_IS3_SUMMARY_HST (
+		HISTORY_ID,CASE_ID,SUBJECT_ID,PROCESSCYCLEID,UPDATED_ON,UPDATED_BY,GCC_IS3_SUMMARY_ID
+		) SELECT RG_GCC_IS3_SUMMARY_HST_SEQ.NEXTVAL,inner_view.*
+		FROM
+		<iterate property="recList" conjunction="UNION ALL" open="("
+			close=")">
+			 (SELECT CASE_ID,SUBJECT_ID,PROCESSCYCLEID,sysdate,#userName# UPDATED_BY ,#recList[]# GCC_IS3_SUMMARY_ID
+			 from RG_GCC_IS3_SUMMARY  
+   			 where GCC_IS3_SUMMARY_ID=#recList[]#)
+   			 
+		
+		</iterate>
+		inner_view
+		
+    </insert>
+		<parameterMap id="getParameterMapIncExdReport" class="java.util.Map">
+		<parameter property="includeExcludeIds" jdbcType="VARCHAR"
+			javaType="java.lang.String" mode="IN" />
+		<parameter property="includeExcludeIdentifire" jdbcType="VARCHAR"
+			javaType="java.lang.String" mode="IN" />
+		<parameter property="userCode" jdbcType="VARCHAR" javaType="java.lang.String"
+			mode="IN" />
+		<parameter property="errorCode" jdbcType="INTEGER" javaType="java.lang.Integer"
+			mode="OUT" />
+	</parameterMap>
+
+
+	<!--- Calling stored procedure -->
+	<procedure id="callIncExdReport" parameterMap="getParameterMapIncExdReport">
+		{call RG_PROC_IND_EXD_REPORT( ?, ?, ?,?,'GCCIS3','N','GCC_IS3_SUMMARY_ID','Y','DOCUMENT_NO')} 
+   </procedure>
+   
+   
+  	<!--- Showing data by ID -->
+
+
+	<resultMap id="saveResult"
+		class="com.worldcheck.juno.vo.component.GccIS3RiskTableVO">
+		<result property="gccRiskTableVal" column="RISKVAL" />
+		<result property="displayDate" column="displayDate" />
+		<result property="subjectVO" resultMap="GccIS3WCVO.riskSubjectLst" />
+		<result property="updateBy" column="UPDATED_BY" />
+	</resultMap>
+
+	<resultMap id="riskSubjectLst" class="com.worldcheck.juno.vo.common.ReportSubjectVO">
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="reportSubjectName" column="REPORT_SUBJECT_NAME" />
+	</resultMap>
+	
+	<insert id="insertRiskTable" parameterClass="com.worldcheck.juno.vo.component.GccIS3RiskTableVO">
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT RG_GCC_IS3_RISKS_TABLE_SEQ.NEXTVAL from dual
+	  </selectKey>
+	  
+	  INSERT INTO RG_GCC_IS3_RISKS_TABLE (GCC_IS3_RISK_TABLE_ID,RISK_VALUE,UPDATED_BY,UPDATED_ON,CASE_ID,PROCESSCYCLEID,SUBJECT_ID,GCC_COMP_TYPE)
+	  VALUES(#id#,#gccRiskTableVal#,#userName#,sysdate,#crn#,#processCycleId#,#riskSubjectId#,#gccType#)
+	</insert>
+
+	<delete id="deleteRiskTable" parameterClass="java.util.HashMap">
+		delete from RG_GCC_IS3_RISKS_TABLE
+		where CASE_ID=#crn# and
+		PROCESSCYCLEID=#processCycleId#
+	</delete>
+
+	<select id="getSaveData" parameterClass="java.util.HashMap"
+		resultMap="saveResult">
+
+		select rgdir.risk_value	RISKVAL,to_char(rgdir.UPDATED_ON, 'DD-MM-YY HH24:MI:SS') displayDate,cs.REPORT_SUBJECT_NAME,rgdir.SUBJECT_ID,
+		rgdir.UPDATED_BY
+		from RG_GCC_IS3_RISKS_TABLE rgdir ,RG_SUBJECT cs
+		where
+		upper(rgdir.case_id)=upper(#crn#)
+		and cs.SUBJECT_ID = rgdir.SUBJECT_ID
+		and rgdir.SUBJECT_ID = #subjectId#
+		and	rgdir.processcycleid=#processCycleId#
+		and rgdir.GCC_COMP_TYPE=#componentType#
+		order by cs.REPORT_ORDER asc,cs.SUBJECT_NAME
+	</select>
+
+	<select id="checkSaveData" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from RG_GCC_IS3_RISKS_TABLE where
+		upper(case_id)=upper(#crn#) and
+		processcycleid=#processCycleId#
+		and SUBJECT_ID = #subjectId#
+		and GCC_COMP_TYPE=#componentType#
+	</select>
+	<select id="getNextDocumentNumber" resultClass="java.lang.Long" parameterClass="java.util.HashMap">
+		select nvl(max(document_no),0)+1 from rg_gcc_is3_summary 
+		where subject_id = #subjectId# and processcycleid = #processCycleId#
+		and IS_AUTO_SAVED='N'
+		<isEqual property="sameName" compareValue="N" prepend="and">
+			same_name_ind = 'N'
+		</isEqual>
+	</select>
+</sqlMap>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<savvion-licenses>
+    <product-group name="Business Manager" version="7.6">
+        <component country-code="Any"
+            distribution-number="G000-0000-00000"
+            expiration-date="04-25-2094" ip-address="Any"
+            key="ZZ9G94300E8UZ000K00000" license-type="Enterprise"
+            licensee="World Check" memory-limit="256" name="BizLogic"
+            os-code="All" session-limit="Unlimited" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="G000-0000-00000"
+            expiration-date="04-25-2094" ip-address="Any"
+            key="Z9AUN6300E2U7000A00000" license-type="Enterprise"
+            licensee="World Check" name="BizStore" os-code="All"
+            session-limit="Unlimited" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="G000-0000-00000"
+            expiration-date="04-25-2094" ip-address="Any"
+            key="ZRBKHQ300ETY7000J00000" license-type="Enterprise"
+            licensee="World Check" name="BizPulse" os-code="All"
+            session-limit="Unlimited" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="G000-0000-00000"
+            expiration-date="04-25-2094" ip-address="Any"
+            key="0MD7BK400EWVC000O00000" license-type="Enterprise"
+            licensee="World Check" memory-limit="256"
+            name="ArchiveReplicator" os-code="All"
+            session-limit="Unlimited" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="G000-0000-00000"
+            expiration-date="04-25-2094" ip-address="Any"
+            key="ZEHML0300E0C9000P00000" license-type="Enterprise"
+            licensee="World Check" name="BizSite" os-code="All"
+            session-limit="Unlimited" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="G000-0000-00000"
+            expiration-date="04-25-2094" ip-address="Any"
+            key="ZBWSXR300EJJE000700000" license-type="Enterprise"
+            licensee="World Check" name="SBMAdmin" os-code="All"
+            session-limit="Unlimited" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="G000-0000-00000"
+            expiration-date="04-25-2094" ip-address="Any"
+            key="ZVO7RV300ERXB000Y00000" license-type="Enterprise"
+            licensee="World Check" name="BizManage" os-code="All"
+            session-limit="Unlimited" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="G000-0000-00000"
+            expiration-date="04-25-2094" ip-address="Any"
+            key="Z5ZBZE300E4QF000A00000" license-type="Enterprise"
+            licensee="World Check" name="BizManage_BSC" os-code="All"
+            session-limit="Unlimited" session-operand="reset"/>
+        <component country-code="Any"
+            distribution-number="G000-0000-00000"
+            expiration-date="04-25-2094" ip-address="Any"
+            key="Z8J5NM300ELJA000S00000" license-type="Enterprise"
+            licensee="World Check" name="BizSolo" os-code="All"
+            session-limit="Unlimited" session-operand="reset"/>
+    </product-group>
+</savvion-licenses>

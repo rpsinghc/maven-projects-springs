@@ -1,0 +1,933 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" 
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="CaseRawDataTemplate">
+
+   <resultMap id="resultGrid"   class="com.worldcheck.atlas.vo.report.CaseRawTableVO">
+		<result property="templateId" column="TEMPLATE_ID"/>
+		<result property="templateName" column="TEMPLATENAME"/>
+		<result property="templateComments" column="templateComments"/>
+		<result property="creatorFullName" column="creatorFullName" />
+		<result property="created_by" column="created_By"/>
+		<result property="shareWith" column="SHAREWITH"/>		
+		<result property="defaultStatus" column="defaultStatus" />
+   </resultMap>
+     
+	<select id="searchCaseRawDataGridList" resultMap="resultGrid"
+		parameterClass="com.worldcheck.atlas.vo.report.CaseRawTableVO">
+  SELECT * FROM (SELECT a.*, ROWNUM rn FROM 
+		( SELECT 
+	       TEMPLATE_ID ,
+	       TEMPLATE_NAME TEMPLATENAME,
+	       TEMPLATE_COMMENT templateComments,
+	       CUM.user_full_name creatorFullName,
+	       created_By ,
+	       CASE SHAREWITH
+		   	  WHEN 0 THEN 'Myself Only'
+			  ELSE 'Everyone'			 
+		END
+		SHAREWITH,
+	    CASE    
+		    WHEN   INSTR(DEFAULT_USERS ,#userId#,1,1 ) > 0  THEN 1
+		    ELSE  0 END
+	    defaultStatus
+	FROM 
+	       CMS_CASE_RAW_TEMPLATE,
+     	   CMS_USER_MASTER CUM
+	  WHERE	 
+	       CUM.login_id = created_By
+			<isNotNull property="searchType">
+				<isEqual property="searchType" compareValue="default">
+		 <isNotNull prepend="AND" property="userId">
+				<isNotEmpty property="userId">
+							((created_by = #userId# and (INSTR(DEFAULT_USERS ,#userId#,1,1 ) > 0)) OR
+							INSTR(DEFAULT_USERS ,#userId#,1,1 ) > 0) 
+			    </isNotEmpty>
+		 </isNotNull>
+
+				</isEqual>
+				<isEqual prepend="AND" property="searchType" compareValue="All">
+					((#userId# != created_by and sharewith = 1) OR #userId# = created_by)
+    			</isEqual>
+				
+				<isEqual property="searchType" compareValue="Filter">
+					<isNotNull property="templateName">
+						<isNotEmpty prepend="AND" property="templateName">
+							(upper(TEMPLATE_NAME)Like UPPER(TRIM('%'||#templateName#||'%'))
+							and ((#userId# != created_by and sharewith = 1) OR
+							(#userId# = created_by)))
+         				</isNotEmpty>
+			</isNotNull>
+
+					<isNotNull  property="created_by">
+						<isNotEmpty property="userId">
+						<isNotEmpty prepend="AND" property="created_by">
+							((#userId# != #created_by# and #created_by# = created_by and sharewith = 1) OR
+							(#userId# = #created_by# and #userId# = created_by))
+					</isNotEmpty>	
+			    </isNotEmpty>
+					</isNotNull>					
+				</isEqual>
+		 </isNotNull>
+		
+		  
+		 ORDER By UPPER($sortColumnName$) $sortType$) a WHERE ROWNUM <![CDATA[ <= ]]>
+		#limit#) WHERE rn <![CDATA[ >= ]]>
+		#start#	 
+   </select>
+   
+	<select id="searchCaseRawDataGridListCount" parameterClass="com.worldcheck.atlas.vo.report.CaseRawTableVO"
+		resultClass="java.lang.Integer">
+		SELECT 
+	       COUNT(TEMPLATE_ID)       
+		FROM 
+	       CMS_CASE_RAW_TEMPLATE,
+     	   CMS_USER_MASTER CUM
+	  WHERE	 
+	       CUM.login_id = created_By
+			<isNotNull property="searchType">
+				<isEqual property="searchType" compareValue="default">
+		 <isNotNull prepend="AND" property="userId">
+				<isNotEmpty property="userId">
+							((created_by = #userId# and (INSTR(DEFAULT_USERS ,#userId#,1,1 ) > 0)) OR
+							INSTR(DEFAULT_USERS ,#userId#,1,1 ) > 0) 
+			    </isNotEmpty>			
+		 </isNotNull>
+		 
+				</isEqual>
+				<isEqual prepend="AND" property="searchType" compareValue="All">
+					((#userId# != created_by and sharewith = 1) OR #userId# = created_by)
+    			</isEqual>
+
+				<isEqual property="searchType" compareValue="Filter">
+					<isNotNull property="templateName">
+						<isNotEmpty prepend="AND" property="templateName">
+							(upper(TEMPLATE_NAME)Like UPPER(TRIM('%'||#templateName#||'%'))
+							and ((#userId# != created_by and sharewith = 1) OR
+							(#userId# = created_by)))
+		 		</isNotEmpty>
+			</isNotNull>
+			
+					<isNotNull  property="created_by">
+						<isNotEmpty property="userId">
+						<isNotEmpty prepend="AND" property="created_by">
+							((#userId# != #created_by# and #created_by# = created_by and sharewith = 1) OR
+							(#userId# = #created_by# and #userId# = created_by))
+       					</isNotEmpty>
+				</isNotEmpty>	
+			</isNotNull>		 
+				</isEqual>
+			</isNotNull>
+   </select>
+   
+ 
+  <select id="getAllTemplateCreator" resultClass="com.worldcheck.atlas.vo.masters.UserMasterVO">
+  SELECT 
+	  		USER_MASTER_ID userMasterId,
+	  		LOGIN_ID loginId,
+		USER_FULL_NAME
+		userFullName
+  FROM 
+  		CMS_USER_MASTER
+  WHERE 
+		USER_MASTER_ID IN(SELECT USER_ID
+		FROM CMS_USER_ROLE_MAP WHERE ROLE_ID
+		IN('R1','R2','R7','R8')) ORDER BY
+		UPPER(userFullName) 
+ </select>   
+ 
+     
+     <select id="getInfoListCaseRawDataTemplate"  resultClass="com.worldcheck.atlas.vo.report.CaseRawTableVO">
+		Select
+		FIELD_ID caseRawDataMasterFieldId, FIELD_NAME caseRawDataMasterColumn ,FIELD_FULL_NAME fieldFullName
+		from CMS_CASE_RAW_FIELD_MASTER where FIELD_NAME NOT IN ('UPDATED_BY','UPDATED_ON') order by caseRawDataMasterFieldId   
+     </select>
+     
+	<select id="searchExistTemplateName" resultClass="java.lang.Integer"
+		parameterClass="java.lang.String">
+	   SELECT  
+	   			COUNT(TEMPLATE_NAME) 
+	   FROM 
+	   			CMS_CASE_RAW_TEMPLATE 
+	   WHERE  
+	   			UPPER(TEMPLATE_NAME)=UPPER(TRIM(#templateName#))  
+     </select> 
+     
+     <insert id="saveCaseRawDataTemplate" parameterClass="com.worldcheck.atlas.vo.report.CaseRawTableVO">  
+		 <selectKey resultClass="int" type="pre" keyProperty="caseRawDataTemplateId">
+			SELECT
+			CMS_CASE_RAW_TEMPLATE_SEQ.nextval AS VALUE FROM DUAL
+  		</selectKey>
+		INSERT INTO 
+				CMS_CASE_RAW_TEMPLATE 
+				(
+					TEMPLATE_ID, 
+					TEMPLATE_NAME,
+					TEMPLATE_COMMENT,
+					CREATED_BY,
+					SHAREWITH,
+					UPDATED_BY,
+					UPDATED_ON,
+					DEFAULT_USERS
+				)
+		VALUES
+				(	
+					#caseRawDataTemplateId#,
+					#templateName#,
+					#templateComments#,	
+					#created_by#,						
+					#shareWith#,					
+					#updated_by#,
+					sysdate,
+					#updated_by#				
+				)			
+	 </insert>
+	 
+	 <insert id="save_Case_Raw_Data_Field_Map" parameterClass="java.util.HashMap">  
+		 <selectKey resultClass="int" type="pre" keyProperty="caseRawDataTemplateId">
+			SELECT
+			CMS_CASE_RAW_FIELDMAP_SEQ.nextval AS VALUE FROM DUAL
+  		 </selectKey>
+			INSERT INTO 
+					CMS_CASE_RAW_FIELDMAP 
+					(
+						ID,
+						FIELD_ID,
+						TEMPLATE_ID,
+						OPTION_STATUS,
+						UPDATED_BY,
+						UPDATED_ON
+					)
+			VALUES
+					(	
+						#caseRawDataTemplateId#,
+						#fieldId#,
+						#templateId#,									
+						#optionStatus#,
+						#updated_by#,
+						sysdate				
+					)			
+	 </insert>
+	 
+	 <insert id="save_CASE_RAW_OPTION_INFO" parameterClass="java.util.HashMap">  
+		 <selectKey resultClass="int" type="pre" keyProperty="caseRawDataTemplateId">
+			SELECT
+			CMS_CASE_RAW_OPTION_INFO_SEQ.nextval AS VALUE FROM DUAL
+  		 </selectKey>
+
+			INSERT INTO 
+					CMS_CASE_RAW_OPTION_INFO 
+					(
+				  		ID,
+						FIELD_MAP_ID,
+						SELECTED_OPTION_ID,
+						UPDATED_BY,
+						UPDATED_ON
+					)
+			VALUES
+					(	
+						#caseRawDataTemplateId#,
+						#fieldId#,
+						#seletedOptionId#,									
+						#updated_by#,
+						sysdate				
+					)			
+	 </insert>
+	 
+	 <delete id="deleteCaseRawDataTemplate" parameterClass="java.lang.Long">
+		DELETE
+		FROM CMS_CASE_RAW_TEMPLATE WHERE TEMPLATE_ID =#caseRawDataTemplateId#
+	</delete>
+	
+	
+	<update id="setDefaultCaseRawDataTemplate" parameterClass="java.util.Map">
+	
+	UPDATE CMS_CASE_RAW_TEMPLATE
+		SET	 DEFAULT_USERS = 
+			  <isEqual property="status" compareValue="1">
+		     CASE 
+			WHEN DEFAULT_USERS
+			IS NULL
+			  	THEN #updated_by#
+			WHEN
+			INSTR(dbms_lob.substr(DEFAULT_USERS),#updated_by#,1,1) = 0
+			THEN
+			dbms_lob.substr(DEFAULT_USERS) || ','|| #updated_by#
+			WHEN
+			INSTR(dbms_lob.substr(DEFAULT_USERS),#updated_by#,1,1) = 1
+			THEN
+			dbms_lob.substr(DEFAULT_USERS)
+			  END
+			 </isEqual>
+
+			<isEqual property="status" compareValue="0">
+			 CASE 
+			WHEN DEFAULT_USERS
+			IS NULL
+		 			 THEN ''
+			WHEN
+			INSTR(dbms_lob.substr(DEFAULT_USERS),#updated_by#,1,1) = 0
+			THEN
+			dbms_lob.substr(DEFAULT_USERS)
+			WHEN
+			INSTR(dbms_lob.substr(DEFAULT_USERS),#updated_by#,1,1) > 0
+			THEN
+			REPLACE(dbms_lob.substr(DEFAULT_USERS),#updated_by#)
+	  		 END
+	  		 </isEqual>
+			  ,
+			UPDATED_BY=#updated_by#,
+			UPDATED_ON=sysdate
+		WHERE TEMPLATE_ID =
+		#caseRawDataTemplateId#
+	</update>
+   
+	<select id="get_Selected_Info_Fields_ListCaseRawDataTemplate"
+		parameterClass="java.lang.Long" resultClass="com.worldcheck.atlas.vo.report.CaseRawTableVO">
+	   SELECT 
+		CCRF.TEMPLATE_ID
+		caseRawDataTemplateId,
+			CCRFM.FIELD_ID selectedInfoId,
+		CCRF.Id
+		fieldMapId,
+			CCRFM.FIELD_NAME selectedInfo,			
+		CCRF.OPTION_STATUS
+		optionStatus,
+		CCRFM.FIELD_FULL_NAME fieldFullName
+		FROM 
+			CMS_CASE_RAW_FIELDMAP CCRF,
+		CMS_CASE_RAW_FIELD_MASTER
+		CCRFM
+		WHERE
+			CCRF.FIELD_ID = CCRFM.FIELD_ID AND
+			CCRF.TEMPLATE_ID=#caseRawDataTemplateId#
+		order by CCRF.Id
+     </select> 
+     
+	<select id="get_Selected_Option_Fields_List_FOR_REPORT_TYPE"
+		parameterClass="java.lang.Long" resultClass="com.worldcheck.atlas.vo.report.CaseRawTableVO">
+    SELECT 
+			CCROI.SELECTED_OPTION_ID fieldMapId,
+			CMS_REPORT_TYPE_MASTER.REPORT_TYPE selectedOption,
+		CCRFM.FIELD_NAME
+		searchType
+	FROM 
+			CMS_CASE_RAW_FIELDMAP CCRF,
+		CMS_CASE_RAW_OPTION_INFO
+		CCROI,
+			CMS_CASE_RAW_FIELD_MASTER CCRFM,
+			CMS_REPORT_TYPE_MASTER
+	WHERE
+			CCRF.Field_ID = CCRFM.FIELD_ID AND
+			CCRF.ID = CCROI.FIELD_MAP_ID AND 
+		CCROI.SELECTED_OPTION_ID =
+		CMS_REPORT_TYPE_MASTER.REPORT_TYPE_MASTER_ID AND
+		CCROI.FIELD_MAP_ID=
+		#selectedInfoId#
+      </select>  
+    
+	  <select id="get_Selected_Option_Fields_List_FOR_SUB_REPORT_TYPE"
+		parameterClass="java.lang.Long" resultClass="com.worldcheck.atlas.vo.report.CaseRawTableVO">
+    SELECT 
+		CCROI.SELECTED_OPTION_ID fieldMapId,
+		CMS_SUBREPORT_TYPE_MASTER.SUB_REPORT selectedOption,
+		CCRFM.FIELD_NAME
+		searchType
+	FROM 
+		CMS_CASE_RAW_FIELDMAP CCRF,
+		CMS_CASE_RAW_OPTION_INFO
+		CCROI,
+			CMS_CASE_RAW_FIELD_MASTER CCRFM,
+			CMS_SUBREPORT_TYPE_MASTER
+	WHERE
+			CCRF.Field_ID = CCRFM.FIELD_ID AND
+			CCRF.ID = CCROI.FIELD_MAP_ID AND 
+		CCROI.SELECTED_OPTION_ID =
+		CMS_SUBREPORT_TYPE_MASTER.SUBREPORT_TYPE_MASTER_ID AND
+		CCROI.FIELD_MAP_ID=
+		#selectedInfoId#
+     </select> 
+    
+	<select id="get_Selected_Option_Fields_List_FOR_OFFICE"
+		parameterClass="java.lang.Long" resultClass="com.worldcheck.atlas.vo.report.CaseRawTableVO">
+	    SELECT 
+		      CCROI.SELECTED_OPTION_ID fieldMapId,
+		CMS_OFFICE_MASTER.OFFICE
+		selectedOption,
+		      CCRFM.FIELD_NAME searchType
+		FROM 
+		CMS_CASE_RAW_FIELDMAP
+		CCRF,
+		      CMS_CASE_RAW_OPTION_INFO CCROI,
+		      CMS_CASE_RAW_FIELD_MASTER CCRFM,
+		      CMS_OFFICE_MASTER
+		WHERE
+		      CCRF.Field_ID = CCRFM.FIELD_ID AND
+		CCRF.ID =
+		CCROI.FIELD_MAP_ID AND
+		CCROI.SELECTED_OPTION_ID =
+		CMS_OFFICE_MASTER.OFFICE_MASTER_ID AND
+		      CCROI.FIELD_MAP_ID=#selectedInfoId#
+      </select>  
+      
+	<select id="get_Selected_Option_Fields_List_FOR_CASEMANAGER"
+		parameterClass="java.lang.Long" resultClass="com.worldcheck.atlas.vo.report.CaseRawTableVO">
+      SELECT 
+			CCROI.SELECTED_OPTION_ID fieldMapId,
+		cms_user_master.USER_FULL_NAME
+		selectedOption,
+			CCRFM.FIELD_NAME searchType
+	   FROM 
+		CMS_CASE_RAW_FIELDMAP
+		CCRF,
+			CMS_CASE_RAW_OPTION_INFO CCROI,
+			CMS_CASE_RAW_FIELD_MASTER CCRFM,
+			cms_user_master
+	  WHERE
+			CCRF.Field_ID = CCRFM.FIELD_ID AND
+		CCRF.ID =
+		CCROI.FIELD_MAP_ID AND
+		CCROI.SELECTED_OPTION_ID =
+		cms_user_master.USER_MASTER_ID AND
+			CCROI.FIELD_MAP_ID= #selectedInfoId#
+	</select>	 
+     
+	<select id="get_Selected_Option_Fields_List_FOR_CLIENTCODE"
+		parameterClass="java.lang.Long" resultClass="com.worldcheck.atlas.vo.report.CaseRawTableVO">
+      SELECT 
+			CCROI.SELECTED_OPTION_ID fieldMapId,
+		CMS_CLIENT_MASTER.CLIENT_CODE
+		selectedOption,
+			CCRFM.FIELD_NAME searchType
+	   FROM 
+		CMS_CASE_RAW_FIELDMAP
+		CCRF,
+			CMS_CASE_RAW_OPTION_INFO CCROI,
+			CMS_CASE_RAW_FIELD_MASTER CCRFM,
+			CMS_CLIENT_MASTER
+	  WHERE
+			CCRF.Field_ID = CCRFM.FIELD_ID AND
+		CCRF.ID =
+		CCROI.FIELD_MAP_ID AND
+		CCROI.SELECTED_OPTION_ID =
+		CMS_CLIENT_MASTER.CLIENT_MASTER_ID AND
+		CCROI.FIELD_MAP_ID =
+		#selectedInfoId#
+	</select>
+     
+	<select id="get_Selected_Option_Fields_List_FOR_CASESTATUS"
+		parameterClass="java.lang.Long" resultClass="com.worldcheck.atlas.vo.report.CaseRawTableVO">
+     SELECT 
+			CCROI.SELECTED_OPTION_ID fieldMapId,
+			CMS_CASE_STATUS_MASTER.DESCRIPTION selectedOption,
+		CCRFM.FIELD_NAME
+		searchType
+	   FROM 
+			CMS_CASE_RAW_FIELDMAP CCRF,
+		CMS_CASE_RAW_OPTION_INFO
+		CCROI,
+			CMS_CASE_RAW_FIELD_MASTER CCRFM,
+			CMS_CASE_STATUS_MASTER
+	  WHERE
+			CCRF.Field_ID = CCRFM.FIELD_ID AND
+			CCRF.ID = CCROI.FIELD_MAP_ID AND 
+			CCROI.SELECTED_OPTION_ID = CMS_CASE_STATUS_MASTER.CASE_STATUS_ID AND 
+			CCROI.FIELD_MAP_ID = #selectedInfoId#
+	</select>
+	 
+	 <select id="getExportToExcelSubjectData" parameterClass="com.worldcheck.atlas.vo.report.CaseRawTableVO" 
+	resultClass="java.util.HashMap" remapResults="true">
+	 SELECT 
+			<iterate property="fieldName" conjunction=",">
+				$fieldName[]$
+	    	</iterate>
+	   FROM 
+			DW_CASE_RAW_DATA_SUBJECT_MIS
+ 		
+	  <dynamic prepend="WHERE">	   	 
+	     <isNotNull property="selectedReportType">
+				<isNotEmpty prepend="AND" property="selectedReportType">
+					REPORT_TYPE NOT IN
+					($selectedReportType$)
+			    </isNotEmpty>
+		 </isNotNull>
+		   <isNotNull property="selectedSubReportType">
+				<isNotEmpty prepend="AND" property="selectedSubReportType">
+					(SUB_REPORT_TYPE NOT IN
+					($selectedSubReportType$)  OR SUB_REPORT_TYPE IS null)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedClientCode">
+				<isNotEmpty prepend="AND" property="selectedClientCode">
+					
+					($selectedClientCode$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedCaseManager">
+				<isNotEmpty prepend="AND" property="selectedCaseManager">
+					
+					($selectedCaseManager$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedCaseStatus">
+				<isNotEmpty prepend="AND" property="selectedCaseStatus">
+					CASE_STATUS NOT IN
+					($selectedCaseStatus$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedPriTeamOffice">
+				<isNotEmpty prepend="AND" property="selectedPriTeamOffice">
+					PRIMARY_TEAM_OFFICE
+					NOT IN ($selectedPriTeamOffice$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam1">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam1">
+					 SUPPORTING_1_TEAM_OFFICE NOT IN ($selectedSuppTeam1$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam2">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam2">
+					 SUPPORTING_2_TEAM_OFFICE NOT IN ($selectedSuppTeam2$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam3">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam3">
+					 SUPPORTING_3_TEAM_OFFICE NOT IN ($selectedSuppTeam3$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="dateType">
+				<isEqual prepend="AND" property="dateType" compareValue="Case Received Date">
+				
+					CASE_RECEIVED_DATE <![CDATA[ >= ]]>
+					To_date('$startDate$','DD MON RRRR') AND CASE_RECEIVED_DATE <![CDATA[ <= ]]>
+					To_date('$endDate$','DD MON RRRR')+1
+			    </isEqual>
+			    <isEqual prepend="AND" property="dateType" compareValue="Final Client Sent Date">					 
+					FINAL_SENT_D_CLIENT <![CDATA[ >= ]]>
+					To_date('$startDate$','DD MON RRRR') AND FINAL_SENT_D_CLIENT <![CDATA[ <= ]]>
+					To_date('$endDate$','DD MON RRRR')
+			    </isEqual>
+		 </isNotNull>		
+		</dynamic>		  
+			  
+	</select>
+	
+	<select id="getExportToExcelJlpData" parameterClass="com.worldcheck.atlas.vo.report.CaseRawTableVO" 
+	resultClass="java.util.HashMap" remapResults="true">
+	 SELECT 
+			<iterate property="fieldName" conjunction=",">
+				$fieldName[]$
+	    	</iterate>
+	   FROM 
+			DW_CASE_RAW_DATA_JLP_MIS
+ 		
+	  <dynamic prepend="WHERE">	   	 
+	     <isNotNull property="selectedReportType">
+				<isNotEmpty prepend="AND" property="selectedReportType">
+					REPORT_TYPE NOT IN
+					($selectedReportType$)
+			    </isNotEmpty>
+		 </isNotNull>
+		   <isNotNull property="selectedSubReportType">
+				<isNotEmpty prepend="AND" property="selectedSubReportType">
+					(SUB_REPORT_TYPE NOT IN
+					($selectedSubReportType$)  OR SUB_REPORT_TYPE IS null)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedClientCode">
+				<isNotEmpty prepend="AND" property="selectedClientCode">
+					
+					($selectedClientCode$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedCaseManager">
+				<isNotEmpty prepend="AND" property="selectedCaseManager">
+					
+					($selectedCaseManager$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedCaseStatus">
+				<isNotEmpty prepend="AND" property="selectedCaseStatus">
+					CASE_STATUS NOT IN
+					($selectedCaseStatus$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedPriTeamOffice">
+				<isNotEmpty prepend="AND" property="selectedPriTeamOffice">
+					PRIMARY_TEAM_OFFICE
+					NOT IN ($selectedPriTeamOffice$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam1">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam1">
+					 SUPPORTING_1_TEAM_OFFICE NOT IN ($selectedSuppTeam1$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam2">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam2">
+					 SUPPORTING_2_TEAM_OFFICE NOT IN ($selectedSuppTeam2$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam3">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam3">
+					 SUPPORTING_3_TEAM_OFFICE NOT IN ($selectedSuppTeam3$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="dateType">
+				<isEqual prepend="AND" property="dateType" compareValue="Case Received Date">
+				
+					CASE_RECEIVED_DATE <![CDATA[ >= ]]>
+					To_date('$startDate$','DD MON RRRR') AND CASE_RECEIVED_DATE <![CDATA[ <= ]]>
+					To_date('$endDate$','DD MON RRRR')+1
+			    </isEqual>
+			    <isEqual prepend="AND" property="dateType" compareValue="Final Client Sent Date">					 
+					FINAL_SENT_D_CLIENT <![CDATA[ >= ]]>
+					To_date('$startDate$','DD MON RRRR') AND FINAL_SENT_D_CLIENT <![CDATA[ <= ]]>
+					To_date('$endDate$','DD MON RRRR')
+			    </isEqual>
+		 </isNotNull>		
+		</dynamic>		  
+			  
+	</select>
+	
+	
+	<select id="getExportToExcelData" parameterClass="com.worldcheck.atlas.vo.report.CaseRawTableVO"
+		resultClass="java.util.HashMap" remapResults="true">
+      SELECT 
+			<iterate property="fieldName" conjunction=",">
+				$fieldName[]$
+	    	</iterate>
+	   FROM 
+			DW_CASE_RAW_DATA
+ 		
+	  <dynamic prepend="WHERE">	   	 
+	     <isNotNull property="selectedReportType">
+				<isNotEmpty prepend="AND" property="selectedReportType">
+					REPORT_TYPE NOT IN
+					($selectedReportType$)
+			    </isNotEmpty>
+		 </isNotNull>
+		   <isNotNull property="selectedSubReportType">
+				<isNotEmpty prepend="AND" property="selectedSubReportType">
+					(SUB_REPORT_TYPE NOT IN
+					($selectedSubReportType$)  OR SUB_REPORT_TYPE IS null)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedClientCode">
+				<isNotEmpty prepend="AND" property="selectedClientCode">
+					($selectedClientCode$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedCaseManager">
+				<isNotEmpty prepend="AND" property="selectedCaseManager">
+					
+					($selectedCaseManager$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedCaseStatus">
+				<isNotEmpty prepend="AND" property="selectedCaseStatus">
+					CASE_STATUS NOT IN
+					($selectedCaseStatus$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedPriTeamOffice">
+				<isNotEmpty prepend="AND" property="selectedPriTeamOffice">
+					PRIMARY_TEAM_OFFICE
+					NOT IN ($selectedPriTeamOffice$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam1">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam1">
+					 SUPPORTING_1_TEAM_OFFICE NOT IN ($selectedSuppTeam1$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam2">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam2">
+					 SUPPORTING_2_TEAM_OFFICE NOT IN ($selectedSuppTeam2$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam3">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam3">
+					 SUPPORTING_3_TEAM_OFFICE NOT IN ($selectedSuppTeam3$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="dateType">
+				<isEqual prepend="AND" property="dateType" compareValue="Case Received Date">
+				
+					CASE_RECEIVED_DATE <![CDATA[ >= ]]>
+					To_date('$startDate$','DD MON RRRR') AND CASE_RECEIVED_DATE <![CDATA[ <= ]]>
+					To_date('$endDate$','DD MON RRRR')+1
+			    </isEqual>
+			    <isEqual prepend="AND" property="dateType" compareValue="Final Client Sent Date">					 
+					FINAL_SENT_D_CLIENT <![CDATA[ >= ]]>
+					To_date('$startDate$','DD MON RRRR') AND FINAL_SENT_D_CLIENT <![CDATA[ <= ]]>
+					To_date('$endDate$','DD MON RRRR')
+			    </isEqual>
+		 </isNotNull>		
+		</dynamic>		  
+			  
+	</select>
+	
+		<select id="getExportToExcelDataCount" parameterClass="com.worldcheck.atlas.vo.report.CaseRawTableVO" resultClass="int" remapResults="true">
+      SELECT count(*)
+	   FROM DW_CASE_RAW_DATA
+ 		
+	  <dynamic prepend="WHERE">	   	 
+	     <isNotNull property="selectedReportType">
+				<isNotEmpty prepend="AND" property="selectedReportType">
+					REPORT_TYPE NOT IN
+					($selectedReportType$)
+			    </isNotEmpty>
+		 </isNotNull>
+		   <isNotNull property="selectedSubReportType">
+				<isNotEmpty prepend="AND" property="selectedSubReportType">
+					(SUB_REPORT_TYPE NOT IN
+					($selectedSubReportType$)  OR SUB_REPORT_TYPE IS null)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedClientCode">
+				<isNotEmpty prepend="AND" property="selectedClientCode">
+					
+					($selectedClientCode$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedCaseManager">
+				<isNotEmpty prepend="AND" property="selectedCaseManager">
+					
+					($selectedCaseManager$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedCaseStatus">
+				<isNotEmpty prepend="AND" property="selectedCaseStatus">
+					CASE_STATUS NOT IN
+					($selectedCaseStatus$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedPriTeamOffice">
+				<isNotEmpty prepend="AND" property="selectedPriTeamOffice">
+					PRIMARY_TEAM_OFFICE
+					NOT IN ($selectedPriTeamOffice$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam1">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam1">
+					 SUPPORTING_1_TEAM_OFFICE NOT IN ($selectedSuppTeam1$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam2">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam2">
+					 SUPPORTING_2_TEAM_OFFICE NOT IN ($selectedSuppTeam2$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam3">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam3">
+					 SUPPORTING_3_TEAM_OFFICE NOT IN ($selectedSuppTeam3$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="dateType">
+				<isEqual prepend="AND" property="dateType" compareValue="Case Received Date">
+				
+					CASE_RECEIVED_DATE <![CDATA[ >= ]]>
+					To_date('$startDate$','DD MON RRRR') AND CASE_RECEIVED_DATE <![CDATA[ <= ]]>
+					To_date('$endDate$','DD MON RRRR')+1
+			    </isEqual>
+			    <isEqual prepend="AND" property="dateType" compareValue="Final Client Sent Date">					 
+					FINAL_SENT_D_CLIENT <![CDATA[ >= ]]>
+					To_date('$startDate$','DD MON RRRR') AND FINAL_SENT_D_CLIENT <![CDATA[ <= ]]>
+					To_date('$endDate$','DD MON RRRR')
+			    </isEqual>
+		 </isNotNull>		
+		</dynamic>		  
+			  
+	</select>
+	
+	<select id="getSubReportTypesList" 
+		resultClass="com.worldcheck.atlas.vo.masters.ReportTypeMasterVO">
+	    SELECT SUB_REPORT subReportType, 
+		subreport_type_master_id subReportTypeId,
+		report_type_id reportTypeId,
+		SUB_CRN_INITIAL subCRNInitial,
+		(select report_type from
+        cms_report_type_master where  cms_report_type_master.report_type_master_id = report_type_id ) reportType
+        ,SUB_REPORT_CODE subReportTypeCode
+		FROM
+		CMS_SUBREPORT_TYPE_MASTER
+		WHERE STATUS = 1 and report_type_id in (select
+		rtype.report_type_master_id from
+		cms_report_type_master rType where status=1
+		)
+    
+	</select>
+	
+	<select id="getExportToExcelSubjectDataCount" parameterClass="com.worldcheck.atlas.vo.report.CaseRawTableVO" 
+	resultClass="int" remapResults="true">
+	SELECT count(*)
+	   FROM DW_CASE_RAW_DATA
+ 		
+	  <dynamic prepend="WHERE">	   	 
+	     <isNotNull property="selectedReportType">
+				<isNotEmpty prepend="AND" property="selectedReportType">
+					REPORT_TYPE NOT IN
+					($selectedReportType$)
+			    </isNotEmpty>
+		 </isNotNull>
+		   <isNotNull property="selectedSubReportType">
+				<isNotEmpty prepend="AND" property="selectedSubReportType">
+					(SUB_REPORT_TYPE NOT IN
+					($selectedSubReportType$)  OR SUB_REPORT_TYPE IS null)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedClientCode">
+				<isNotEmpty prepend="AND" property="selectedClientCode">
+					
+					($selectedClientCode$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedCaseManager">
+				<isNotEmpty prepend="AND" property="selectedCaseManager">
+					
+					($selectedCaseManager$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedCaseStatus">
+				<isNotEmpty prepend="AND" property="selectedCaseStatus">
+					CASE_STATUS NOT IN
+					($selectedCaseStatus$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedPriTeamOffice">
+				<isNotEmpty prepend="AND" property="selectedPriTeamOffice">
+					PRIMARY_TEAM_OFFICE
+					NOT IN ($selectedPriTeamOffice$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam1">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam1">
+					 SUPPORTING_1_TEAM_OFFICE NOT IN ($selectedSuppTeam1$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam2">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam2">
+					 SUPPORTING_2_TEAM_OFFICE NOT IN ($selectedSuppTeam2$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam3">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam3">
+					 SUPPORTING_3_TEAM_OFFICE NOT IN ($selectedSuppTeam3$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="dateType">
+				<isEqual prepend="AND" property="dateType" compareValue="Case Received Date">
+				
+					CASE_RECEIVED_DATE <![CDATA[ >= ]]>
+					To_date('$startDate$','DD MON RRRR') AND CASE_RECEIVED_DATE <![CDATA[ <= ]]>
+					To_date('$endDate$','DD MON RRRR')+1
+			    </isEqual>
+			    <isEqual prepend="AND" property="dateType" compareValue="Final Client Sent Date">					 
+					FINAL_SENT_D_CLIENT <![CDATA[ >= ]]>
+					To_date('$startDate$','DD MON RRRR') AND FINAL_SENT_D_CLIENT <![CDATA[ <= ]]>
+					To_date('$endDate$','DD MON RRRR')
+			    </isEqual>
+		 </isNotNull>		
+		</dynamic>		  
+			  
+	</select>
+	
+	<select id="getExportToExcelJlpDataCount" parameterClass="com.worldcheck.atlas.vo.report.CaseRawTableVO" 
+	resultClass="int" remapResults="true">
+	SELECT count(*)
+	   FROM DW_CASE_RAW_DATA
+ 		
+	  <dynamic prepend="WHERE">	   	 
+	     <isNotNull property="selectedReportType">
+				<isNotEmpty prepend="AND" property="selectedReportType">
+					REPORT_TYPE NOT IN
+					($selectedReportType$)
+			    </isNotEmpty>
+		 </isNotNull>
+		   <isNotNull property="selectedSubReportType">
+				<isNotEmpty prepend="AND" property="selectedSubReportType">
+					(SUB_REPORT_TYPE NOT IN
+					($selectedSubReportType$) OR SUB_REPORT_TYPE IS null)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedClientCode">
+				<isNotEmpty prepend="AND" property="selectedClientCode">
+					
+					($selectedClientCode$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedCaseManager">
+				<isNotEmpty prepend="AND" property="selectedCaseManager">
+					
+					($selectedCaseManager$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedCaseStatus">
+				<isNotEmpty prepend="AND" property="selectedCaseStatus">
+					CASE_STATUS NOT IN
+					($selectedCaseStatus$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedPriTeamOffice">
+				<isNotEmpty prepend="AND" property="selectedPriTeamOffice">
+					PRIMARY_TEAM_OFFICE
+					NOT IN ($selectedPriTeamOffice$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam1">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam1">
+					 SUPPORTING_1_TEAM_OFFICE NOT IN ($selectedSuppTeam1$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam2">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam2">
+					 SUPPORTING_2_TEAM_OFFICE NOT IN ($selectedSuppTeam2$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="selectedSuppTeam3">
+				<isNotEmpty prepend="AND" property="selectedSuppTeam3">
+					 SUPPORTING_3_TEAM_OFFICE NOT IN ($selectedSuppTeam3$)
+			    </isNotEmpty>
+		 </isNotNull>
+		 <isNotNull property="dateType">
+				<isEqual prepend="AND" property="dateType" compareValue="Case Received Date">
+				
+					CASE_RECEIVED_DATE <![CDATA[ >= ]]>
+					To_date('$startDate$','DD MON RRRR') AND CASE_RECEIVED_DATE <![CDATA[ <= ]]>
+					To_date('$endDate$','DD MON RRRR')+1
+			    </isEqual>
+			    <isEqual prepend="AND" property="dateType" compareValue="Final Client Sent Date">					 
+					FINAL_SENT_D_CLIENT <![CDATA[ >= ]]>
+					To_date('$startDate$','DD MON RRRR') AND FINAL_SENT_D_CLIENT <![CDATA[ <= ]]>
+					To_date('$endDate$','DD MON RRRR')
+			    </isEqual>
+		 </isNotNull>		
+		</dynamic>		  
+			  
+	</select>
+	
+	<select id="getMaterializedViewRefreshTime"
+		parameterClass="com.worldcheck.atlas.vo.MaterializedViewVO" resultClass="com.worldcheck.atlas.vo.MaterializedViewVO">
+			SELECT mview_name, to_char(LAST_REFRESH_DATE, 'dd-Mon-yyyy hh24:mi:ss') startTime,
+			CASE
+			  WHEN fullrefreshtim <![CDATA[ <> ]]> 0 THEN
+				to_char( LAST_REFRESH_DATE + fullrefreshtim/60/60/24, 'dd-Mon-yyyy hh24:mi:ss')
+			  WHEN increfreshtim <![CDATA[ <> ]]> 0 THEN
+				to_char( LAST_REFRESH_DATE + increfreshtim/60/60/24, 'dd-Mon-yyyy hh24:mi:ss')
+			  ELSE
+				 to_char(LAST_REFRESH_DATE, 'dd-Mon-yyyy hh24:mi:ss')
+			END as endTime,
+			fullrefreshtim fullrefreshtime,increfreshtim increfreshtime
+			FROM all_mview_analysis
+			<isNotNull property="mvList">
+			<isNotEmpty  prepend="where" property="mvList">
+				mview_name in 
+				<iterate property="mvList" open="(" close=")" conjunction=",">
+					#mvList[]#
+				</iterate> 
+			</isNotEmpty>
+		</isNotNull>
+     </select> 
+</sqlMap>

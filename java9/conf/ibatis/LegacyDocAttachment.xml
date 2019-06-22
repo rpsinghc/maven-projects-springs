@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="LegacyDocAttachment">
+
+<select id="getAttachmentDetails" resultClass="com.worldcheck.atlas.vo.document.LegacyDocAttachmentVO" parameterClass="com.worldcheck.atlas.vo.document.LegacyDocAttachmentVO">
+
+
+	SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (
+select 
+ATTACHMENTID,
+CRN crn,
+SUBJECTID subjectId,
+ISSENSITIVE isSensitive,
+REFERENCE reference,
+FILENAME fileName,
+FOLDERNAME folderName,
+VERSION version,
+WHOCREATED whoCreated,
+WHENCREATED whenCreated,
+WHOMODIFIED whoModified,
+WHENMODIFIED whenModified,
+FINALREPORTFLAG finalReportFlag,
+CLIENTCODE clientCode
+from attachment@legacy
+WHERE crn = #crn#
+
+ORDER BY upper($sortColumnName$) $sortType$
+
+			) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+
+
+</select>
+
+
+<select id="getAttachmentDetailsCount" resultClass="int" parameterClass="com.worldcheck.atlas.vo.document.LegacyDocAttachmentVO">
+
+
+select count(*) from
+(
+select 
+ATTACHMENTID,
+CRN crn,
+SUBJECTID subjectId,
+ISSENSITIVE isSensitive,
+REFERENCE reference,
+FILENAME fileName,
+FOLDERNAME folderName,
+VERSION version,
+WHOCREATED whoCreated,
+WHENCREATED whenCreated,
+WHOMODIFIED whoModified,
+WHENMODIFIED whenModified,
+FINALREPORTFLAG finalReportFlag,
+CLIENTCODE clientCode
+from attachment@legacy
+WHERE crn = #crn#
+
+)
+
+
+</select>
+
+
+</sqlMap>

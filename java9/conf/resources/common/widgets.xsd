@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- edited with XMLSpy v2006 rel. 3 U (http://www.altova.com) by AKA (SavvyWeb) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:element name="height">
+        <xs:simpleType>
+            <xs:restriction base="xs:short">
+                <xs:whiteSpace value="collapse"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="category">
+        <xs:simpleType>
+            <xs:restriction base="xs:string"/>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="title">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="preserve"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="refreshinterval">
+    	<xs:simpleType>
+        	<xs:restriction base="xs:int">
+        		<xs:whiteSpace value="collapse"/>
+        	</xs:restriction>	
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="graphical">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="title"/>
+                <xs:element ref="category" minOccurs="0"/>
+                <xs:element ref="width"/>
+                <xs:element ref="height"/>
+                <xs:element ref="jsp"/>
+                <xs:element ref="description" minOccurs="0"/>
+                <xs:element ref="drilldownurl" minOccurs="0"/>
+                <xs:element ref="charttype" minOccurs="0"/>
+                <xs:element ref="properties" minOccurs="0"/>
+                <xs:element ref="sqlquery" minOccurs="0"/>
+                <xs:element ref="queries" minOccurs="0"/>
+                <xs:element ref="refreshinterval" minOccurs="0"/>
+            </xs:all>
+            <xs:attribute name="name" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="preserve"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="tabular">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="title"/>
+                <xs:element ref="category" minOccurs="0"/>
+                <xs:element ref="width"/>
+                <xs:element ref="height"/>
+                <xs:element ref="jsp"/>
+                <xs:element ref="description" minOccurs="0"/>
+                <xs:element ref="properties" minOccurs="0"/>
+                <xs:element ref="sqlquery" minOccurs="0"/>
+                <xs:element ref="queries" minOccurs="0"/>
+                <xs:element ref="drilldownurls" minOccurs="0"/>
+                <xs:element ref="refreshinterval" minOccurs="0"/>
+            </xs:all>
+            <xs:attribute name="name" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="preserve"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="infopad">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="title"/>
+                <xs:element ref="category" minOccurs="0"/>
+                <xs:element ref="width"/>
+                <xs:element ref="height"/>
+                <xs:element ref="jsp"/>
+                <xs:element ref="description" minOccurs="0"/>
+                <xs:element ref="properties" minOccurs="0"/>
+                <xs:element ref="infopadname"/>
+                <xs:element ref="appname"/>
+                <xs:element ref="modulename"/>
+                <xs:element ref="sliceon"/>
+                <xs:element ref="sliceon-value"/>
+                <xs:element ref="refreshinterval" minOccurs="0"/>
+            </xs:all>
+            <xs:attribute name="name" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="preserve"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="scorecard">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="title"/>
+                <xs:element ref="category" minOccurs="0"/>
+                <xs:element ref="width"/>
+                <xs:element ref="height"/>
+                <xs:element ref="jsp"/>
+                <xs:element ref="description" minOccurs="0"/>
+                <xs:element ref="properties" minOccurs="0"/>
+                <xs:element ref="type"/>
+                <xs:element ref="scorecardname"/>
+                <xs:element ref="perspectivename" minOccurs="0"/>
+                <xs:element ref="kpiname" minOccurs="0"/>
+                <xs:element ref="refreshinterval" minOccurs="0"/>
+            </xs:all>
+            <xs:attribute name="name" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="preserve"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="globalds">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="title"/>
+                <xs:element ref="category" minOccurs="0"/>
+                <xs:element ref="width"/>
+                <xs:element ref="height"/>
+                <xs:element ref="jsp"/>
+                <xs:element ref="appname"/>
+                <xs:element ref="description" minOccurs="0"/>
+                <xs:element ref="properties" minOccurs="0"/>
+                <xs:element ref="dataslots"/>
+                <xs:element ref="refreshinterval" minOccurs="0"/>
+            </xs:all>
+            <xs:attribute name="name" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="preserve"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="other">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="title"/>
+                <xs:element ref="category" minOccurs="0"/>
+                <xs:element ref="width"/>
+                <xs:element ref="height"/>
+                <xs:element ref="jsp"/>
+                <xs:element ref="description" minOccurs="0"/>
+                <xs:element ref="properties" minOccurs="0"/>
+                <xs:element ref="targeturl"/>
+                <xs:element ref="refreshinterval" minOccurs="0"/>
+            </xs:all>
+            <xs:attribute name="name" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="preserve"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="taskanalysis">
+            <xs:complexType>
+                <xs:all>
+                    <xs:element ref="title"/>
+                    <xs:element ref="category" minOccurs="0"/>
+                    <xs:element ref="width"/>
+                    <xs:element ref="height"/>
+                    <xs:element ref="description" minOccurs="0"/>
+                    <xs:element ref="jsp"/>
+                    <xs:element ref="appname" minOccurs="0"/>
+                    <xs:element ref="filter"/>
+                    <xs:element ref="status"/>
+                    <xs:element ref="priority"/>
+                    <xs:element ref="sortcolumn"/>
+                    <xs:element ref="sortorder"/>
+                    <xs:element ref="duedate"/>
+                    <xs:element ref="fetchsize"/>
+                    <xs:element ref="refreshinterval" minOccurs="0"/>
+                </xs:all>
+                <xs:attribute name="name" use="required">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:whiteSpace value="preserve"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:complexType>
+    </xs:element>
+    <xs:element name="instanceanalysis">
+                <xs:complexType>
+                    <xs:all>
+                        <xs:element ref="title"/>
+                        <xs:element ref="category" minOccurs="0"/>
+                        <xs:element ref="width"/>
+                        <xs:element ref="height"/>
+                        <xs:element ref="description" minOccurs="0"/>
+                        <xs:element ref="jsp"/>
+                        <xs:element ref="appname" minOccurs="0"/>
+                        <xs:element ref="filter"/>
+                        <xs:element ref="status"/>
+                        <xs:element ref="priority"/>
+                        <xs:element ref="sortcolumn"/>
+                        <xs:element ref="sortorder"/>
+                        <xs:element ref="duedate"/>
+                        <xs:element ref="fetchsize"/>
+                        <xs:element ref="refreshinterval" minOccurs="0"/>
+                    </xs:all>
+                    <xs:attribute name="name" use="required">
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:whiteSpace value="preserve"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                </xs:complexType>
+    </xs:element>
+    <xs:element name="alerts">
+                <xs:complexType>
+                    <xs:all>
+                        <xs:element ref="title"/>
+                        <xs:element ref="category" minOccurs="0"/>
+                        <xs:element ref="width"/>
+                        <xs:element ref="height"/>
+                        <xs:element ref="description" minOccurs="0"/>
+                        <xs:element ref="jsp"/>
+                        <xs:element ref="appname" minOccurs="0"/>
+                        <xs:element ref="severity"/>
+                        <xs:element ref="recvdfromdate"/>
+                        <xs:element ref="recvdtodate"/>
+            <xs:element ref="sortcolumn"/>
+                        <xs:element ref="sortorder"/>
+            <xs:element ref="fetchsize"/>
+            		<xs:element ref="refreshinterval" minOccurs="0"/>
+                    </xs:all>
+                    <xs:attribute name="name" use="required">
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:whiteSpace value="preserve"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                </xs:complexType>
+    </xs:element>
+    <xs:element name="compositeui">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element ref="title"/>
+                            <xs:element ref="category" />
+                            <xs:element ref="width"/>
+                            <xs:element ref="height"/>
+                            <xs:element ref="description" minOccurs="0"/>
+                            <xs:element ref="renderer" />
+                            <xs:element ref="properties" minOccurs="0"/>
+                            <xs:element ref="appname" minOccurs="0"/>
+                            <xs:element ref="targeturl"/>
+                        </xs:all>
+                        <xs:attribute name="name" use="required">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:whiteSpace value="preserve"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>                        
+                    </xs:complexType>
+    </xs:element>
+    <xs:element name="widgets">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element ref="graphical" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="tabular" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="infopad" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="scorecard" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="globalds" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="other" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="taskanalysis" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="instanceanalysis" minOccurs="0" maxOccurs="unbounded"/>
+        		<xs:element ref="alerts" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="compositeui" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="width">
+        <xs:simpleType>
+            <xs:restriction base="xs:short">
+                <xs:whiteSpace value="collapse"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="jsp">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="collapse"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="renderer">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:whiteSpace value="collapse"/>
+                </xs:restriction>
+            </xs:simpleType>
+    </xs:element>
+    <xs:element name="description">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="preserve"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="drilldownurl">
+        <xs:complexType mixed="true">
+            <xs:attribute name="target">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="inline"/>
+                        <xs:enumeration value="popup"/>
+                        <xs:enumeration value="browser"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="properties">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="property">
+        <xs:complexType>
+            <xs:attribute name="name" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="preserve"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="value" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="preserve"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="charttype">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="verticalBar2D"/>
+                <xs:enumeration value="verticalBar3D"/>
+                <xs:enumeration value="horizontalBar2D"/>
+                <xs:enumeration value="horizontalBar3D"/>
+                <xs:enumeration value="pie2D"/>
+                <xs:enumeration value="pie3D"/>
+                <xs:enumeration value="line2D"/>
+                <xs:enumeration value="line3D"/>
+                <xs:enumeration value="doughnut2D"/>
+                <xs:enumeration value="doughnut3D"/>
+                <xs:enumeration value="area"/>
+                <xs:enumeration value="meter"/>
+                <xs:enumeration value="funnel"/>
+                <xs:enumeration value="pyramid"/>
+                <xs:enumeration value="bar3DLine"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="queries">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="sqlquery" minOccurs="1" maxOccurs="5"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sqlquery">
+        <xs:complexType mixed="true">
+            <xs:attribute name="dbtype">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="oracle"/>
+                        <xs:enumeration value="mssqlserver"/>
+                        <xs:enumeration value="ibmdb2"/>
+                        <xs:enumeration value="sybase"/>
+                        <xs:enumeration value="openedge"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="infopadname">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="preserve"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="appname">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="preserve"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="modulename">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="preserve"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="sliceon">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="row"/>
+                <xs:enumeration value="column"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="sliceon-value">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="preserve"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="scorecardname">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="preserve"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="perspectivename">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="preserve"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="kpiname">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="preserve"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="type">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="scorecard"/>
+                <xs:enumeration value="perspective"/>
+                <xs:enumeration value="kpi"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="filter">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="collapse"/>   
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="priority">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value=""/>
+                <xs:enumeration value="CRITICAL"/>
+                <xs:enumeration value="HIGH"/>
+                <xs:enumeration value="MEDIUM"/>        
+                <xs:enumeration value="LOW"/>       
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="severity">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value=""/>
+                <xs:enumeration value="CRITICAL"/>
+                <xs:enumeration value="HIGH"/>
+                <xs:enumeration value="MEDIUM"/>        
+                <xs:enumeration value="LOW"/>       
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="status">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="I_ASSIGNED"/>
+                <xs:enumeration value="I_AVAILABLE"/>
+                <xs:enumeration value="I_COMPLETED"/>   
+                <xs:enumeration value="PI_ACTIVATED"/>  
+                <xs:enumeration value="PI_COMPLETED"/>  
+                <xs:enumeration value="PI_SUSPENDED"/>  
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="duedate">
+        <xs:simpleType>
+            <xs:restriction base="xs:long">
+                <xs:whiteSpace value="collapse"/>   
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+        <xs:element name="recvdfromdate">
+        <xs:simpleType>
+            <xs:restriction base="xs:long">
+                <xs:whiteSpace value="collapse"/>   
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="recvdtodate">
+        <xs:simpleType>
+            <xs:restriction base="xs:long">
+                <xs:whiteSpace value="collapse"/>   
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="sortcolumn">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="collapse"/>   
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="fetchsize">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:whiteSpace value="collapse"/>   
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="sortorder">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="0"/>
+                <xs:enumeration value="1"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="dataslots">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="dataslot" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="dataslot">
+        <xs:complexType>
+            <xs:attribute name="name" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="collapse"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="type" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="collapse"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="drilldownurls">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="url" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="target">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="inline"/>
+                        <xs:enumeration value="popup"/>
+                        <xs:enumeration value="browser"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="url">
+        <xs:complexType mixed="true">
+            <xs:attribute name="column" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="replace"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="targeturl">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="param" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="url" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="replace"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="param">
+        <xs:complexType mixed="true">
+            <xs:attribute name="name" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:whiteSpace value="replace"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

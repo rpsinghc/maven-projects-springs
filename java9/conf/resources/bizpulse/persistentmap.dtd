@@ -1,0 +1,31 @@
+<!ELEMENT PersistentMaps ( PersistentMap+ ) >
+<!ATTLIST PersistentMaps publishdate CDATA #REQUIRED >
+<!ATTLIST PersistentMaps sbmbuild CDATA #REQUIRED >
+<!ATTLIST PersistentMaps sbmversion CDATA #REQUIRED >
+
+<!ELEMENT PersistentMap ( MapAttributes+, MapInstances+) >
+<!ATTLIST PersistentMap classname CDATA #REQUIRED >
+<!ATTLIST PersistentMap appname CDATA #REQUIRED >
+<!ATTLIST PersistentMap modulename CDATA #REQUIRED >
+<!ATTLIST PersistentMap classid CDATA #REQUIRED >
+
+<!ELEMENT MapAttributes EMPTY>
+<!ATTLIST MapAttributes name CDATA #REQUIRED >
+<!ATTLIST MapAttributes type CDATA #REQUIRED >
+
+<!ELEMENT MapInstances ( MapInstance+ ) >
+
+<!ELEMENT MapInstance ( MapData ) >
+<!ATTLIST MapInstance name CDATA #REQUIRED >
+<!ATTLIST MapInstance appname CDATA #REQUIRED >
+<!ATTLIST MapInstance modulename CDATA #REQUIRED >
+<!ATTLIST MapInstance id CDATA #REQUIRED >
+
+<!ELEMENT MapData ( MapKey+ ) >
+
+<!ELEMENT MapKey ( Attribute+ ) >
+<!ATTLIST MapKey name CDATA #REQUIRED >
+
+<!ELEMENT Attribute ( #PCDATA ) >
+<!ATTLIST Attribute name CDATA #REQUIRED >
+<!ATTLIST Attribute value CDATA #REQUIRED >

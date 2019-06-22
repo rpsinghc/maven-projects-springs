@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="FCPARedFlagVO">
+
+	<resultMap id="matrixList" class="com.worldcheck.juno.vo.component.FCPARedFlagVO">				
+		<result property="fieldValue" column="fieldvalue" />
+		<result property="fieldName" column="fieldname" />
+		<result property="id" column="is_fcpa_red_flag_id" />
+	</resultMap>
+
+		
+	<resultMap id="resultVO"
+		class="com.worldcheck.juno.vo.component.FCPARedFlagVO" groupBy="id">
+		<result property="id" column="fcpa_red_flag_smmry_id" />
+		<result property="crn" column="CASE_ID" />		
+		<result property="displayDate" column="displayDate" />
+		<result property="updateBy" column="UPDATED_BY" />		
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="title" column="TITLE" />
+		<result property="matrixList" resultMap="FCPARedFlagVO.matrixList" />
+	</resultMap>
+	
+	<select id="getByCRN" resultMap="resultVO" parameterClass="java.util.HashMap">
+
+		select rbs.case_id, rbs.fcpa_red_flag_smmry_id, rbs.processcycleid, rbs.title, rbs.updated_by,
+		to_char(rbs.UPDATED_ON, 'DD-MM-YY HH24:MI:SS') displayDate, frf.is_fcpa_red_flag_id, frf.fieldvalue,  null AS FIELDNAME
+		from 
+		rg_is_fcpa_red_flag_smmry rbs		
+		LEFT OUTER JOIN RG_IS_FCPA_RED_FLAG frf ON frf.fcpa_red_flag_smmry_id = rbs.fcpa_red_flag_smmry_id
+		WHERE upper(rbs.case_id) = upper(#crn#) and rbs.processcycleid = #processCycleId# and upper(IS_AUTO_SAVED)=upper('N')
+		order by frf.is_fcpa_red_flag_id
+
+	</select>
+
+	<select id="getPastGenerateData" resultMap="matrixList" parameterClass="java.util.HashMap">
+		select frf.is_fcpa_red_flag_id, frf.fieldvalue, frfs.fieldname 
+		from 
+		rg_is_fcpa_red_flag_smmry rbs		
+		LEFT OUTER JOIN RG_IS_FCPA_RED_FLAG frf ON frf.fcpa_red_flag_smmry_id = rbs.fcpa_red_flag_smmry_id
+		LEFT OUTER JOIN RG_FCPA_RED_FLAG_STATIC frfs ON frfs.fcpa_red_flag_static_id = frf.fcpa_red_flag_static_id
+		WHERE upper(rbs.case_id) = upper(#crn#) and rbs.processcycleid = #processCycleId# and upper(IS_AUTO_SAVED)=upper('N')
+		order by frf.is_fcpa_red_flag_id
+
+	</select>
+
+	<select id="checkDataExist" resultClass="java.lang.Integer">
+		select fcpa_red_flag_smmry_id
+		from rg_is_fcpa_red_flag_smmry where case_id = #crn# and processcycleid = #processCycleId#
+	</select>
+
+	<insert id="insert" parameterClass="com.worldcheck.juno.vo.component.FCPARedFlagVO">
+	<selectKey keyProperty="id" resultClass="long">
+		SELECT RG_IS_FCRD_FLAG_SMMRY_SEQ.NEXTVAL from dual
+	</selectKey>
+		insert into RG_IS_FCPA_RED_FLAG_SMMRY (
+		CASE_ID, TITLE,UPDATED_ON,UPDATED_BY,PROCESSCYCLEID,FCPA_RED_FLAG_SMMRY_ID,IS_AUTO_SAVED)
+		values 
+		(#crn#,#title#,sysdate,#updateBy#,#processCycleId#,#id#,'N')        
+	</insert>
+
+	<insert id="insertHistory" parameterClass="com.worldcheck.juno.vo.component.FCPARedFlagVO">
+		<selectKey keyProperty="componentId" resultClass="long">
+			SELECT RG_IS_FCPA_RED_FLAG_SEQ.NEXTVAL from dual
+		</selectKey>
+		insert into RG_IS_FCPA_RED_FLAG 
+		(FCPA_RED_FLAG_SMMRY_ID,FIELDVALUE,IS_FCPA_RED_FLAG_ID,FCPA_RED_FLAG_STATIC_ID)
+		values 
+		(#id#,#fieldValue#,#componentId#, #rowNum#)        
+	</insert>
+
+	<update id="update"
+		parameterClass="com.worldcheck.juno.vo.component.FCPARedFlagVO">
+		update RG_IS_FCPA_RED_FLAG_SMMRY set
+		TITLE = #title#,
+		UPDATED_BY=#updateBy#,
+		PROCESSCYCLEID=#processCycleId#,
+		UPDATED_ON=sysdate		
+		where FCPA_RED_FLAG_SMMRY_ID=#id#		
+		AND upper(IS_AUTO_SAVED)=upper('N')
+	</update>
+
+	<delete id="delete">
+		delete FROM RG_IS_FCPA_RED_FLAG WHERE
+		FCPA_RED_FLAG_SMMRY_ID = #id#
+	</delete>
+	
+</sqlMap>

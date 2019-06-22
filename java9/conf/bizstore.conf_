@@ -1,0 +1,116 @@
+#BizStore specific parameters
+
+# <param name="bizstore.debug.engine">
+#    <alias>BizStore Server Debug Control Flag</alias>
+#    <description>If set to true, the debug (trace) information is written to the log file for the BizStore Engine.</description>
+#    <visible>true</visible>
+#    <legalvalues>true|false</legalvalues>
+#    <autoreload>true</autoreload>
+#    <group>DEBUGINFO</group>
+# </param>
+
+bizstore.debug.engine=false
+
+# <param name="bizstore.debug.sql">
+#    <alias>BizStore Server Debug SQL Flag</alias>
+#    <description>If set to true, all the sql statements used in BizStore engine will be written to the log file while startup.</description>
+#    <visible>true</visible>
+#    <legalvalues>true|false</legalvalues>
+#    <autoreload>true</autoreload>
+#    <group>DEBUGINFO</group>
+# </param>
+
+bizstore.debug.sql=false
+
+# <param name="bizstore.printEvent">
+#    <alias>BizStore Server Event Trace</alias>
+#    <description>If true, server will write the various events in the log file</description>
+#    <visible>true</visible>
+#    <legalvalues>true|false</legalvalues>
+#    <autoreload>true</autoreload>
+#    <group>EVTINFO</group>
+# </param>
+
+bizstore.printEvent=false
+
+# <param name="bizstore.printStack">
+#    <alias>BizStore Server Trace</alias>
+#    <description>If true, server will write the stack trace in the log file in case of an error</description>
+#    <visible>false</visible>
+#    <legalvalues>true|false</legalvalues>
+#    <autoreload>true</autoreload>
+# </param>
+
+bizstore.printStack=true
+
+# <param name="bizstore.event.batch.size">
+#    <alias>Batch size for BizStore events</alias>
+#    <description>The maximum number of events retrieved by BizStore each time. The values should be in range 30-300.</description>
+#    <visible>false</visible>
+#    <legalvalues>ANY</legalvalues>
+#    <autoreload>false</autoreload>
+# </param>
+
+bizstore.event.batch.size=300
+
+# <param name="bizstore.sleep.noevents">
+#    <alias>Timer interval for BizStore</alias>
+#    <description>The number of milliseconds bizstore sleeps when it is idling. The values should be in range 5000-60000 milliseconds.</description>
+#    <visible>true</visible>
+#    <legalvalues>ANY</legalvalues>
+#    <autoreload>true</autoreload>
+#    <group>TMINFO</group>
+# </param>
+
+bizstore.sleep.noevents=10000
+
+# <param name="bizstore.email.notification">
+#    <alias>Sending Email notifications</alias>
+#    <description>Option to send email notifications in asynchronous BizStore. This property is true by default.</description>
+#    <visible>true</visible>
+#    <legalvalues>true|false</legalvalues>
+#    <autoreload>true</autoreload>
+#    <group>EMINFO</group>
+# </param>
+
+bizstore.email.notification=true
+
+# <param name="bizstore.sleep.moreevents">
+#    <alias>Sleep Time between processing events</alias>
+#    <description>The number of milliseconds BizStore sleeps after processing each batch even though there are more events to be processed. The values should be in range 0-5000 milliseconds.</description>
+#    <visible>false</visible>
+#    <legalvalues>ANY</legalvalues>
+#    <autoreload>false</autoreload>
+# </param>
+
+bizstore.sleep.moreevents=0
+
+# <param name="bizstore.resource.usage">
+#    <alias>BizStore Server Resource Usage</alias>
+#    <description>Indicates if resources are getting used with SBM. If false, resource usage related columns in BizStore tables may not be updated.</description>
+#    <visible>false</visible>
+#    <legalvalues>true|false</legalvalues>
+#    <autoreload>true</autoreload>
+# </param>
+
+bizstore.resource.usage=true
+
+# <param name="mconsole.populator.sleepTime">
+#    <alias>Sleep time of MConsole after every run</alias>
+#    <description>The number of seconds that management console deamon thread sleeps : should be 3 * 60 secs (3 minutes).</description>
+#    <visible>false</visible>
+#    <legalvalues>ANY</legalvalues>
+#    <autoreload>false</autoreload>
+# </param>
+
+mconsole.populator.sleepTime=180
+
+# <param name="mconsole.read.alltables.enable">
+#    <alias>Whether to enable reading all MConsole tables</alias>
+#    <description>By default only two tables (STAT_WI_DUE_INFO and STAT_APP_PRIORITY) used by Dashboard gets updated. If this flag is set to true all the tables will be updated.</description>
+#    <visible>false</visible>
+#    <legalvalues>true|false</legalvalues>
+#    <autoreload>false</autoreload>
+# </param>
+
+mconsole.read.alltables.enable=false

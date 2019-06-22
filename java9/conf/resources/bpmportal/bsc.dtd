@@ -1,0 +1,52 @@
+<!ELEMENT BalancedScorecard (Perspective*)>
+<!ATTLIST BalancedScorecard Name CDATA #REQUIRED>
+<!ATTLIST BalancedScorecard Description CDATA #REQUIRED>
+
+<!ELEMENT Perspective (KPI*)>
+<!ATTLIST Perspective Name CDATA #REQUIRED>
+<!ATTLIST Perspective Weight CDATA #REQUIRED>
+
+<!ELEMENT KPI (Weight,Source+,CurrentValue,BestValue,WorstValue,Description,Unit,Score,TargetScore,Type,EditCurrentValue,DisplayCurrentValue,EditBestValue,DisplayBestValue,EditWorstValue,DisplayWorstValue,EditWeight,DisplayWeight,EditUnit,DisplayUnit,EditScore,DisplayScore,EditDescription,DisplayDescription,EditTargetScore,DisplayTargetScore)>
+<!ATTLIST KPI Name CDATA #REQUIRED>
+
+<!ELEMENT Weight (#PCDATA)>
+
+<!ELEMENT Source ((ProcessTemplate,Workstep,Event,Dataslot)|(Application,Module,Infopad,Row,Column,Slot))>
+<!ATTLIST Source Name CDATA #REQUIRED>
+
+<!ELEMENT ProcessTemplate (#PCDATA)>
+<!ELEMENT Workstep (#PCDATA)>
+<!ELEMENT Event (#PCDATA)>
+<!ELEMENT Dataslot (#PCDATA)>
+
+<!ELEMENT Application (#PCDATA)>
+<!ELEMENT Module (#PCDATA)>
+<!ELEMENT Infopad (#PCDATA)>
+<!ELEMENT Row (#PCDATA)>
+<!ELEMENT Column (#PCDATA)>
+<!ELEMENT Slot (#PCDATA)>
+
+<!ELEMENT CurrentValue (#PCDATA)>
+<!ELEMENT BestValue (#PCDATA)>
+<!ELEMENT WorstValue (#PCDATA)>
+<!ELEMENT Unit (#PCDATA)>
+<!ELEMENT Score (#PCDATA)>
+<!ELEMENT TargetScore (#PCDATA)>
+<!ELEMENT Description (#PCDATA)>
+<!ELEMENT Type (#PCDATA)>
+<!ELEMENT EditCurrentValue (#PCDATA)>
+<!ELEMENT DisplayCurrentValue (#PCDATA)>
+<!ELEMENT EditBestValue (#PCDATA)>
+<!ELEMENT DisplayBestValue (#PCDATA)>
+<!ELEMENT EditWorstValue (#PCDATA)>
+<!ELEMENT DisplayWorstValue (#PCDATA)>
+<!ELEMENT EditWeight (#PCDATA)>
+<!ELEMENT DisplayWeight (#PCDATA)>
+<!ELEMENT EditUnit (#PCDATA)>
+<!ELEMENT DisplayUnit (#PCDATA)>
+<!ELEMENT EditScore (#PCDATA)>
+<!ELEMENT DisplayScore (#PCDATA)>
+<!ELEMENT EditDescription (#PCDATA)>
+<!ELEMENT DisplayDescription (#PCDATA)>
+<!ELEMENT EditTargetScore (#PCDATA)>
+<!ELEMENT DisplayTargetScore (#PCDATA)>

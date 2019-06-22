@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="xsrf-config">
+    	<xs:complexType>
+      		<xs:sequence>
+        		<xs:element ref="redirect-url-on-attack"/>
+        		<xs:element ref="enable-user-agent-check"/>
+        		<xs:element ref="enable-user-remote-address-check"/>
+        		<xs:element ref="exclude-url-patterns"/>
+      		</xs:sequence>
+    	</xs:complexType>
+  	</xs:element>
+  	
+  	<xs:element name="redirect-url-on-attack" type="xs:string"/>
+  	<xs:element name="enable-user-agent-check" type="xs:boolean"/>
+  	<xs:element name="enable-user-remote-address-check" type="xs:boolean"/>
+  
+  	<xs:element name="exclude-url-patterns">
+    	<xs:complexType>
+      		<xs:sequence>
+        		<xs:element maxOccurs="unbounded" ref="url-pattern" minOccurs="0"/>
+      		</xs:sequence>
+    	</xs:complexType>
+  	</xs:element>
+  	
+  	<xs:element name="url-pattern" type="xs:string"/>
+</xs:schema>

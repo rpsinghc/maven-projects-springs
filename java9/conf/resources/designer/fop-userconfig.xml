@@ -1,0 +1,64 @@
+<configuration>
+<!--
+************************************************************************
+         Add fonts here
+************************************************************************
+-->
+
+<entry>
+    <key>ja_JP_fontName</key>
+    <value>MS Gothic</value>
+</entry>
+
+<entry>
+    <key>en_US_fontName</key>
+    <value>Helvetica</value>
+</entry>
+<!--
+************************************************************************
+  Add fonts here
+************************************************************************
+-->
+
+<fonts>
+ <font metrics-file="arial.xml" kerning="yes" embed-file="arial.ttf">
+    <font-triplet name="Arial" style="normal" weight="normal"/>
+    <font-triplet name="ArialMT" style="normal" weight="normal"/>
+ </font>
+ <font metrics-file="arialb.xml" kerning="yes" embed-file="arialb.ttf">
+    <font-triplet name="Arial" style="normal" weight="bold"/>
+    <font-triplet name="ArialMT" style="normal" weight="bold"/>
+ </font>
+ <font metrics-file="ariali.xml" kerning="yes" embed-file="ariali.ttf">
+    <font-triplet name="Arial" style="italic" weight="normal"/>
+    <font-triplet name="ArialMT" style="italic" weight="normal"/>
+ </font>
+ <font metrics-file="arialbi.xml" kerning="yes" embed-file="arialbi.ttf">
+    <font-triplet name="Arial" style="italic" weight="bold"/>
+    <font-triplet name="ArialMT" style="italic" weight="bold"/>
+ </font>
+ <!--
+ **********************************************************************************************
+   Please make sure that you have copied embed-file "msgothic.ttc" %SBM_HOME%/conf directory
+   msgothic.xml has been generated for encoding of msgothic.ttc
+ **********************************************************************************************  
+ -->
+ <font metrics-file="msgothic.xml" embed-file="msgothic.ttc" kerning="yes">
+    <font-triplet name="Gothic" style="normal" weight="normal"/>
+    <font-triplet name="Gothic" style="normal" weight="bold"/>
+     <font-triplet name="MS Gothic" style="normal" weight="normal"/>
+    <font-triplet name="MS Gothic" style="normal" weight="bold"/>
+    <font-triplet name="Gothic" style="italic" weight="normal"/>
+    <font-triplet name="Gothic" style="italic" weight="bold"/>
+ </font>
+ <font metrics-file="msmincho.xml" embed-file="Cyberbit.ttf" kerning="yes">
+    <font-triplet name="Mincho" style="normal" weight="normal"/>
+    <font-triplet name="Mincho" style="normal" weight="bold"/>
+    <font-triplet name="Mincho" style="italic" weight="normal"/>
+    <font-triplet name="Mincho" style="italic" weight="bold"/>
+   </font> 
+</fonts>
+</configuration>
+
+
+

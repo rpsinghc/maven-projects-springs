@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.2 U (http://www.xmlspy.com) by Deepak Gupta (P S Consultants) -->
+<!--
+This is the DTD file of DatabaseMapping.xml file.
+Author: Deepak Gupta
+Creation Date: September 18, 2001
+-->
+<!--
+The sql-mapping element is the root element of the DatabaseMapping.xml
+-->
+<!ELEMENT sql-mapping (description?, data-source+)>
+<!--
+The type-mapping information consists of the following parts:
+	The name of database vendor
+	Mapping information.	
+
+Used in: sql-mapping 
+-->
+<!ELEMENT data-source (max-table-name, record-size, read-only-transaction?, ddl-autocommit?, create-table?, type-mapping+)>
+<!ATTLIST data-source
+	name CDATA #REQUIRED
+>
+<!ELEMENT max-table-name (#PCDATA)>
+<!ELEMENT record-size (#PCDATA)>
+<!ELEMENT read-only-transaction (#PCDATA)>
+<!ELEMENT ddl-autocommit (#PCDATA)>
+<!ELEMENT type-mapping (description?, mapping+)>
+<!--
+The mapping contains the information for mapping java type
+to database type. Also, it has two optional tags for specifying
+the dataSlot type and maximum size of database type.
+
+Used in: type-mapping 
+-->
+<!ELEMENT mapping (java?, dataslot?, database, database-mb?, size?, precision?, scale?)>
+<!--
+The description contains the optional description of sql-mapping.
+
+Used in: sql-mapping, type-mapping 
+-->
+<!ELEMENT description (#PCDATA)>
+<!--
+The java element contains the fully qualified class name
+of java type. For primitive types corresponding wrapper class
+should be used. e.g. for int, value of java element will
+be java.lang.Integer
+
+Used in: mapping 
+-->
+<!ELEMENT java (#PCDATA)>
+<!--
+The database element contains the name database type (or SQL type)
+e.g. NUMBER, VARCHAR etc. This element will not contain any size 
+information e.g. VARCHAR (255) is not allowed here. For size information
+separate element max-size is provided.
+
+Used in: mapping 
+-->
+<!ELEMENT database (#PCDATA)>
+<!--
+The data-slot element is optional in mapping element. It contain the
+String constants used in BizLogic 3.0/3.5 for dataSlot type
+representation. It value could be STRING, DOUBLE, DOCUMENT, URL etc. All
+dataSlot types are declared in PAKConstants class.
+
+Used in: mapping 
+-->
+<!ELEMENT dataslot (#PCDATA)>
+<!--
+The max-size element contains the size information of database types.
+e.g. in VARCHAR (255), the value 255 is contained by max-size element. 
+This element is provided to prevent any overflow error caused by
+storing the value exceeding the maximum allowed size.
+
+Used in: mapping 
+-->
+<!ELEMENT size (#PCDATA)>
+<!--
+The precision element contains the precision information of double values.
+
+Used in: mapping 
+-->
+<!ELEMENT precision (#PCDATA)>
+<!--
+The scale element contains the scale information of double values.
+
+Used in: mapping 
+-->
+<!ELEMENT scale (#PCDATA)>
+<!--
+The database-mb element contains the SQL type for multibyte support.
+e.g. NCHAR, NVARCHAR2 etc. This element will not contain any size 
+information e.g. NVARCHAR (255) is not allowed here. For size information
+separate element size is provided. In this case, size is the number of 
+characters.
+
+Used in: mapping 
+-->
+<!ELEMENT database-mb (#PCDATA)>
+
+<!ATTLIST size
+	bytes CDATA #IMPLIED
+>
+
+<!ELEMENT create-table (statement-suffix?)>
+<!--
+The create table element contains additional data that might be needed by a database for creating the table
+for eg. Area Name that needs to be added at the end of the create table statement. 
+while creating a table. 
+-->
+<!ELEMENT statement-suffix (#PCDATA)>
+<!--
+Contains a string that is appended at the end to the Create table statemnts for eg. Area AreaName
+-->
+

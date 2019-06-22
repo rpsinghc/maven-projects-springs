@@ -1,0 +1,725 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="ReportTemplateVO">
+
+
+	<resultMap id="result" class="com.worldcheck.juno.vo.component.SectionVO"
+		groupBy="id">
+		<result property="sectionTitle" column="TITLE" />
+		<result property="sectionLevel" column="SECTION_LEVEL" />
+		<result property="sectionNumber" column="NUMBER_VALUE" />
+		<result property="numberType" column="NUMBER_TYPE" />
+		<result property="prefix" column="PREFIX" />
+		<result property="suffix" column="SUFFIX" />
+		<result property="crn" column="CASE_ID" />
+		<result property="id" column="SECTION_ID" />
+		<result property="processCycleId" column="SEC_PROCESSCYCLEID" />
+		<result property="activeStatus" column="SEC_ACTIVE_IND" />
+		<result property="componentSet" resultMap="ReportTemplateVO.ComponentSetMain" />
+	</resultMap>
+
+	<resultMap id="ComponentSetMain" class="com.worldcheck.juno.vo.component.ComponentVO">
+		<result property="componentId" column="component_id" />
+		<result property="id" column="CASERPT_COMPONENTS_ID" />
+		<result property="componentLevel" column="component_level_id" />
+		<result property="componentTitle" column="component_title" />
+		<result property="componentStatus" column="COMPONENT_STATUS" />
+		<result property="controllerName" column="CONTROLLER_NAME" />
+		<result property="activeStatus" column="ACTIVE_IND" />
+		<result property="componentNumber" column="COMPONENT_NUMBER" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+		<result property="sectionVO" resultMap="ReportTemplateVO.componentSection" />
+		<result property="componentType" column="COMPONENT_TYPE" />
+		<result property="showSupportingDocs" column="SHOW_SUPPORTED_DOCUMENT_FLAG" />
+		<result property="isAlways" column="IS_ALWAYS" />
+	</resultMap>
+	
+	<resultMap id="ComponentMasterDetail" class="com.worldcheck.juno.vo.component.ComponentVO">
+		<result property="componentId" column="component_id" />
+		<result property="componentLevel" column="component_level_id" />
+		<result property="id" column="CASERPT_COMPONENTS_ID" />
+	</resultMap>
+	<resultMap id="componentSection" class="com.worldcheck.juno.vo.component.SectionVO">
+		<result property="sectionTitle" column="TITLE" />
+		<result property="sectionNumber" column="NUMBER_VALUE" />
+		<result property="crn" column="CASE_ID" />
+		<result property="id" column="SECTION_ID" />
+		<result property="processCycleId" column="PROCESSCYCLEID" />
+	</resultMap>
+
+
+
+
+	<!--
+		<resultMap id="ComponentSet"
+		class="com.worldcheck.juno.vo.component.ComponentVO"> <result
+		property="componentNumber" column="component_number" /> <result
+		property="componentId" column="component_id" /> <result
+		property="componentLevel" column="component_level_id" /> <result
+		property="componentTitle" column="component_title" /> <result
+		property="componentOrder" column="component_order" /> <result
+		property="activeStatus" column="ACTIVE_IND" /> </resultMap>
+	-->
+
+	<resultMap id="resultComponentList" class="com.worldcheck.juno.vo.component.SectionVO"
+		groupBy="id">
+		<result property="sectionTitle" column="TITLE" />
+		<result property="prefix" column="PREFIX" />
+		<result property="suffix" column="SUFFIX" />
+		<result property="numberType" column="NUMBER_TYPE" />
+		<result property="sectionLevel" column="SECTION_LEVEL" />
+		<result property="sectionOrder" column="SECTION_ORDER" />
+		<result property="id" column="SECTION_ID" />
+		<result property="componentSet" resultMap="ReportTemplateVO.componentResult" />
+	</resultMap>
+	
+
+
+	<resultMap id="componentmaster"
+		class="com.worldcheck.juno.vo.component.ComponentMasterVO">
+		<result property="id" column="COMPONENT_ID" />
+		<result property="name" column="component_desc" />
+	</resultMap>
+
+
+	<resultMap id="ComponentSet" class="com.worldcheck.juno.vo.component.ComponentVO">
+		<result property="componentId" column="component_id" />
+		<result property="componentLevel" column="component_level_id" />
+		<result property="componentTitle" column="component_title" />
+		<result property="componentOrder" column="component_order" />
+		<result property="activeStatus" column="ACTIVE_IND" />
+		<result property="controllerName" column="controller_name" />
+		<result property="lockArrangementStatus" column="LOCK_ARRANGEMENT" />
+		<result property="componentType" column="COMPONENT_TYPE" />
+
+	</resultMap>
+	
+	<resultMap id="componentResult" class="com.worldcheck.juno.vo.component.ComponentVO">
+		<result property="componentId" column="component_id" />
+		<result property="componentLevel" column="component_level_id" />
+		<result property="componentTitle" column="component_title" />
+		<result property="componentOrder" column="component_order" />
+		<result property="activeStatus" column="ACTIVE_IND" />
+		<result property="controllerName" column="controller_name" />
+		<result property="componentType" column="COMPONENT_TYPE" />
+
+	</resultMap>
+	
+	
+	<resultMap id="reMapList"
+		class="com.worldcheck.juno.vo.common.ComponentREMapVO">
+		<result property="reId" column="RESEARCH_TYPE_ID" />
+		<result property="componentId" column="COMPONENT_ID" />
+		<result property="entityTypeId" column="ENTITY_TYPE_ID" />
+		<result property="componentLevel" column="component_level_id" />
+	</resultMap>
+	
+	<resultMap id="resultVO" class="com.worldcheck.juno.vo.component.ComponentVO">
+		<result property="componentId" column="component_id" />
+		<result property="componentLevel" column="component_level_id" />
+		<result property="id" column="CASERPT_COMPONENTS_ID" />
+		<result property="processCycleId" column="processcycleid" />
+		<result property="componentStatus" column="component_status" />
+		<result property="lockArrangementStatus" column="LOCK_ARRANGEMENT" />
+	</resultMap>
+	
+	<resultMap id="annexureList" class="com.worldcheck.juno.vo.component.SectionVO">
+		<result property="prefix" column="prefix" />
+		<result property="suffix" column="suffix" />
+		<result property="sectionNumber" column="number_value" />
+		<result property="sectionTitle" column="title" />
+	</resultMap>
+	
+	
+	<resultMap id="permissionMapList"
+		class="com.worldcheck.juno.vo.common.ComponentPermissionVO">
+		<result property="componentId" column="COMPONENT_ID" />
+		<result property="componentLevel" column="COMPONENT_LEVEL" />
+		<result property="permissionType" column="PERMISSION" />
+	</resultMap>
+	
+	<select id="checkCaseRPTDataExists" resultClass="java.lang.Boolean">
+		select CASE WHEN count(*) > 0 THEN 'true'
+			ELSE 'false' END
+		from RG_CASERPT_TEMPLATE_SECTION
+		WHERE CASE_ID = #crn# and PROCESSCYCLEID = #processCycleId#
+	</select>
+	
+	<select id="getCaseDataExists" parameterClass="java.util.HashMap" resultClass="java.lang.Boolean">
+		select CASE WHEN count(*) > 0 THEN 'true'
+			ELSE 'false' END
+		from RG_CASERPT_TEMPLATE_SECTION
+		WHERE CASE_ID = #crn#
+	</select>
+
+	<select id="getComponentTableDetails" resultClass="String" parameterClass="java.util.HashMap">
+		select COMPONENT_TABLES||':'||COMPONENT_TYPE
+		from RG_COMPONENT_TABLE_DETAILS
+		where COMPONENT_ID = #componentId#
+	</select>
+
+	<select id="getComponentTableDetailsForSubjects" resultClass="String" parameterClass="java.util.HashMap">
+		select COMPONENT_TABLES||':'||COMPONENT_TYPE
+		from RG_COMPONENT_TABLE_DETAILS
+		where COMPONENT_ID = #componentId# and (COMPONENT_TYPE = 'SUBJECT' or COMPONENT_TYPE = 'CASE')
+	</select>
+	
+	<select id="getComponentMasterDetails" resultMap="ComponentMasterDetail" parameterClass="java.util.HashMap">
+		SELECT COMPONENT_ID, component_level_id,CASERPT_COMPONENTS_ID FROM RG_CASERPT_TEMPLATE_COMPONENT WHERE CASERPT_COMPONENTS_ID = #componentId#
+	</select>
+	
+
+	<select id="getComponentDetails" resultMap="ComponentMasterDetail" parameterClass="java.util.HashMap">
+		SELECT COMPONENT_ID, component_level_id,CASERPT_COMPONENTS_ID FROM RG_CASERPT_TEMPLATE_COMPONENT WHERE SECTION_ID = #sectionId#
+	</select>
+	<select id="getAllComponentList" resultMap="resultComponentList"
+		parameterClass="java.util.HashMap">
+		select rcom.component_id, rcom.component_title,
+		rcom.component_order,
+		rcom.component_level_id, rcom.section_id,
+		rsec.prefix, rsec.number_type, rsec.suffix, rsec.title,
+		rsec.section_level,rcom.controller_name,
+		rsec.section_order, 'N'
+		ACTIVE_IND, COMPONENT_TYPE  from
+		RG_REPORT_COMPONENTS rcom, RG_REPORT_SECTION rsec
+		where
+		rcom.section_id
+		= rsec.report_section_id
+		and rcom.report_type_id =
+		(select
+		REPORT_TYPE_MASTER_ID from RG_REPORT_TYPE_MASTER where
+		REPORT_TYPE
+		= (select report_type from rg_report_type_master where report_type_code = #reportType#))
+		order by rsec.section_order,
+		rsec.section_level $orderby$,
+		rcom.component_order
+
+	</select>
+
+	<select id="getREComponentMapList" resultClass="java.lang.String"
+		parameterClass="java.lang.String">
+		select distinct(map.component_id) component_id from
+		RG_COMPONENT_RE_MAP map
+		WHERE map.RESEARCH_TYPE_ID in ($reList$) order
+		by map.component_id
+
+	</select>
+
+	<select id="getComponentAlwaysList" resultClass="java.lang.String">
+		select
+		component_id from RG_COMPONENT_MASTER WHERE IS_ALWAYS = 'T' order by
+		component_id
+	</select>
+
+	<select id="getAnnexuresList" parameterClass="java.util.HashMap" resultMap="annexureList">
+		select prefix, number_value, suffix, title
+		from rg_caserpt_template_section
+		where number_type = 'A' and case_id = #crn# and active_ind = 'Y'
+		<isNotNull property="processCycleId">
+			<isNotEqual prepend="AND" property="processCycleId" compareValue="0">
+				processcycleid = #processCycleId# 
+			</isNotEqual>
+		</isNotNull>
+		order by number_value
+	</select>
+
+	<select id="getMasterAnnexuresList" resultMap="annexureList">
+		select distinct prefix, 'XX' number_value, suffix, title
+		from rg_report_section
+		where number_type = 'A'
+		order by title
+	</select>
+
+
+	<insert id="insertCaseRPTSections" parameterClass="com.worldcheck.juno.vo.component.SectionVO">
+		<selectKey keyProperty="id" resultClass="long">
+			SELECT
+			RG_CASERPT_TEMP_SEC_SEQ.NEXTVAL from dual
+	</selectKey>
+
+		INSERT INTO
+		RG_CASERPT_TEMPLATE_SECTION(CASERPT_SECTION_ID,PREFIX,NUMBER_VALUE,
+		NUMBER_TYPE,SUFFIX,TITLE,SECTION_LEVEL,ACTIVE_IND,CASE_ID,PROCESSCYCLEID,SECTION_ORDER)
+		VALUES(#id#,#prefix#,#sectionNumber#,#numberType#,
+		#suffix#,#sectionTitle#,#sectionLevel#,#activeStatus#,#crn#,#processCycleId#,#sectionOrder#)
+	</insert>
+
+	<insert id="insertCaseRPTComponents" parameterClass="com.worldcheck.juno.vo.component.ComponentVO">
+		INSERT INTO
+		RG_CASERPT_TEMPLATE_COMPONENT(CASERPT_COMPONENTS_ID,COMPONENT_ID,
+		CASE_ID,PROCESSCYCLEID,SECTION_ID,COMPONENT_LEVEL_ID,
+		COMPONENT_TITLE,COMPONENT_NUMBER,ACTIVE_IND,COMPONENT_STATUS,CONTROLLER_NAME, SHOW_SUPPORTED_DOCUMENT_FLAG, COMPONENT_TYPE,IS_ALWAYS)
+		VALUES(RG_CASERPT_TEMP_COMPO_SEQ.NEXTVAL,#componentId#,#crn#,#processCycleId#,
+		#componentSectionId#,#componentLevel#,#componentTitle#,#componentNumber#,
+		#activeStatus#,#componentStatus#,#controllerName#, #showSupportingDocs#, #componentType#,#isAlways#)
+	</insert>
+
+	<update id="updateSectionActiveStatus" parameterClass="java.util.HashMap">
+		update RG_CASERPT_TEMPLATE_SECTION
+		set
+		ACTIVE_IND=
+		case CASERPT_SECTION_ID
+		<iterate property="secList">
+			when #secList[].id# then
+			#secList[].activeStatus#
+		</iterate>
+		END
+		where CASERPT_SECTION_ID IN
+		<iterate property="secList" open="(" close=")" conjunction=",">
+			#secList[].id#
+	    </iterate>
+	    and case_id = #crn#
+	</update>
+
+	<update id="updateSectionNumber" parameterClass="java.util.HashMap">
+		update RG_CASERPT_TEMPLATE_SECTION
+		set
+		NUMBER_VALUE=
+		case CASERPT_SECTION_ID
+		<iterate property="secList">
+			when #secList[].id# then
+			#secList[].sectionNumber#
+		</iterate>
+		END
+		where CASERPT_SECTION_ID IN
+		<iterate property="secList" open="(" close=")" conjunction=",">
+			#secList[].id#
+	    </iterate>
+	    and case_id = #crn#
+	</update>
+
+	<update id="updateComponentActiveStatus" parameterClass="java.util.HashMap">
+		update RG_CASERPT_TEMPLATE_COMPONENT
+		set
+		ACTIVE_IND=
+		case CASERPT_COMPONENTS_ID
+		<iterate property="compList">
+			when #compList[].id# then
+			#compList[].activeStatus#
+		</iterate>
+		END
+		where CASERPT_COMPONENTS_ID IN
+		<iterate property="compList" open="(" close=")" conjunction=",">
+			#compList[].id#
+	    </iterate>
+	    and case_id = #crn#
+	</update>
+
+	<update id="updateComponentNumber" parameterClass="java.util.HashMap">
+		update RG_CASERPT_TEMPLATE_COMPONENT
+		set
+		COMPONENT_NUMBER=
+		case CASERPT_COMPONENTS_ID
+		<iterate property="compList">
+			when #compList[].id# then
+			nvl(#compList[].componentNumber#,0)
+		</iterate>
+		END
+		where CASERPT_COMPONENTS_ID IN
+		<iterate property="compList" open="(" close=")" conjunction=",">
+			#compList[].id#
+	    </iterate>
+	    and case_id = #crn#
+	</update>
+
+	<update id="updateComponentStatus" parameterClass="java.util.HashMap">
+		update RG_CASERPT_TEMPLATE_COMPONENT
+		set
+		COMPONENT_STATUS=
+		case CASERPT_COMPONENTS_ID
+		<iterate property="compList">
+			when #compList[].id# then
+			#compList[].componentStatus#
+		</iterate>
+		END
+		where CASERPT_COMPONENTS_ID IN
+		<iterate property="compList" open="(" close=")" conjunction=",">
+			#compList[].id#
+	    </iterate>
+	    and case_id = #crn#
+	</update>
+
+	<update id="resetCaseRPTSections" parameterClass="com.worldcheck.juno.vo.component.SectionVO">
+		UPDATE
+		RG_CASERPT_TEMPLATE_SECTION
+		SET NUMBER_VALUE = #sectionNumber#,
+		ACTIVE_IND = #activeStatus#
+		WHERE CASE_ID = #crn#
+		AND PROCESSCYCLEID =
+		#processCycleId# and CASERPT_SECTION_ID = #id#
+	</update>
+
+	<update id="resetCaseRPTComponents" parameterClass="com.worldcheck.juno.vo.component.ComponentVO">
+		UPDATE
+		RG_CASERPT_TEMPLATE_COMPONENT
+		SET COMPONENT_NUMBER = #componentNumber#,
+		ACTIVE_IND = #activeStatus#,
+		COMPONENT_STATUS = #componentStatus#
+		WHERE CASE_ID = #crn#
+		AND PROCESSCYCLEID =
+		#processCycleId# and CASERPT_COMPONENTS_ID = #id#
+	</update>
+
+
+
+	<update id="deleteCaseRPTSections" parameterClass="java.util.HashMap">
+		DELETE FROM
+		RG_CASERPT_TEMPLATE_SECTION
+		WHERE CASE_ID = #crn#
+		AND PROCESSCYCLEID =
+		#processCycleId# 
+	</update>
+
+	<update id="deleteCaseRPTComponents" parameterClass="java.util.HashMap">
+		DELETE FROM
+		RG_CASERPT_TEMPLATE_COMPONENT
+		WHERE CASE_ID = #crn#
+		AND PROCESSCYCLEID =
+		#processCycleId#	 
+	</update>
+	<!--
+		Lists the Report Types for which no entry Exists in the Passsword
+		MAster
+	-->
+	<select id="listByCRN" resultMap="result" parameterClass="java.util.HashMap">
+		select
+		rgcts.CASE_ID,
+		rgctc.PROCESSCYCLEID,
+		rgctc.SECTION_ID,
+		rgcts.SECTION_LEVEL,
+		rgcts.NUMBER_VALUE,
+		rgcts.NUMBER_TYPE,
+		rgcts.TITLE,
+		rgcts.prefix,
+		rgcts.suffix,
+		rgcts.ACTIVE_IND SEC_ACTIVE_IND,
+		rgctc.component_number,
+		rgctc.component_title,
+		rgctc.component_id,
+		rgctc.component_title,
+		rgctc.component_status,
+		rgctc.LOCK_ARRANGEMENT,
+		rgctc.component_level_id,
+		rgctc.CASERPT_COMPONENTS_ID,
+		rgctc.CONTROLLER_NAME,
+		rgctc.ACTIVE_IND,
+		rgctc.COMPONENT_TYPE,
+		rgctc.SHOW_SUPPORTED_DOCUMENT_FLAG,
+		rgcts.PROCESSCYCLEID SEC_PROCESSCYCLEID,
+		rgctc.IS_ALWAYS
+		from
+		RG_CASERPT_TEMPLATE_COMPONENT
+		rgctc,RG_CASERPT_TEMPLATE_SECTION rgcts
+		where rgctc.section_id =
+		rgcts.CASERPT_SECTION_ID
+		and rgcts.case_id = #crn#
+		<isNotNull property="processCycleId">
+			<isNotEqual prepend="AND" property="processCycleId"
+				compareValue="0">
+				rgcts.PROCESSCYCLEID=#processCycleId# 
+			</isNotEqual>
+		</isNotNull>
+		and rgctc.case_id = rgcts.case_id
+		<isNull property="allComponents" prepend="AND">
+			rgctc.active_ind='Y'
+			and rgcts.active_ind='Y'
+		</isNull>
+		order by rgcts.SECTION_ORDER
+		<isNotNull property="orderBy" prepend=",">
+			rgcts.SECTION_LEVEL $orderBy$
+		</isNotNull>
+		,rgcts.NUMBER_VALUE, rgctc.section_id,rgctc.CASERPT_COMPONENTS_ID
+
+	</select>
+	
+	<select id="getComponentSectionDetails" parameterClass="java.util.HashMap" resultMap="result">
+		select
+		rgcts.CASE_ID,
+		rgctc.PROCESSCYCLEID,
+		rgctc.SECTION_ID,
+		rgcts.SECTION_LEVEL,
+		rgcts.NUMBER_VALUE,
+		rgcts.NUMBER_TYPE,
+		rgcts.TITLE,
+		rgcts.prefix,
+		rgcts.suffix,
+		rgcts.ACTIVE_IND SEC_ACTIVE_IND,
+		rgctc.component_number,
+		rgctc.component_title,
+		rgctc.component_id,
+		rgctc.component_title,
+		rgctc.component_status,
+		rgctc.LOCK_ARRANGEMENT,
+		rgctc.component_level_id,
+		rgctc.CASERPT_COMPONENTS_ID,
+		rgctc.CONTROLLER_NAME,
+		rgctc.ACTIVE_IND,
+		rgctc.COMPONENT_TYPE,
+		rgctc.SHOW_SUPPORTED_DOCUMENT_FLAG,
+		rgcts.PROCESSCYCLEID SEC_PROCESSCYCLEID,
+		rgctc.IS_ALWAYS
+		from
+		RG_CASERPT_TEMPLATE_COMPONENT	rgctc,
+    	RG_CASERPT_TEMPLATE_SECTION rgcts
+		where rgctc.section_id =
+		rgcts.CASERPT_SECTION_ID
+		and rgcts.case_id = #crn#
+    	and rgcts.PROCESSCYCLEID in ($processCycleId$)
+		and rgctc.case_id = rgcts.case_id
+    	and rgctc.component_id in ($componentId$)
+		order by rgcts.SECTION_ORDER,rgcts.NUMBER_VALUE, rgctc.section_id,rgctc.CASERPT_COMPONENTS_ID
+	</select>
+	
+	<update id="updateStatus" parameterClass="java.util.HashMap">
+
+		update RG_CASERPT_TEMPLATE_COMPONENT set COMPONENT_STATUS = 'N'
+		where CASERPT_COMPONENTS_ID = #recordId#
+
+	</update>
+	<update id="updateStatusToWIP" parameterClass="java.util.HashMap">
+
+		update RG_CASERPT_TEMPLATE_COMPONENT set COMPONENT_STATUS = 'W'
+		where processcycleid in ($processCycles$) and COMPONENT_STATUS = 'D' and component_id not in (2,11,12) and case_id = #crn#
+
+	</update>
+	<!--
+		Lists the Report Types for which entry Exists in the Passsword MAster.
+		To be Shown at the password master Main page
+	-->
+
+	<resultMap id="resultCheckList"
+		class="com.worldcheck.juno.vo.component.ReportTemplateVO">
+		<result property="id" column="template_check_list_id" />
+		<result property="serialNo" column="serial_no" />
+		<result property="isCheck" column="is_checked" />
+		<result property="stepsFollowed" column="steps_followed" />
+		<result property="comments" column="comments" />
+	</resultMap>
+
+	<select id="listByCheckList" resultMap="resultCheckList">
+		select
+		template_check_list_id, serial_no, is_checked, steps_followed,
+		comments from rg_template_check_list
+	</select>
+
+	<resultMap id="resultSectionList"
+		class="com.worldcheck.juno.vo.component.ReportTemplateVO">
+		<result property="id" column="caserpt_section_id" />
+		<result property="sectionNumber" column="number_value" />
+		<result property="isCheck" column="active_ind" />
+		<result property="numberType" column="number_type" />
+	</resultMap>
+
+	<select id="selectSectionListById" resultMap="resultSectionList"
+		parameterClass="java.util.HashMap">
+		select caserpt_section_id, number_value, number_type,
+		active_ind
+		from rg_caserpt_template_section
+		where case_id=#crn# and
+		processcycleid=#processCycleId# and active_ind='Y'
+		order by
+		caserpt_section_id, number_value
+	</select>
+	<resultMap id="resultCaseRPTSection"
+		class="com.worldcheck.juno.vo.component.SectionVO">
+		<result property="id" column="caserpt_section_id" />
+		<result property="sectionNumber" column="number_value" />
+	</resultMap>
+	<select id="getCaseRPTSections" resultMap="resultCaseRPTSection"
+		parameterClass="java.util.HashMap">
+		select a.caserpt_section_id, a.number_value
+		from rg_caserpt_template_section a,rg_caserpt_template_section b
+		where a.case_id=#crn# and a.active_ind='Y' and b.active_ind='Y'
+		and a.section_order = b.section_order
+    	and a.case_id = b.case_id and a.section_level != 0
+    	and a.processcycleid = b.processcycleid
+        and a.caserpt_section_id != b.caserpt_section_id
+        and a.processcycleid in ($processCycleId$)
+		order by a.section_order , a.processcycleid, a.section_level $orderby$
+	</select>
+
+		<update id="resetCaseRPTSectionChangeSubject" parameterClass="com.worldcheck.juno.vo.component.SectionVO">
+		UPDATE
+		RG_CASERPT_TEMPLATE_SECTION
+		SET NUMBER_VALUE = #sectionNumber#
+		WHERE CASERPT_SECTION_ID = #id#
+	</update>	
+	<resultMap id="resultCompList"
+		class="com.worldcheck.juno.vo.component.ReportTemplateVO">
+		<result property="compId" column="CASERPT_COMPONENTS_ID" />
+		<result property="sectionNumber" column="component_number" />
+		<result property="isCheck" column="active_ind" />
+		<result property="id" column="section_id" />
+	</resultMap>
+
+	<select id="selectCompListById" resultMap="resultCompList"
+		parameterClass="java.util.HashMap">
+		select CASERPT_COMPONENTS_ID, active_ind, section_id,
+		component_number
+		from rg_caserpt_template_component
+		where
+		section_id=#sectionId# and
+		case_id=#crn# and
+		processcycleid=#processCycleId# and active_ind='Y'
+		order by
+		component_id
+	</select>
+
+
+	<update id="updateSectionListById" parameterClass="com.worldcheck.juno.vo.component.ReportTemplateVO">
+		update
+		rg_caserpt_template_section
+		set active_ind=#isCheck#,
+		number_value=#sectionNumber#
+		where
+		caserpt_section_id=#id#
+	</update>
+
+	<update id="updateComponentBySectionId" parameterClass="com.worldcheck.juno.vo.component.ReportTemplateVO">
+		update
+		RG_CASERPT_TEMPLATE_COMPONENT
+		set active_ind=#isCheck#
+		where
+		section_id=#id#
+	</update>
+
+	<update id="updateCompListById" parameterClass="com.worldcheck.juno.vo.component.ReportTemplateVO">
+		update
+		rg_caserpt_template_component
+		set active_ind=#isCheck#,
+		component_number=#sectionNumber#
+		where
+		CASERPT_COMPONENTS_ID=#compId#
+		and section_id=#id#
+	</update>
+	
+	<select id="componentREMap" resultMap="reMapList">
+		select
+		cmap.RESEARCH_TYPE_ID,cmap.COMPONENT_ID, re.entity_type_id, cmp.component_level_id
+		from RG_COMPONENT_RE_MAP cmap 
+		join cms_re_master re on re.re_master_id = cmap.RESEARCH_TYPE_ID
+		left outer join rg_report_components cmp on cmp.component_id = cmap.component_id and cmp.component_level_id = 0
+	</select>
+
+	<select id="rptComponentREMap" resultMap="reMapList" parameterClass="java.lang.String">
+		select distinct rg.component_id, cmap.research_type_id, re.entity_type_id, cmp.component_level_id
+		from rg_report_components rg 
+		join cms_report_type_master rt on rt.report_type_master_id = rg.report_type_id 
+		join rg_component_re_map cmap on cmap.component_id = rg.component_id
+	    join cms_re_master re on re.re_master_id = cmap.research_type_id
+	    left outer join rg_report_components cmp on cmp.component_id = cmap.component_id and cmp.component_level_id = 0
+		where rt.report_crn_initial = #reportType# order by rg.component_id
+	</select>
+
+	<select id="getMarkDoneProcessCycle" parameterClass="java.util.HashMap"
+		resultMap="resultVO">
+
+		select processcycleid,COMPONENT_ID,COMPONENT_LEVEL_ID,
+		CASERPT_COMPONENTS_ID,component_status,LOCK_ARRANGEMENT
+
+		from RG_CASERPT_TEMPLATE_COMPONENT
+		where case_id=#crn#
+		and component_id=#componentId#
+		and COMPONENT_LEVEL_ID=#componentLevel#
+	</select>
+	
+	<select id="getReportInitials" parameterClass="java.util.HashMap"
+		resultClass="java.lang.String">
+		select report_type from rg_report_type_master where report_type_code = #reportType#
+	</select>
+
+
+	<update id="callMarkDone" parameterClass="java.util.HashMap">
+
+		update
+		RG_CASERPT_TEMPLATE_COMPONENT set COMPONENT_STATUS='D'
+		where
+		CASERPT_COMPONENTS_ID = #recordId#
+
+	</update>
+	
+	
+	<update id="lockArrangement" parameterClass="java.util.HashMap">
+
+		update RG_CASERPT_TEMPLATE_COMPONENT set LOCK_ARRANGEMENT=#status#
+		where CASERPT_COMPONENTS_ID = #recordId#
+
+	</update>
+	
+	<!-- show supporting document for MIS -->
+	<update id="showSupportingDocument" parameterClass="java.util.HashMap">
+		UPDATE RG_CASERPT_TEMPLATE_COMPONENT 
+			SET SHOW_SUPPORTED_DOCUMENT_FLAG = #showFlag#
+		WHERE
+			CASERPT_COMPONENTS_ID = #recordId#
+
+	</update>
+	
+	<delete id="deleteComponentData" parameterClass="java.util.HashMap">
+		delete from $tableName$ 
+		where CASE_ID = #crn#
+		and PROCESSCYCLEID in ($processCycleId$)
+		<isNotEqual property="tableType" compareValue="ANNEXURE">
+		  <isNotEqual property="tableType" compareValue="CASE">
+			<isNotNull property="subjectId">
+				<isNotEqual prepend="AND" property="subjectId"
+					compareValue="">
+					SUBJECT_ID in($subjectId$) 
+				</isNotEqual>
+			</isNotNull>
+		  </isNotEqual>
+		</isNotEqual>
+		<isEqual property="tableType" compareValue="ANNEXURE">
+			and REPORT_COMPONENT_ID = #componentId#
+		</isEqual>
+	</delete>
+	
+	<select id="getReportPassword" parameterClass="java.util.HashMap"
+		resultClass="java.lang.String">
+		select rpass.password
+		from rg_report_password_master rpass
+    	join cms_report_type_master rtype on rtype.report_type_master_id = rpass.report_type_id
+		join rg_report_type_master rpt on rpt.report_type_code = rtype.report_code
+		where rpt.REPORT_TYPE = #reportType# and rpass.STATUS = 1
+	</select>
+	
+	<select id="getREsForReportType" resultClass="java.lang.String" parameterClass="java.lang.String">
+		select distinct(re.re_master_id)||'' from cms_re_master re
+		join rg_component_re_map cmap on cmap.research_type_id = re.re_master_id
+		join rg_report_components cmp on cmp.component_id = cmap.component_id
+		join rg_report_type_master rpt on rpt.report_type_master_id = cmp.report_type_id 
+		join cms_report_type_master rt on rt.REPORT_TYPE = rpt.REPORT_TYPE_CODE
+		where rpt.REPORT_TYPE = #reportType#
+	</select>
+	
+	
+	<select id="componentPermissionMap" resultMap="permissionMapList">
+		select COMPONENT_ID,COMPONENT_LEVEL,PERMISSION
+		from RG_COMPONENT_PERMISSIONS 
+		
+	</select>
+	
+	<update id="enableBIComponent" parameterClass="java.util.HashMap">
+		declare
+		sectionId number;
+		crn VARCHAR2(200):=#crn#;
+		processCycle number:=#processCycleId#;
+		componentId number(10):=#componentId#;
+		sectionNumber number;
+		begin
+		select caserpt_section_id into sectionid from rg_caserpt_template_section where case_id = crn and caserpt_section_id in (select section_id from rg_caserpt_template_component where component_id = componentId and case_id = crn and processcycleid = processCycle);
+		update rg_caserpt_template_section set active_ind = 'Y' where caserpt_section_id = sectionid;
+		select number_value into sectionNumber from rg_caserpt_template_section where caserpt_section_id = sectionid;
+		if sectionNumber is null THEN
+		select max(number_value)+1 into sectionNumber from rg_caserpt_template_section where case_id = crn and active_ind = 'Y' and number_type = 'N' and processcycleid = processCycle and section_order <![CDATA[<]]> (select section_order from rg_caserpt_template_section where case_id = crn and caserpt_section_id = sectionId);
+		update rg_caserpt_template_section set number_value = sectionNumber where caserpt_section_id = sectionid;
+		update rg_caserpt_template_component set active_ind = 'Y', component_number = 1, component_status = 'N' where component_id = componentId and case_id = crn and processcycleid = processCycle;
+		end if;
+		END;
+	</update>
+	
+</sqlMap>

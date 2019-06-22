@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Toolbar SYSTEM "Designer.dtd" >
+<Toolbar>
+  <Palettes>
+    <Palette mode="BizLogic">
+      <Page name="Standard">
+        <Description>Standard</Description>
+        <Description xml:lang="ja">標準</Description>
+        <Description xml:lang="zh">标准</Description>
+        <Templates>
+          <ComponentTemplate type="Start" name="Start">
+            <NameTemplate count="false">Start</NameTemplate>
+            <Description>Start</Description>
+            <Description xml:lang="ja">スタート</Description>
+            <Description xml:lang="zh">开始</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="Workstep" name="Activity">
+            <NameTemplate>Activity {0}</NameTemplate>
+            <Description>Activity</Description>
+            <Description xml:lang="ja">アクティビティー</Description>
+            <Description xml:lang="zh">活动</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="External" name="Adapter">
+            <NameTemplate>Adapter {0}</NameTemplate>
+            <Description>Adapter</Description>
+            <Description xml:lang="ja">アダプター</Description>
+            <Description xml:lang="zh">整合(集成)</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="External" name="Agent">
+            <NameTemplate>Agent {0}</NameTemplate>
+            <Description>Agent</Description>
+            <Description xml:lang="ja">エージェント</Description>
+            <Description xml:lang="zh">代理</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="WebService" name="WebService">
+            <NameTemplate>WebService {0}</NameTemplate>
+            <Description>WebService</Description>
+            <Description xml:lang="ja">Webサービス</Description>
+            <Description xml:lang="zh">Web服务</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="Subprocess" name="Subprocess">
+            <NameTemplate>Subprocess {0}</NameTemplate>
+            <Description>Subprocess</Description>
+            <Description xml:lang="ja">サブプロセス</Description>
+            <Description xml:lang="zh">子流程</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="Decision" name="Decision">
+            <NameTemplate>Decision {0}</NameTemplate>
+            <Description>Decision</Description>
+            <Description xml:lang="ja">条件分岐</Description>
+            <Description xml:lang="zh">条件分支</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="AndJoin" name="And">
+            <NameTemplate>And {0}</NameTemplate>
+            <Description>And-join</Description>
+            <Description xml:lang="ja">ＡＮＤ結合</Description>
+            <Description xml:lang="zh">与</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="OrJoin" name="Or">
+            <NameTemplate>Or {0}</NameTemplate>
+            <Description>Or-join</Description>
+            <Description xml:lang="ja">ＯＲ結合</Description>
+            <Description xml:lang="zh">或</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="Split" name="Split">
+            <NameTemplate>Split {0}</NameTemplate>
+            <Description>Split</Description>
+            <Description xml:lang="ja">分岐</Description>
+            <Description xml:lang="zh">分支</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="End" name="End">
+            <NameTemplate>End {0}</NameTemplate>
+            <Description>End</Description>
+            <Description xml:lang="ja">終了</Description>
+            <Description xml:lang="zh">结束</Description>
+          </ComponentTemplate>
+        </Templates>
+      </Page>
+      <Page name="Adapter Library">
+        <Description>Adapters</Description>
+        <Description xml:lang="ja">アダプター</Description>
+        <Description xml:lang="zh">适配器</Description>
+        <Templates>
+          <ComponentTemplate type="External" name="Emailer.EP">
+            <NameTemplate>Emailer {0}</NameTemplate>
+            <Icon toolbar="email16.gif" diagram="email32.gif"/>
+            <Description>Emailer</Description>
+            <Description xml:lang="ja">メーラー</Description>
+            <Description xml:lang="zh">电子邮件</Description>
+            <Properties>
+              <Performer>common.externalperformers.Emailer</Performer>
+              <PerformBy>sendMail</PerformBy>
+              <ClosedConnection>TRUE</ClosedConnection>
+            </Properties>
+            <Inputs>
+              <Param type="STRING" name="setMailTo" optional="FALSE">
+                <Description>To</Description>
+                <Description xml:lang="ja">宛先</Description>
+                <Description xml:lang="zh">邮寄</Description>
+              </Param>
+              <Param type="STRING" name="setCCTo" optional="FALSE">
+                <Description>CC</Description>
+                <Description xml:lang="ja">CC</Description>
+                <Description xml:lang="zh">抄送</Description>
+              </Param>
+              <Param type="STRING" name="setBCCTo" optional="FALSE">
+                <Description>BCC</Description>
+                <Description xml:lang="ja">BCC</Description>
+                <Description xml:lang="zh">抄送</Description>
+              </Param>
+              <Param type="STRING" name="setMessage" optional="FALSE">
+                <Description>Body</Description>
+                <Description xml:lang="ja">本文</Description>
+                <Description xml:lang="zh">内容</Description>
+              </Param>
+              <Param type="STRING" name="setEmailSubject" optional="FALSE">
+                <Description>Subject</Description>
+                <Description xml:lang="ja">件名</Description>
+                <Description xml:lang="zh">标题</Description>
+              </Param>
+              <Param type="DOCUMENT" name="setAttachment" optional="FALSE">
+                <Description>Subject</Description>
+                <Description xml:lang="ja">添付</Description>
+                <Description xml:lang="zh">文档</Description>
+              </Param>
+            </Inputs>
+          </ComponentTemplate>
+        </Templates>
+      </Page>
+      <Page name="Notes">
+        <Description>Notes</Description>
+        <Description xml:lang="ja">ノート</Description>
+        <Templates>
+          <ComponentTemplate type="StickyNote" name="StickyNote" width="120" height="120">
+            <NameTemplate count="false">Sticky note</NameTemplate>
+            <Icon toolbar="stickyNote.gif" diagram=""/>
+            <Description>Sticky note</Description>
+            <Description xml:lang="ja">付箋紙</Description>
+          </ComponentTemplate>
+        </Templates>
+      </Page>
+    </Palette>
+    <Palette mode="BizSolo">
+      <Page name="Standard">
+        <Description>Standard</Description>
+        <Description xml:lang="ja">標準</Description>
+        <Description xml:lang="zh">标准</Description>
+        <Templates>
+          <ComponentTemplate type="Start" name="Start">
+            <NameTemplate count="false">Start</NameTemplate>
+            <Description>Start</Description>
+            <Description xml:lang="ja">スタート</Description>
+            <Description xml:lang="zh">开始</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="Workstep" name="Activity">
+            <NameTemplate>Activity {0}</NameTemplate>
+            <Description>Activity</Description>
+            <Description xml:lang="ja">アクティビティー</Description>
+            <Description xml:lang="zh">活动</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="External" name="Adapter">
+            <NameTemplate>Adapter {0}</NameTemplate>
+            <Description>Adapter</Description>
+            <Description xml:lang="ja">アダプター</Description>
+            <Description xml:lang="zh">适配器</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="External" name="Agent">
+            <NameTemplate>Agent {0}</NameTemplate>
+            <Description>Agent</Description>
+            <Description xml:lang="ja">エージェント</Description>
+            <Description xml:lang="zh">代理</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="WebService" name="WebService">
+            <NameTemplate>WebService {0}</NameTemplate>
+            <Description>WebService</Description>
+            <Description xml:lang="ja">Webサービス</Description>
+            <Description xml:lang="zh">Web服务</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="Subprocess" name="Subprocess">
+            <NameTemplate>Subprocess {0}</NameTemplate>
+            <Description>Subprocess</Description>
+            <Description xml:lang="ja">サブプロセス</Description>
+            <Description xml:lang="zh">子流程</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="Decision" name="Decision">
+            <NameTemplate>Decision {0}</NameTemplate>
+            <Description>Decision</Description>
+            <Description xml:lang="ja">条件分岐</Description>
+            <Description xml:lang="zh">条件分支</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="OrJoin" name="Or">
+            <NameTemplate>Or {0}</NameTemplate>
+            <Description>Or-join</Description>
+            <Description xml:lang="ja">ＯＲ結合</Description>
+            <Description xml:lang="zh">与</Description>
+          </ComponentTemplate>
+          <ComponentTemplate type="End" name="End">
+            <NameTemplate>End {0}</NameTemplate>
+            <Description>End</Description>
+            <Description xml:lang="ja">終了</Description>
+            <Description xml:lang="zh">结束</Description>
+          </ComponentTemplate>
+        </Templates>
+      </Page>
+      <Page name="BizSoloAdapters">
+        <Description>Adapters</Description>
+        <Description xml:lang="ja">アダプター</Description>
+        <Description xml:lang="zh">适配器</Description>
+        <Templates>
+          <ComponentTemplate type="External" name="DatabaseTableFactory">
+            <NameTemplate>DBTable {0}</NameTemplate>
+            <Icon toolbar="database16.gif" diagram="database32.gif"/>
+            <Description>DBTable</Description>
+            <Description xml:lang="ja">ＤＢテーブル</Description>
+            <Description xml:lang="zh">数据表格</Description>
+            <Properties>
+              <Performer>com.savvion.BizSolo.beans.DsPrototypeFactory</Performer>
+            </Properties>
+            <Inputs>
+              <Param type="STRING" name="Query" optional="FALSE">
+                <Description>Query whose result will be displayed</Description>
+                <Description xml:lang="ja">検索文</Description>
+                <Description xml:lang="zh">检索</Description>
+              </Param>
+              <Param type="STRING" name="className" optional="FALSE">
+                <Description>Class name of the object to be created</Description>
+                <Description xml:lang="ja">クラス名</Description>
+                <Description xml:lang="zh">类名</Description>
+              </Param>
+            </Inputs>
+            <Outputs>
+              <Param type="OBJECT" name="DBTable" optional="FALSE">
+                <Description>Database Object DS to be created</Description>
+                <Description xml:lang="ja">データベースのオブジェクトデータスロット名</Description>
+                <Description xml:lang="zh">数据对象</Description>
+              </Param>
+            </Outputs>
+          </ComponentTemplate>
+          <ComponentTemplate type="External" name="Emailer">
+            <NameTemplate>Emailer {0}</NameTemplate>
+            <Icon toolbar="email16.gif" diagram="email32.gif"/>
+            <Description>Emailer</Description>
+            <Description xml:lang="ja">メーラー</Description>
+            <Description xml:lang="zh">电子邮件</Description>
+            <Properties>
+              <Performer>com.savvion.BizSolo.beans.Email</Performer>
+            </Properties>
+            <Inputs>
+              <Param type="STRING" name="Body" optional="FALSE">
+                <Description>Email Body</Description>
+                <Description xml:lang="ja">本文</Description>
+                <Description xml:lang="zh">内容</Description>
+              </Param>
+              <Param type="STRING" name="Host" optional="FALSE">
+                <Description>Email Server</Description>
+                <Description xml:lang="ja">メールサーバー</Description>
+                <Description xml:lang="zh">电子邮件服务器</Description>
+              </Param>
+              <Param type="STRING" name="Source" optional="FALSE">
+                <Description>Email Sender</Description>
+                <Description xml:lang="ja">送信者</Description>
+                <Description xml:lang="zh">发信人</Description>
+              </Param>
+              <Param type="STRING" name="Subject" optional="FALSE">
+                <Description>Email Subject</Description>
+                <Description xml:lang="ja">件名</Description>
+                <Description xml:lang="zh">标题</Description>
+              </Param>
+              <Param type="STRING" name="Destination" optional="FALSE">
+                <Description>Email Destination</Description>
+                <Description xml:lang="ja">宛先</Description>
+                <Description xml:lang="zh">收信人地址</Description>
+              </Param>
+            </Inputs>
+            <Outputs>
+              <Param type="STRING" name="error" optional="FALSE">
+                <Description>Errors</Description>
+                <Description xml:lang="ja">エラー</Description>
+                <Description xml:lang="zh">错误</Description>
+              </Param>
+            </Outputs>
+          </ComponentTemplate>
+        </Templates>
+      </Page>
+      <Page name="List">
+        <Description>List</Description>
+        <Description xml:lang="ja">リスト</Description>
+        <Description xml:lang="zh">列表</Description>
+        <Templates>
+          <ComponentTemplate type="External" name="List.add">
+            <NameTemplate>ListAdd {0}</NameTemplate>
+            <Icon toolbar="list_add.gif" diagram="list_add32.gif"/>
+            <Description>ListAdd</Description>
+            <Description xml:lang="ja">リストの追加</Description>
+            <Description xml:lang="zh">追加列表内容</Description>
+            <Properties>
+              <Performer>com.savvion.BizSolo.beans.VectorOps</Performer>
+              <PerformBy>add</PerformBy>
+            </Properties>
+            <Inputs>
+              <Param type="LIST" name="List" optional="FALSE">
+                <Description>List to update</Description>
+                <Description xml:lang="ja">リストの更新</Description>
+                <Description xml:lang="zh">更新列表内容</Description>
+              </Param>
+              <Param type="OBJECT" name="Element" optional="FALSE">
+                <Description>Element to be added</Description>
+                <Description xml:lang="ja">要素の追加</Description>
+                <Description xml:lang="zh">追加要素</Description>
+              </Param>
+            </Inputs>
+            <Outputs>
+              <Param type="LIST" name="List" optional="TRUE">
+                <Description>List to update</Description>
+                <Description xml:lang="ja">リストの更新</Description>
+                <Description xml:lang="zh">更新列表内容</Description>
+              </Param>
+            </Outputs>
+          </ComponentTemplate>
+          <ComponentTemplate type="External" name="List.remove">
+            <NameTemplate>ListRemove {0}</NameTemplate>
+            <Icon toolbar="list_remove.gif" diagram="list_remove32.gif"/>
+            <Description>ListRemove</Description>
+            <Description xml:lang="ja">リストの削除</Description>
+            <Description xml:lang="zh">删除列表内容</Description>
+            <Properties>
+              <Performer>com.savvion.BizSolo.beans.VectorOps</Performer>
+              <PerformBy>remove</PerformBy>
+            </Properties>
+            <Inputs>
+              <Param type="LIST" name="List" optional="FALSE">
+                <Description>List to update</Description>
+                <Description xml:lang="ja">リストの更新</Description>
+                <Description xml:lang="zh">更新列表内容</Description>
+              </Param>
+              <Param type="OBJECT" name="Element" optional="FALSE">
+                <Description>Element to be removed</Description>
+                <Description xml:lang="ja">要素の削除</Description>
+                <Description xml:lang="zh">删除要素</Description>
+              </Param>
+            </Inputs>
+            <Outputs>
+              <Param type="LIST" name="List" optional="TRUE">
+                <Description>List to update</Description>
+                <Description xml:lang="ja">リストの更新</Description>
+                <Description xml:lang="zh">更新列表内容</Description>
+              </Param>
+            </Outputs>
+          </ComponentTemplate>
+          <ComponentTemplate type="External" name="List.get">
+            <NameTemplate>ListGet {0}</NameTemplate>
+            <Icon toolbar="list_get.gif" diagram="list_get32.gif"/>
+            <Description>ListGet</Description>
+            <Description xml:lang="ja">リストの取得</Description>
+            <Description xml:lang="zh">取得列表</Description>
+            <Properties>
+              <Performer>com.savvion.BizSolo.beans.VectorOps</Performer>
+              <PerformBy>get</PerformBy>
+            </Properties>
+            <Inputs>
+              <Param type="LIST" name="List" optional="FALSE">
+                <Description>List to update</Description>
+                <Description xml:lang="ja">リストの更新</Description>
+                <Description xml:lang="zh">更新列表内容</Description>
+              </Param>
+              <Param type="LONG" name="Index" optional="FALSE">
+                <Description>Index of element to be retrieved</Description>
+                <Description xml:lang="ja">復元される要素のインデックス</Description>
+                <Description xml:lang="zh">要素索引</Description>
+              </Param>
+            </Inputs>
+            <Outputs>
+              <Param type="OBJECT" name="Element" optional="FALSE">
+                <Description>Element</Description>
+                <Description xml:lang="ja">要素</Description>
+                <Description xml:lang="zh">要素</Description>
+              </Param>
+            </Outputs>
+          </ComponentTemplate>
+          <ComponentTemplate type="External" name="List.set">
+            <NameTemplate>ListSet {0}</NameTemplate>
+            <Icon toolbar="list_set.gif" diagram="list_set32.gif"/>
+            <Description>ListSet</Description>
+            <Description xml:lang="ja">リストセット</Description>
+            <Description xml:lang="zh">列表集合</Description>
+            <Properties>
+              <Performer>com.savvion.BizSolo.beans.VectorOps</Performer>
+              <PerformBy>set</PerformBy>
+            </Properties>
+            <Inputs>
+              <Param type="LIST" name="List" optional="FALSE">
+                <Description>List to update</Description>
+                <Description xml:lang="ja">リストの更新</Description>
+                <Description xml:lang="zh">更新列表内容</Description>
+              </Param>
+              <Param type="LONG" name="Index" optional="FALSE">
+                <Description> Index of element to be updated</Description>
+                <Description xml:lang="ja">更新される要素のインデックス</Description>
+                <Description xml:lang="zh">要素索引</Description>
+              </Param>
+              <Param type="OBJECT" name="Element" optional="FALSE">
+                <Description>Element</Description>
+                <Description xml:lang="ja">要素</Description>
+                <Description xml:lang="zh">要素</Description>
+              </Param>
+            </Inputs>
+            <Outputs>
+              <Param type="LIST" name="List" optional="TRUE">
+                <Description>List to update</Description>
+                <Description xml:lang="ja">リストの更新</Description>
+                <Description xml:lang="zh">更新列表内容</Description>
+              </Param>
+            </Outputs>
+          </ComponentTemplate>
+          <ComponentTemplate type="External" name="List.size">
+            <NameTemplate>ListSize {0}</NameTemplate>
+            <Icon toolbar="list.gif" diagram="list32.gif"/>
+            <Description>ListSize</Description>
+            <Description xml:lang="ja">リストサイズ</Description>
+            <Description xml:lang="zh">列表大小</Description>
+            <Properties>
+              <Performer>com.savvion.BizSolo.beans.VectorOps</Performer>
+              <PerformBy>size</PerformBy>
+            </Properties>
+            <Inputs>
+              <Param type="LIST" name="List" optional="FALSE">
+                <Description>List to update</Description>
+                <Description xml:lang="ja">リストの更新</Description>
+                <Description xml:lang="zh">更新列表内容</Description>
+              </Param>
+            </Inputs>
+            <Outputs>
+              <Param type="LONG" name="Size" optional="FALSE">
+                <Description>Size of list</Description>
+                <Description xml:lang="ja">リストのサイズ</Description>
+                <Description xml:lang="zh">列表大小</Description>
+              </Param>
+            </Outputs>
+          </ComponentTemplate>
+          <ComponentTemplate type="External" name="LoadList">
+            <NameTemplate>ListLoad {0}</NameTemplate>
+            <Icon toolbar="database16.gif" diagram="database32.gif"/>
+            <Description>ListLoad</Description>
+            <Description xml:lang="ja">リストのロード</Description>
+            <Description xml:lang="zh">加载列表</Description>
+            <Properties>
+              <Performer>com.savvion.BizSolo.beans.LoadList</Performer>
+              <PerformBy>load</PerformBy>
+            </Properties>
+            <Inputs>
+              <Param type="STRING" name="DriverClass" optional="FALSE">
+                <Description>JDBC Driver Class</Description>
+                <Description xml:lang="ja">JDBCドライバクラス</Description>
+                <Description xml:lang="zh">JDBC连接对象类</Description>
+              </Param>
+              <Param type="STRING" name="JdbcURI" optional="FALSE">
+                <Description>JDBC URI</Description>
+                <Description xml:lang="ja">JDBC URI</Description>
+                <Description xml:lang="zh">JDBC URI</Description>
+              </Param>
+              <Param type="STRING" name="User" optional="FALSE">
+                <Description>Database username</Description>
+                <Description xml:lang="ja">DBユーザー名</Description>
+                <Description xml:lang="zh">数据库用户</Description>
+              </Param>
+              <Param type="STRING" name="Password" optional="FALSE">
+                <Description>Database password</Description>
+                <Description xml:lang="ja">DBパスワード</Description>
+                <Description xml:lang="zh">数据库用户密码</Description>
+              </Param>
+              <Param type="STRING" name="Query" optional="FALSE">
+                <Description>Query to select column loaded into List</Description>
+                <Description xml:lang="ja">リストの検索</Description>
+                <Description xml:lang="zh">所选数据列表</Description>
+              </Param>
+              <Param type="LIST" name="List" optional="FALSE">
+                <Description>List to update</Description>
+                <Description xml:lang="ja">リストの更新</Description>
+                <Description xml:lang="zh">更新列表内容</Description>
+              </Param>
+            </Inputs>
+            <Outputs>
+              <Param type="LIST" name="List" optional="FALSE">
+                <Description>List to update</Description>
+                <Description xml:lang="ja">リスト</Description>
+                <Description xml:lang="zh">更新列表内容</Description>
+              </Param>
+            </Outputs>
+          </ComponentTemplate>
+        </Templates>
+      </Page>
+      <Page name="Notes">
+        <Description>Notes</Description>
+        <Description xml:lang="ja">ノート</Description>
+        <Templates>
+          <ComponentTemplate type="StickyNote" name="StickyNote" width="120" height="120">
+            <NameTemplate count="false">Sticky note</NameTemplate>
+            <Icon toolbar="stickyNote.gif" diagram=""/>
+            <Description>Sticky note</Description>
+            <Description xml:lang="ja">付箋紙</Description>
+          </ComponentTemplate>
+        </Templates>
+      </Page>
+    </Palette>
+  </Palettes>
+</Toolbar>

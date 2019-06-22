@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CGMaster">
+
+	<resultMap id="clientGroupMasterVO"
+		class="com.worldcheck.atlas.vo.masters.ClientGroupMasterVO">
+			<result property="clientGroupId" column="CLIENT_GROUP_MASTER_ID" />
+			<result property="clientGroupName" column="CLIENT_GROUP_MASTER_NAME" />
+			<result property="statusval" column="STATUS" />
+			
+	</resultMap>
+
+
+	<insert id="addNewBO"
+		parameterClass="com.worldcheck.atlas.vo.masters.ClientGroupMasterVO">
+
+		<selectKey resultClass="java.lang.String" type="pre" keyProperty="clientGroupId">
+
+			SELECT
+			CMS_CLIENT_GROUP_MASTER_SEQ.nextval AS VALUE FROM DUAL
+
+		</selectKey>
+		insert into CMS_CLIENT_GROUP_MASTER
+		(
+		CLIENT_GROUP_MASTER_ID,
+		CLIENT_GROUP_MASTER_NAME,
+		UPDATED_BY,
+		UPDATED_ON
+		)
+		values
+		( #clientGroupId#,
+		#clientGroupName#,
+		#updateBy#,
+		sysdate
+		)
+
+	</insert>
+	
+
+	<!--   <select id="searchBO"
+		parameterClass="com.worldcheck.atlas.vo.masters.ClientGroupMasterVO"
+		resultMap="clientGroupMasterVO">
+		     select CLIENT_GROUP_MASTER_ID,
+			CLIENT_GROUP_MASTER_NAME,
+			STATUS,
+			UPDATED_BY,
+			UPDATED_ON from cms_client_group_master 
+           where STATUS=1
+		<isNotNull property="clientGroupName">
+			<isNotEmpty property="clientGroupName">
+				and CLIENT_GROUP_MASTER_NAME  LIKE 
+				UPPER(#clientGroupName#) || '%'
+			</isNotEmpty>
+		</isNotNull>
+		
+	
+	</select>
+	-->
+	
+	
+	 <select id="searchBO" parameterClass="com.worldcheck.atlas.vo.masters.ClientGroupMasterVO" resultMap="clientGroupMasterVO" >
+	 	SELECT * FROM (SELECT  a.*, ROWNUM rn FROM (select CLIENT_GROUP_MASTER_ID,
+			CLIENT_GROUP_MASTER_NAME,
+			STATUS,
+			UPDATED_BY,
+			UPDATED_ON from cms_client_group_master 
+	 	    WHERE STATUS = 1 and CLIENT_GROUP_MASTER_ID!=0
+			<isNotNull prepend="AND" property="clientGroupName">
+	 			<isNotEmpty property="clientGroupName">
+           		CLIENT_GROUP_MASTER_NAME  LIKE 
+				UPPER(#clientGroupName#) || '%'
+           		</isNotEmpty>
+      		</isNotNull>
+      	order by UPPER(CLIENT_GROUP_MASTER_NAME) ) a WHERE ROWNUM <![CDATA[ <= ]]> #limit#) WHERE rn <![CDATA[ >= ]]> #start#
+	</select>
+	
+	
+
+	<select id="searchBO_count"
+		parameterClass="com.worldcheck.atlas.vo.masters.ClientGroupMasterVO"
+		resultClass="int">
+		    select count(*) from cms_client_group_master where status=1 and CLIENT_GROUP_MASTER_ID!=0
+	</select>
+
+	
+	<select id="getBOInfo" parameterClass="java.lang.Integer"
+		resultClass="com.worldcheck.atlas.vo.masters.ClientGroupMasterVO">
+
+      select CLIENT_GROUP_MASTER_ID,
+		CLIENT_GROUP_MASTER_NAME,
+		STATUS,
+		UPDATED_BY,
+		UPDATED_ON from CMS_CLIENT_GROUP_MASTER where STATUS=1 and  CLIENT_GROUP_MASTER_ID= #clientGroupId#
+									
+	</select>
+	
+
+	<update id="updateBo"
+		parameterClass="com.worldcheck.atlas.vo.masters.ClientGroupMasterVO">
+	
+		update
+		CMS_CLIENT_GROUP_MASTER
+		SET
+		CLIENT_GROUP_MASTER_NAME=#clientGroupName#,
+		STATUS= #statusval#,
+		UPDATED_BY=#updateBy#,
+		UPDATED_ON=SYSDATE
+		WHERE
+		CLIENT_GROUP_MASTER_ID= #clientGroupId#
+															
+	</update>
+
+	
+	<select id="isExist" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+
+		SELECT COUNT(*) FROM CMS_CLIENT_GROUP_MASTER WHERE STATUS=1 and  UPPER(CLIENT_GROUP_MASTER_NAME)
+		=
+		UPPER(#clientGroupName#)
+	</select>
+	
+	
+	<select id="searchGroupByName"  resultClass="com.worldcheck.atlas.vo.masters.ClientGroupMasterVO" parameterClass = "String">
+	 	select CLIENT_GROUP_MASTER_ID clientGroupId ,
+		CLIENT_GROUP_MASTER_NAME clientGroupName ,
+		STATUS statusval
+	 	FROM  CMS_CLIENT_GROUP_MASTER 
+	 	WHERE
+	 	  	STATUS =1 and CLIENT_GROUP_MASTER_NAME = #clientGroupName#
+    </select> 
+      
+		<update id="deActivateGroup"
+		parameterClass="com.worldcheck.atlas.vo.masters.ClientGroupMasterVO">
+	
+		update
+		CMS_CLIENT_GROUP_MASTER
+		SET
+		STATUS= 0,
+		UPDATED_BY=#updateBy#,
+		UPDATED_ON=SYSDATE
+		WHERE
+		CLIENT_GROUP_MASTER_ID= #clientGroupId#
+															
+	  </update>
+	  
+	  	<update id="deAssociateClient" parameterClass="com.worldcheck.atlas.vo.masters.ClientGroupMasterVO">
+	
+		update cms_client_master set client_group_id=0 
+		WHERE
+		client_group_id= #clientGroupId#
+															
+	  </update>
+	  	
+</sqlMap>
+
+

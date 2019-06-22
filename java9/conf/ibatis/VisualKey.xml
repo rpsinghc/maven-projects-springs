@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="VisualKey">
+
+	<resultMap id="visualKeyResultMap" class="com.worldcheck.atlas.vo.visualkey.VisualKey">
+		
+		<result property="crn" column="CRN"/>
+		<result property="caseManager" column="CASE_MANAGER"/>
+		<result property="teamType" column="TEAM_TYPE"/>
+		<result property="manager" column="MANAGER"/>
+		<result property="primaryAnalyst" column="MAIN_ANALYST"/>
+		<result property="mainAnalystManager" column="main_analyst_manager"/>
+
+
+	</resultMap>
+
+	<select id="getVisualKey" resultMap="visualKeyResultMap" parameterClass="java.lang.String">
+		SELECT cc.CRN,cum.USER_FULL_NAME AS "CASE_MANAGER" ,
+		ctt.TEAM_TYPE,cum_mgr.USER_FULL_NAME as MANAGER,
+		cum_main.USER_FULL_NAME as MAIN_ANALYST ,
+		cum_main_manager.USER_FULL_NAME as main_analyst_manager
+		FROM CMS_CLIENTCASE cc
+		LEFT JOIN CMS_USER_MASTER cum ON cc.CASE_MGR_ID = cum.LOGIN_ID
+		LEFT JOIN CMS_TEAM_DETAILS CTD ON CTD.CRN =cc.CRN
+		LEFT JOIN CMS_USER_MASTER cum_mgr ON ctd.MANAGER_ID = cum_mgr.LOGIN_ID
+		LEFT JOIN CMS_USER_MASTER cum_main ON ctd.MAIN_ANALYST = cum_main.LOGIN_ID
+		LEFT JOIN  CMS_TEAM_TYPE  ctt ON ctd.TEAM_TYPE_ID = ctt.TEAM_TYPE_ID
+		LEFT JOIN CMS_USER_MASTER cum_main_manager ON cum_main.REPORTS_TO = cum_main_manager.LOGIN_ID
+		WHERE cc.CRN =#CRN#
+		ORDER BY ctd.team_id
+	</select> 
+
+	
+		
+</sqlMap>
+
+

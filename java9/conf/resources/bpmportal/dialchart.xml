@@ -1,0 +1,8 @@
+<chart lowerLimit='#lower_limit#' upperLimit='#upper_limit#' gaugeStartAngle='180' gaugeEndAngle='0' gaugeOuterRadius='150' gaugeInnerRadius='80' tickValueDistance='10' showValue='1' palette='1' bgColor='FFFFFF' autoScale='1' origW='300' origH='200' showBorder='0'>
+    <colorRange>
+        #color_range#
+    </colorRange>
+    <dials>
+        <dial value='#value#' rearExtension='10'/>
+    </dials>
+</chart>
